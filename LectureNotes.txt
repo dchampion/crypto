@@ -1,0 +1,1472 @@
+Cryptography Lecture Series
+
+I. Introduction to Cryptography (https://youtu.be/2aHkqB2-46k)
+
+    1.  Classification:
+                                   IT Security
+                                        |
+                                    Cryptology (one small branch of IT security)
+                                        |
+                                -----------------
+                                |               | 
+                           Cryptography    Cryptanalysis (attackers)
+                                |
+                          ------------------------------------------------------------------------------
+                          |                                       |                                    |
+                      Symmetric                              Asymmetric                            Protocols
+                          |                                       |                                    |
+               -----------------------                 ----------------------               ------------------------
+               |                     |                 |          |         |               |
+        Stream ciphers         Block Ciphers          RSA    Discrete Log  ECC      Digital Signature
+                                     |
+                            -------------------
+                            |                 |
+                           DES               AES
+
+
+        IT security is a huge field, and a superset of crypto, but you cannot have a secure system without crypto being some part of it.
+
+    2.  Setup for symmetric cryptography:
+
+        a) Problem: Communication over insecure channels; e.g. the internet, wifi, cell network, etc.
+        b) Solution(s): Encryption/decryption, with algorithms. For 4k years (i.e. the entire history of crypto), the solution was to keep the algorithms secret. Starting in the 1970s, this approach was turned on its head: publicize the algorithms, and keep the keys secret (the keys being the input to the crypto function to encrypt/decrypt messages).
+              i) There is no way to prove that a crypto algorithm is unbreakable; the only evidence that such an algorithm is unbreakable is that it is a) widely publicized and b) has been used in practice and never successfully attacked.
+             ii) Never use an untested crypto algorithm.
+            iii) Kerckhoff's Principle (1883): A cryptosystem should be secure even if the attacker knows all the details about the system, with the exception of the secret key.
+
+        Kerckhoff's Principle is counterintuitive. For 4k years, keeping the algorithm secret was the approach.
+
+        With a finite number of keys, brute-force is the most obvious method of breaking a crypto algorithm; i.e. you try all possible keys. The "keyspace" is defined as the number of possible keys in a symmetric-key cipher.
+
+        Symmetric keys must be shared between communicating parties over a secure channel; otherwise an attacker can steal keys.
+
+    3.  Substitution cipher:
+
+        a) The substitution cipher is a historical (and very insecure) cipher.
+        b) Prior to about 50 years ago, all ciphers operated on alphabetic letters; since then, operations are on bits.
+        c) The general idea is to replace every plaintext letter with a fixed ciphertext letter.
+
+        Example:
+        A -> l
+        B -> d
+        C -> w
+
+        e(ABBA) -> lddl
+
+        How do you break this cipher?
+            a) Brute force (or exhaustive key search): The keyspace for this cipher is 26! (2^88). This is a very large number; too large for this type of attack.
+            b) Letter frequency analysis: The frequency of letters occuring in plaintext is a very big clue we can leverage; e.g. 13% of all English letters are 'e'. Since the cipher uses fixed substitution, the frequency distribution will be the same between the plaintext and the ciphertext.
+
+    4.  Attacks (classification thereof)
+
+        From the POV of the attacker (cryptanalysis), he is satisfied if he breaks the cipher by whatever means (your cipher is only as strong as its weakest link). He doesn't care HOW he breaks it, just that he breaks it.
+
+        Attack "vectors":
+            a) "Classical" approaches
+                 i) Brute-force (exhaustive key search)
+                ii) Analytical (e.g. letter-frequency analysis)
+            b) Social engineering approaches
+                 i) Impersonation
+                ii) Phishing
+            c) "Implementation" attacks (aka side-channel attacks)
+                 i) Magnitude and/or timing of power fluctuations
+
+II. Modular Arithmetic and Historical Ciphers (https://youtu.be/W1SY6qKZrUk)
+
+    1.  Modular Arithmetic:
+
+        Goal: Computation in finite sets. Example of a finite set is a clock; i.e. the hours in a day (or half a day).
+
+        Formal definition: Let a, r, m in Z, and m > 0; we write a ≡ r mod m, if m divides (a-r), i.e. m | (a-r)
+
+        m is called the "modulus"
+        r is called the "remainder"
+
+        Example:
+            If a=13 and m=9, what is r? r=4, because m | (a-r) => 9 | (13-4) => 9 | 9.
+
+            1a) Computation of the remainder:
+                Given: a, m in Z, we write a = qm + r (where q is the "quotient").
+            
+                Example:
+                    a = 42, m = 9
+                    42 = 4 * 9 + 6 => r = 6
+
+                    check m | (a-r): 9 | (42-6) => 9 | 36 => true
+
+                but also,
+
+                    42 = 3 * 9 + 15 => r = 15
+
+                    check m | (a-r): 9 | (42-15) => 9 | 27 => true
+
+                but also,
+
+                    42 = 5 * 9 + -3 => r = -3
+            
+                    check m | (a-r): 9 | (42-(-3)) => 9 | (42+3) => 9 | 45 => true
+
+                *** The result of all this is that the remainder is not unique. ***
+
+            1b) Equivalence Classes
+
+                Example:
+                    a = 12, m = 5
+                    12 = 2  mod 5 (check: 5 | (12-2) => 5 | 10 => true)
+                    12 = 7  mod 5 (check: 5 | (12-7) => 5 | 5  => true)
+                    12 = -3 mod 5 (check: 5 | (12+3) => 5 | 15 => true)
+
+                Definition: The set {...,-8,-3,2,7,12,...} forms an equivalence class modulo 5. All members of the class behave equivalently modulo 5.
+
+                All equivalence classes modulo 5:
+                    {...,-10,-5,0,5,10,...} A
+                    {..., -9,-4,1,6,11,...} B
+                    {..., -8,-3,2,7,12,...} C
+                    {..., -7,-2,3,8,13,...} D
+                    {..., -6,-1,4,9,14,...} E
+
+                13 * 16 - 8 = (208 - 8) = 200 = 0 mod 5
+
+                D  * B  - D
+                3  * 1  - 3 = (3 - 3)   = 0   = 0 mod 5
+                or
+                8  * 6-(-7) = (48+ 7)   = 55  = 0 mod 5
+
+            1c) Important application in PK crypto is modular exponentiation; e.g. 3^8 mod 7
+                Hard way: 3^8 = 6,561 = 2 mod 7
+                Easy way: 3^8 = (3^4 * 3^4) = (81 * 81) = (4 * 4) = 16 = 2 mod 7
+                    We get (4*4) from (81*81) because 4 is in the same equivalence class mod 7 as 81. Easiest thing to do is to use the smallest positive members in each equivalence class.
+
+    2.  Rings (an algebraic view on modular arithmetic)
+
+        Definition: The "integer ring" Zm (Z index m) consists of:
+            a) The set of integers, written Zm (Z index m); e.g. {0,1,2,3,...m-1} (the set of smallest positive integers in the equivalence classes mod 5 form such a set.)
+            b) Two operators "+" and "*", such that for all a, b, c, d in Zm...
+                i) a + b = c mod m
+               ii) a * b = d mod m
+            c) Rules:
+                i) We can add and multiply any two numbers and the result is always in the ring. The ring is said to be closed.
+               ii) Addition and multiplication are associative; e.g. a+(b+c) = (a+b)+c and a*(b*c) = (a*b)*c for all a, b, c in Zm.
+              iii) There is the neutral element 0 with respect to addition; i.e. for every element a in Zm it holds that a + 0 = a mod m
+               iv) For any element in the ring, there is always the negative element -a such that a+(-a) = 0 mod m; i.e. the additive inverse always exists.
+                v) There is the neutral element 1 with respect to multiplication; i.e. for every element a in Zm it holds that a*1 = a mod m.
+               vi) The multiplicative inverse exists only for some, but not all, elements. Let a in Z, the inverse a^-1 is defined such that a*(a^-1) = 1 mod m. If an inverse exists for a, we can divide by this element since b/a = b*(a^-1) mod m.
+               
+                Example for multiplicative inverses:
+                    m = 9
+                    a) a = 2
+                       2 * (2^-1) = 1 mod 9
+                       2^-1 = .5 => .5 IS NOT IN THE SET, so this doesn't work.
+                       2 * 5 = 1 mod 9
+                       2^-1 = 5 mod 9
+
+                       The number 6, however, does not work, because there is no number in the set by which 6 can be multiplied and get the answer 1 mod 9.
+
+                Use gcd (greatest common divisor) to make this determination. If the gcd of the number you are trying to find and the modulus is 1, the inverse is in the set; otherwise it is not; e.g.
+                gcd(6,9) = 3 => inverse is not in the set.
+                gcd(2,9) = 1 => inverse is in the set.
+
+    3.  Shift Cipher (or Caesar Cipher)
+
+        Example:
+
+            k=3 (k for "key")
+            A -> d
+            B -> 
+            ...
+            w -> z
+            x -> a
+            y -> b
+            z -> c (x, y and z wrap)
+            
+            Encryption: e(x) = x + k mod 26
+            Decryption: d(y) = y - k mod 26
+
+            Two attacks possible:
+                1) Brute force (keyspace is only 26).
+                2) Frequency analysis.
+
+    4.  Affine Cipher
+
+        k = (a,b)
+        Encryption: y = a*x+b mod 26
+        Decryption: y-b = a*x mod 26; or x = a^-1(y-b) (never write fractions for crypto but instead inverses; e.g. replace (y-b)/a with a^-1(y-b))
+
+        What is the keyspace?
+        How many b? 26
+        How many a? Not infinite (see above). Only gcd(a,26) = 1; e.g. 5. The answer is 12
+        Number of keys = #a*#b = (12*26) = 312
+        
+        ***QUESTION*** Why must the encryption be limited to mod 26???
+
+III. Stream Ciphers, Random Numbers and the One Time Pad (https://youtu.be/AELVJL0axRs)
+
+    1.  There are two flavors of symmetric cryptography: a) stream ciphers and b) block ciphers.
+
+        A stream cipher encrypts bit by bit, individually. A block cipher operates on a block of bits. The key in a stream cipher is denoted with 's' (not 'k').
+
+        ****
+        Encryption: yi = e(xi) = xi + si mod 2
+        Decryption: xi = d(yi) = yi + si mod 2
+        ****
+
+        Similar to shift cipher, but decryption adds instead of subtracts the key. Why?
+
+        d(yi) = yi + si mod 2
+              = (xi + si) + si mod 2
+              = xi + 2si mod 2 (2 mod 2 is always 0)
+              = xi + 0 mod 2
+              = xi mod 2 => This is the proof that encryption and decryption are the same operation.
+
+        mod 2 addition and subtraction are the same operation.
+
+        xi, yi, si form the set Z2; i.e. {0,1}
+
+        Another name for this is an xor gate (denoted by a plus sign '+' with a circle around it). mod 2 addition is a synonym for xor.
+
+        xi  si  | yi
+        --------------
+         0   0  |  0     
+         0   1  |  1
+         1   0  |  1
+         1   1  |  0
+
+        xor a 0 key bit with plaintext bit does not change it. xor a 1 key bit with any plaintext bit flips the plaintext bit. By definition, then, if the sender flips the bit, the receiver flips it back; and if the sender does not flip the bit, neither does the receiver.
+
+        Example: Encrpyt the ASCII-encoded letter 'A'
+
+            x7...x1 = 1000001 (plaintext bits for letter 'A')
+            s7...s1 = 0101101 (key bits; assume these bits are randomly generated)
+            -----------------
+            y7...y1 = 1101100 (ciphertext bits; the ASCII-encoded letter 'l')
+            s7...s1 = 0101101 (key bits)
+            -----------------
+            x7...x1 = 1000001 (plaintext bits for letter 'A')
+
+        All of the above is the easy part. The hard part is answering the question: how do we generate the key stream bits si? Obviously, the key stream bits should be random.
+
+    2.  Random Number Generators (RNGs)
+
+        Three types:
+
+            a) True Random Number Generator (TRNG); e.g. coin flip, radioactive decay, thermal noise, dice, mouse movements, keystroke timing and/or any random physical process.
+
+            b) Pseudo Random Number Generator (PRNG); PRNs are computed by an algorithm, i.e. they are deterministic. Often, they are implemented in the following way: they are first seeded with an initial seed s0, and thereafter si+1 = f(si). Therefore, they are predictable if you know the seed. These are typically used to generate statistical randomness; however, they are completely predictable, which makes them wholly unsuitable for cryptography. Even without the seed, they can be predictable; e.g. just knowing the algorithm and/or the internal state of the PRNG.
+
+            c) Cryptographically Secure Pseudo Random Number Generator (CSPRNG); These are PRNGs with the additional property that the numbers are unpredictable. The informal definition of "unpredictable" is: Given n output bits si, si+1...si+n-1, it is computationally infeasible to construct sn
+
+    3.  One-Time Pads
+
+        Goal: Build the "perfect" encryption algorithm.
+
+        ****
+        Definition: A cipher is "unconditionally secure" (or information-theoretically secure) if it cannot be broken even with infinite computing resources.
+        ****
+
+        It is extremely easy to build a cipher that fulfills the above definition.
+
+        ****
+        Definition: The one-time pad (OTP) is a stream cipher where, a) the key-stream bits si stem from a TRNG and b) each key-stream bit is used only once.
+        ****
+
+        If the stream cipher described in part 1 used key bits generated from a TRNG, it would clear this very high bar. The problem is, how does the receiver know this sequence? The entire key would have to be shared, securely, with the receiver. Since the number of key bits is equal to the number of plaintext bits, this is infeasible. Another problem is that the key cannot be reused. Another problem is that the key must be kept secret. Forever.
+
+    4.  Linear Congruential Generator (LCG)
+
+        Use a key stream si from a PRNG. Sender and receiver both have a PRNG. You initialize both PRNGs with the same key.
+
+        S0      = Seed
+        Si+1    = A * si * B mod m; A, B, Si form the set Zm (A and B are contstants)
+        K (key) = (A,B)
+
+        A, B, Si are log2 m bits long.
+
+        Attack:
+
+            Eve knows three plaintext blocks of bits (say 16 bits in length e.g.) x1, x2 and x3 (say constant file-header information). Eve xors these to get s1, s2, s3. Eve knows s2 was computed as s2 = A * s1 + b mod m. There are two unknowns in this equation (this is a linear equation). A and B are unsolvable. A second equation solves. S3 = A * s2 + B mod m. With these two equations the attacker has won. This is a linear equation system with two unknowns.
+
+            A = (s2 - s3)          (s1 - s2)^-1 mod m
+            B =  s2 - s1 (s2 - s3) (s1 - s2)^-1 mod m
+
+            The upshot? Don't use LCGs.
+
+IV. Stream Ciphers and Linear Feedback Shift Registers (LFSR) (https://youtu.be/sKUhFpVxNWc)
+
+    1.  Introduction to LSFRs
+
+        Goal: A stream cipher that is small (low-power) in hardware.
+
+        Example: A5/1 Cipher (in GSM (Euro cell network)). This cipher is based on 3 LFSRs.
+
+        Atomic element: flip-flop. A flip-flop stores a single bit.
+
+V. Data Encryption Standard (DES) (https://youtu.be/kPBJIhpcZgE)
+
+    Block Ciphers (the vast majority of applications).
+
+    1.  Introduction to DES
+
+        Facts:
+
+            a) Proposed by IBM in 1974, with input from NSA. The NSA asked for a standard proposal, and IBM came up with it. Prior to this time, the only applications for cryptography were state intelligence/military.
+
+            b) From 1977 to 1998, DES was a US standard, and was chosen by many private businesses for commercial applications.
+           
+            c) Original DES is insecure today; the key is too short. 3DES is very secure.
+
+        y = DES(k,x); where y is the ciphertext, k is the key and x is the plaintext.
+
+        DES encrypts 64 bits (8 bytes) at a time. The key size of original DES is 56 bits.
+
+        How do we build a block cipher? Claude Shannon proposed two basic (atomic) operations for a block cipher:
+
+            i) Confusion -> relationship between plain and ciphertext is obscured; e.g. substitution (lookup) table. But this is not enough.
+           ii) Diffusion -> the influence of each plaintext bit is spread over many ciphertext bits; e.g. permutation.
+          iii) Combine confusion and diffusion many times to build a strong block cipher; confusion -> diffusion -> confusion -> diffusion -> y. This is what is known as a "product" cipher (or the avalanche effect). A single bit-flip in the input (plaintext) results in many bit-flips in the output (ciphertext).
+
+    2.  Feistel Network
+
+        Many of today's ciphers are Feistel ciphers (but not all).
+
+        DES:
+
+            - Encrypts blocks of size 64 bits.
+            - Uses a key size of 56 bits.
+            - Symmetric cipher (i.e. same key for encryption and decryption).
+            - uses 16 rounds which all perform the identical operation.
+            - Different subkey in each round derived from main key.
+
+        A single round:
+
+            - Split block into equal 16 bit parts, L0 and R0 (L for left, R for right)
+            - Feed R0 and a subkey into a function f (subkey is 48 bits).
+            - The output of the function is xor:ed with L0.
+            - The result of the previous operation becomes R1, and R0 becomes L1.
+            
+            In effect, only L0 is encrypted (using an xor); R0 is simply passed through.
+            By passing R0 through unaltered to L1, the inverse operation can be performed to recover L0 on the receiver side.
+
+    3.  DES Internals (the 'f' function)
+
+        a) IP and IP^-1 (Initial Permutation).
+            - Simple bit permutation. Take 64-bit input plaintext; e.g. copy bit 1 to position 40, and bit 58 to position 1. This is IP.
+            - IP^-1 is the inverse of this.
+
+            The only reason for IP is because of an obscure technical engineering shortcoming; it adds nothing to the security of the cipher. In hardware, setting up an IP is very inexpensive. In software, it is computationally expensive. NSA wanted DES to be a hardware-only standard (may be apocryphal).
+
+        b) Details of 'f' function.
+            - Ri-1 is fed to an "Expansion" function E, which expands the 32-bit input to 48 bits (E-box). E-box provides diffusion. The idea is to copy a few single bits to not one, but two locations, in the expanded array. The farther away the copies, the better. To get from 32 to 48 bits, 16 bits are copied one-for-one, and 16 one-for-two.
+            - XOR the 48-bit subkey with the 48-bit output of E.
+            - The 48-bit output of the previous operation gets split into 8 6-bit blocks, each of which is fed in to a substitution (lookup) table s1 (to s8). (S-boxes). S-box is the heart of DES; it provides confusion.
+            - The 6-bit input is converted to a 4-bit output. An S-box is a table of 2^6 (64) entries; 2^6 to accommodate 6 input bits. Each 6-bit key in the table maps to a 4-bit value. This is a special table (not like a traditional lookup table); it consists of 16 columns and 4 rows. The middle 4 bits of the input are used to select a column in a 16-column table, and the outer 2 bits are used to select a row in the 4-row table.
+            - The result is a 32-bit output, which is permuted.
+
+        DES was broken using differential cryptanalysis. The solution involved the nature of the S-boxes being fixed, which IBM and the NSA insisted were secure and should be trusted. But many thought that this was a back door.
+
+VI. Data Encryption Standard (DES): Key Schedule and Decryption (https://youtu.be/l-7YW06BFNs)
+
+    1.  Key Schedule. Derive 16 subkeys from main key. It consists of simple operations.
+
+        - Split key into 28-bit halves, C0 and D0.
+        - In rounds i = 1, 2, 9 and 16, the two halves are each rotated left by one bit.
+        - In all other rounds the two halves are each rotated left by two bits.
+        - 4 rounds are shifted 1 position, and 12 rounds are shifted 2 positions, for a total of 28 positions.
+        - By the end of a 16-shift round, C16 and D16 equals C0 and D0 again.
+        - In each round a permuted subset of 48 bits is chosen from Ci and Di, as a round key.
+        - Each Ki is a permutation of ki-1???
+
+        a) PC-1 -> Permuted Choice 1. Drops bits 8, 16, 24,...,64 to reduce initial 64-bit input to 56 bits. This is the key.
+        b) PC-2 -> Permuted Choice 2. A permuted 48-bit subset of the remaining 56 bits. This is the key. This is the subkey Ki.
+        c) LSi  -> Left Shift (really a rotation).
+
+        Throughout the entire process, there is no computation, just permutation.
+
+    2.  Decryption.
+
+        There are an equal number of decryption rounds; i.e. the reverse of encryption. R(d)1 is the inverse of R(e)16, R(d)2 is the inverse of R(e)15, etc.
+
+        At the end of encryption we have L(e)16 and R(e)16. At the beginning of decryption we have L(d)0 and R(d)0, and after one round we have L(d)1 and L(d))2, which should be the same as L(e)15 and R(e)15. Specifically, L(d)1 = R(e)15 ^ R(d)1 = L(e)15 (L and R are swapped).
+
+            a) L(d)1 is exactly equal to R(e)15; L(d)1 = R(e)15.
+            b) R(d)1 = L(d)0 ^ f(Ki, R(d)0) (see video @ 43:27).
+                i)   L(d)0 = L(e)15 ^ f(K16, R(e)15)
+            c) R(d)1 = L(e)15 ^ f(K16, R(e)15) ^ f(Ki, R(d)0)
+            d) R(d)1 = L(e)15 ^ (f(K16, R(e)15) ^ f(K16, R(e)15)) -> The last two terms are identical, so when XORed become 0, so...
+            e) R(d)1 = L(e)15 ^ 0
+
+        The remaining round reversals work the same.
+
+    3.  Security of DES
+
+        There are two families of attack.
+
+            a) Analytical attacks. From 1975 to 1999 no successful analytical attack was demonstrated for DES. In 1999 Shamir et al discovered DES is resistant to differential cryptanalysis. However, they proved that if you know 2^47 xy pairs, you can break DES. This requires knowing 2^47 plaintext values. Using Linear cryptanalysis yielded an attack requiring knowledge of 2^43 xy pairs; not good. The bottom line is the DES is very resistant to analytical attacks.
+
+            b) Brute force. Decrypt a block using all possible keys (2^56) and compare the plaintexts. In 1998, DeepCrack, a special-purpose DES hardware cracker, broke a DES cipher in a couple of days. The machine cost $250k to build. This marked the death knell for DES. In 2007, the Germans built COPACABANA, the same machine, for $10k.
+
+    4.  DES Alternatives
+
+        Cipher                              Comment
+        ---------------------------------------------------------------------
+        Advanced Encryption Standard (AES)  De facto world standard. The problem is that it is heavyweight and not good for tiny applications; e.g. chip cards.
+        3DES (triple DES)                   DES with 3 keys. This was introduced to solve the tiny application problem because it is lightweight. It is very secure.
+        AES finalists                       Four ciphers, all very secure.
+
+VII. Introduction to Galois Fields for AES (https://youtu.be/x1v2tX4_dkQ)
+
+    1.  Motivation
+
+        - Blocks size is 128 bits.
+        - Key sizes are 128, 192 and 256.
+        - All internal operations of AES are based on finite fields.
+
+    2.  Finite Fields
+
+        a) Terminology:
+            i) Galois field is synonymous with finite field.
+           ii) There are 3 basic algebraic structures:
+
+                - Group -> A set of elements G together with and operation o (addition/subtraction) which combines 2 elements of G. A group has the following properties:
+                    - The group operation o is closed. That is, for all a, b, in the set G, it holds that a o b = c is in the group G.
+                    - The group operation is associative. That is a o (b o c) = (a o b) c for all a, b, c in the group G.
+                    - There is an element 1 in the group G, called the neutral element (or identity element), such that a o 1 = 1 o a = a for all a in the group G.
+                    - For each a in the group G, there exists and element a^-1 in the group G called the inverse of a, such that a o a^-1 = a^-1 o a = 1.
+                    - A group G is abelian (commutative) if a o b = b o a for all a, b in the group G.
+
+                - Ring -> Adds multiplication to a Group (remember, there is not always an inverse--division--for an element).
+
+                - Field -> Adds inverse/division for all elements (+,-,*,()-1). Informally, a field is a set of numbers in which we can add, subtract, multiply and divide. For example, the set of real numbers and the set of complex numbers, but not natural numbers. In cryptography, we almost always need "finite" sets. Finite fields (ff) only exist if they have p^m elements, where p is prime and m is a positive integer.
+                properties:
+                    - All elements of field F form an additive group with the group operation + and the neutral element 0.
+                    - All elements of field F except 0 for a multiplicative group witht the group operation * and the neutral element 1.
+                    - When the two group operations are mixed, the distributivity law holds; i.e. for all a, b, c in field F: a(b+c) = (ab) + (ac).
+
+                    Examples:
+                        a) There is a ff with  11 elements; i.e. GF(11) = GF(11^1).
+                        b) There is a ff with  81 elements; i.e. GF(81) = GF(3^4).
+                        c) There is a ff with 256 elements; i.e. GF(256) = GF(2^8) -> This is the "AES field."
+                        d) There is not a ff with 12 elements; e.g. 2^2 * 3.
+
+                Types of ff: They all must have the form GF(p^m). Where m = 1, the notation is GF(p), aka a prime field. Where m > 1, the notation is GF(p^m), aka extension fields. Important: In cryptography, we are particularly interested in ff of type GF(2^m).
+
+    3.  Prime Fields Arithmetic. How do we compute in a prime field?
+
+        The elements of a prime field GF(p) are the integers in the set {0,1,...,p-1}.
+
+        a) Add, subtract, multiply.
+
+            Let a, b in the set GF(p) = {0,1,...,p-1}
+            
+                - a + b = c (mod p)
+                - a - b = d (mod p)
+                - a * b = e (mod p)
+
+            Note that all conditions of fields are satisfied with these operations (see rules for Groups above).
+
+        b) Inversion.
+
+            let a in the set GF(p)
+
+                -> a * a^-1 = 1 (mod p) -> How do you compute a^-1? With Extended Euclidean Algorithm.
+
+    4.  Extension Fields (GF(2^m)) arithmetic.
+
+        a) Element representation. The elements of GF(2^m) are polynomials; i.e. am-1x^m-1 + ... + a1x + a0. A(x) is in the field GF(2^m). The coefficients a0, a1, a2,..., a7 form the field GF(2), which is as we saw previously a prime field. Specifically the field consists of the elements {0,1}.
+
+        Example:
+
+            GF(2^3) -> A(x) = a2x^2 + a1 + a0. All three terms must be either 0 or 1. -> (a2, a1, a0) -> A 3-bit vector. Therefore, GF(2^3) = GF(8)
+            GF(2^3) = {0, 1, x, x+1, x^2, x^2 + 1, x^2 + x, x^2 + x + 1} -> {000,001,010,011,100,101,110,111}
+
+        How do we compute these elements?
+
+        b) Addition and subtraction in GF(2^m) -> Use regular polynomial addition or subtraction, where the coefficients are computed in GF(2).
+
+        Example:
+
+            GF(2^3) -> A(x) = x^2 + x + 1
+                       B(x) = x^2     + 1
+                       ------------------
+                       A+B  = (1+1)x^2 + x + (1+1) -> (mod 2)
+                            = 0x^2 + x + 0
+                            = x
+
+            Note: Addition and subtraction in GF(2^m) are the same operations.
+
+        c) Multiplication in GF(2^m). Intuition says, just do regular polynomial multiplication.
+
+        Example:
+ 
+            GF(2^3) -> A*B = (x^2 + x + 1)(x^2 + 1)
+                           = x^4 + x^3 + x^2 + x^2 + x + 1
+                           = x^4 + x^3 + (1+1)x^2 + x + 1
+                           = x^4 + x^3 + x + 1 (mod some prime polynomial -> some polynomial that behaves like a prime; i.e. an irreducible polynomial). Irreducible because they cannot be factored...becuase they are prime.
+
+            Irreducible polynomial for GF(2^3)
+
+            P(x) = x^3 + x + 1
+            C(x) = A(x) * B(x) mod P(x)
+
+        For every field GF(2^m) there are several irreducible polynomials. The AES irreducible polynomial is P(x) = x^8 + x^4 + x^2 + x + 1
+
+        d) Inversion in GF(2^m). Again, thie inverse a^-1(x) of an element A(x) in GF(2^m) must satisfy rule 5 of groups. A(x)^-1 = 1 (mod P(x))
+
+VIII. Advanced Encryption Standard (AES) (https://youtu.be/NHuibtoL_qk)
+
+    1.  Introduction to AES.
+
+        In 1997, there was a request for an AES implementation by NIST (DES was becoming obsolete). By 8/1998, NIST had received 15 submissions. By 8/1999, the field was reduced to 5 finalists. In 10/2000, Rijndael (two young Belgian cryptographers; Joan Daemen and Vincent Rijmen) was selected as the standard.
+
+        The number of encryption rounds depends on the key length; 128 (10 rounds), 192 (12 rounds) or 256 (14 rounds).
+
+        a) AES is by now the most important symmetric algorithm in the world.
+        b) NSA now allows AES for classified data up to TOP SECRET (but not above) with a key length >= 192 bits. Otherwise they use a proprietary algorithm.
+        c) DES was developed in top secret by IBM with input from NSA.
+
+    2.  Structure of AES.
+
+        DES is based on a Feistel network; AES is not. AES encrypts all 128 bits of the data path in one round (where as DES only encrypts half; i.e. 32 bits).
+
+        a) Each round (25:00) consists of 4 layers: byte substitution (ByteSub) (confusion, or S-box), shift row (ShiftRow) (diffusion), mix column (MixCol) (diffusion) and key addition (KeyAdd). The last round omits MixCol. AES also uses "key widening" at the beginning and the very end. At the end a subkey is added.
+
+    3.  Internals of AES.
+
+        The 128-bit data path is split into 16 8-bit bytes; it is a byte-oriented cipher.
+
+        A is a 128-bit input. ByteSub -> ShiftRow -> MixCol -> KeyAdd. This is one round.
+
+        - ByteSub  -> The 16 bytes (A0 to A15) are split into four four-byte words. Each Ai goes into an S-box (substitution/lookup), the output of which is Bi.
+        - ShiftRow -> Byte-wise permutation (cross-wiring) of result of ByteSub into MixCol boxes.
+        - MixCol   -> Matrix multiplication. This is where diffusion happens.
+        - KeyAdd   -> Bit-wise XOR.
+
+        a) ByteSub (S-box) layer:
+
+            S(Ai) -> Bi (All 16 S-boxes are identical.) An S-box table is a 16x16 table of 4-bit hex values. Each column/row is a 4-bit hex value, and each intersection is an 8-bit hex value. AES S-boxes are constructed in the following way: An S-box input Ai is an 8-bit bit vector that is a member of a GF -> Ai is in the field GF(2^8). Compute its multiplicative inverse.
+
+            Example:
+
+                Ai     = 1100 0010
+                Ai(x)  = x^7 + x^6 + x [polynomial]
+                Bi'(x) = x^5 + x^3 + x^2 + 1 = Ai(x)^-1 [inverse]
+
+                 (x^7 + x^6 + x)(x^5 + x^3 + x^2 + x + 1) = 1 mod(x^8 + x^4 + x^3 + x + 1) [AES-standard irreducible polynomial]
+
+                Bi'    = 0010 1111
+                Bi     = Bi' multiplied by an AES-standard fixed bit matrix and reduced with modulo reduction [affine mapping]
+                
+                If you look in the S-box, the substitution for Ai is Bi; i.e. the S-box is computed.
+
+        b) ShiftRow layer:
+
+            Very systematic if we represent the state (i.e. the 16-bytes of the data path) as a 4x4 matrix. Row 0 is not shifted, row 1 is shifted one position to the left, row 2 is shifted 2 positions to the left, and row 3 is shifted 3 positions to the left.
+
+        c) MixCol layer:
+
+            Example:
+
+                Left-most MixCol column of the 4x4 matrix contains B0, B5, B10 and B15. The outputs are C0, C1, C2 and C3
+                
+                |C0| = |02 03 01 01| |B0 |
+                |C1|   |01 02 03 01| |B5 |
+                |C2|   |01 01 02 03| |B10|
+                |C3|   |03 01 01 02| |B15|
+
+                All Bi, Ci and constants are bytes; i.e. 8 bits.
+
+                C0 = (02 * B0) + (03 * B5) + (01 * B10) + (01 * B15)
+
+                Each multiplication and addition is polynomial; i.e. GF(2^8).
+
+                Vec  Bitwise     GF-wise (polynomial)
+                -------------------------------------     
+                01 = 0000 0001 = 1
+                02 = 0000 0010 = 2
+                03 = 0000 0011 = x + 1
+
+                This has a very effective diffusion effect. If there's a single bit-flip at B0, C0, C1, C2 and C3 are all affected.
+
+IX. Modes of Operation for Block Ciphers (https://youtu.be/4FBgb2uobWI)
+
+    1.  More on Block Ciphers:
+
+        a) Introduction.
+
+            Block ciphers can be used for different encryption schemes: they can be converted to stream ciphers (but not vice versa), they can be used to build PRNGs, they can be used to build hash functions, and they can be used to build Message Authentication Codes (MAC).
+
+            "Modes of Operation" means, ways of using a block cipher for encryption. There is a deterministic approach (ECB mode), and a probabalistic (stochastic) approach. The latter subdivide into block (CBC mode) and stream ciphers (OFB, CFB and Counter modes).
+
+            ECB = Electronic Codebook Mode (deterministic)
+            CBC = Cipher Block Chaining Mode (probabalistic)
+            OFB = Output Feedback Mode
+
+    2.  Electronic Code Book (ECB) Mode
+
+        Attack: Electronic Funds Transfer (EFT) between two banks. Set up two accounts, one at bank a, and another at bank b. Repeatedly transfer $1 and analyze ciphertext blocks. This is called traffic analysis. Attacker is particularly interested in block that contains target account number. Objective is to redirect other transfers to attacker's target account. To do this he simply compares other transfers to his own; if source bank ID and target bank IDs match, he replaces target account number block with his own. Note that this attack does not require breaking the cipher, it only requires replacing one ciphertext block with another.
+
+        Because of this attack, ECB is not used in practice. ECB is basically a lookup table consisting of 2^128 entries. This attack is similar in concept to the letter-frequency attack for fixed-output shift ciphers.
+
+    3.  Cipher Block Chaining Mode (CBC)
+
+        Objective is to solve 2 problems: 1) Make encryption probabalistic and 2) combine encryption of all blocks into a monolith.
+
+        Informal definition: An encryption scheme is "deterministic" if a particular plaintext is mapped to a fixed ciphertext, and if the key is the same. A "probabalistic" encryption scheme uses randomness to achieve a nondeterministic ciphertext. e(k,x) = y is deterministic. e(k,r,x) = y, where r is some random bits, is probabalistic (r is not secret).
+
+        Initialization Vector (IV) plays the role of r in the previous paragraph, and solves the problem of ECB mode. IV becomes y1 after first block, which gets XORed with x2, and so on for each subsequent block. This is the reason for Chaining in the name CBC. Encryption: y1 = ek(x1 ^ IV); yi = ek(xi ^ y-1), where i >= 2. ('^' here means XOR, not exponentiation). Decryption: x1 = dk(y1) ^ IV; xi = dk(yi) ^ yi-1, where i >= 2. IV is sent in plaintext to destination. IV, in addition to not being secret, and should be a nonce (number used once); e.g. a) true random number (not necessary), b) a counter, c) a timestamp. The important thing is that it never repeats, not that it be random.
+
+    4.  Cipher Feedback Mode (CFB)
+
+        The idea is to use the block cipher as a keystream generator (as in a stream cipher). An IV is required. No decryption is used in this mode, only XOR. In order for this to work, both keystream generators must exist on both sides. Recall that an XOR is an inverse operation.
+
+X. Multiple Encryption and Brute-Force Attacks (https://youtu.be/M10BVpTCzGg)
+
+    1.  Double Encryption and the Meet-in-the-Middle attack.
+
+        DES is a sound cipher, however its keyspace (56) is too small to resist brute-force attacks. It can be made stronger with repeated encryptions (double- or triple-encryption). This requires multiple keys.
+
+        Naive approach to brute-force attack: Try all combinations of 56 keys to decrypt a ciphertext. In double-encryption, this would require 2^56*56, or 2^112 tries.
+
+        Is there a better approach? Yes. Try keys separately; i.e. 2^56 + 2^56 = 2^57. How is this possible? In phase 1 (i.e. using key 1), compute and store all encrypted ciphertexts in a lookup table alongside all possible keys. You have now stored all intermediate ciphertext values. This equates to a single "normal" brute-force DES attack, plus the storage cost. In phase 2 (i.e. using key 2), you decrypt all ciphertexts stored in phase 1 with all possible keys. Each time you decrypt in phase 2, you look up what was stored in phase 1. If there is a collision, then you have (likely) identified both keys. Total complexity of this attack is 2^56 computations + 2^56 storages (phase 1) + 2^56 (phase 2 (worst case)) = 2^57 plus 2^56 storage. The upshot is that double-encryption is only marginally more secure than single-encryption.
+
+    2.  Triple Encryption.
+
+        MITM doesn't work here because the complexity is 2^56 + 2^56 * 2^56 = 2^112. Hence 3DES (Triple-DES). It has an effective key length of 112 bits. 3DES in Encrypt-Decrypt-Encrpyt (EDE) mode is equivalent to single DES. So if you want to do single DES with a 3DES hardware implementation, you use the same key for k1 and k2 (k3 is different).
+
+    3.  Brute-Force Attacks
+
+        Exhaustive key searches (aka brute force) can give false positive results. The probability of a false positive depends on the relative size of the key space and plaintext space.
+
+        Example:
+
+        Key space = 2^80, plaintext/ciphertext space (block size) = 2^64. Since keyspace is greater than plaintext/ciphertext space, then by definition there will be collisions. The number of candidate keys for any given plaintext/ciphertext is 2^16 (65,536) keys. One of these is the target key. If a candidate is identified, use it with another plaintext/ciphertext pair. If the outputs match, you have (likely) found the target key (it is possible that there is a collision between the two sets of 2^16 key candidates). Given a block cipher with a keylength of n bits, and a block size of b bits, and p pairs of plaintext/ciphertexts, the expected number of false keys is 2^(n-b*p); i.e. 2^(80-2*64) = 2^(80-128) = 2^-48. To increase likelihood of finding the correct key, increase the value of p (e.g. try 3 pairs instead of 2). With p=3, the likelihood of a collision is 2^-112.
+
+XI. Number Theory for Public Key Cryptography (https://youtu.be/fq6SXByItUI)
+
+    1.  Euclidean Algorithm (EA)
+
+        EA computes the greatest common divisor between two integers r0 and r1 -> GCD(r0, r1)
+
+        Example:
+
+            r0 = 27, r1 = 21 -> gcd(27, 21)
+            27 = 3 * 3 * 3
+            21 = 3 * 7
+            ------------------
+                 3 = gcd(27, 21)
+
+            Prime factorization. This doesn't work for large numbers.
+
+            EA can be used efficiently for large numbers. It is a reductive algorithm (recursive).
+
+            gcd(r0, r1) = gcd(r0 mod r1, r1)
+                        = gcd(r1, r0 mod r1) -> Swap. By convention, the larger number comes first.
+
+            gcd(27, 21)         -> Start
+            gcd(27 mod 21, 21)
+            gcd(21, 27 mod 21)  -> Swap
+            gcd(21, 6)
+            gcd(21 mod 6, 6)
+            gcd(6, 21 mod 6)    -> Swap
+            gcd(6, 3)
+            gcd(6 mod 3, 3)
+            gcd(3, 6 mod 3) -> last result with a remainder is the gcd; i.e. 3.
+            gcd(3, 0)
+
+            27 = q * 21 + r -> q = quotient, r = remainder
+            27 = 1 * 21 + 6
+            21 = 3 *  6 + 3 -> This is the GCD
+             6 = 2 *  3 + 0
+
+            gcd(973, 301)
+            973 = 3 * 301 + 70 (r2)
+            301 = 4 *  70 + 21 (r3)
+             70 = 3 *  21 + 7  (r4) -> This is the GCD
+             21 = 3 *   7 + 0
+
+    2.  Extended Euclidean Algorithm (EEA)
+
+        First we want to compute the GCD, as before. In addition we want a linear combination of r0 and r1, with coefficients s and t. The objective is to compute the coefficients.
+
+        gdc(r0, r1) = s * r0 + t * r1
+
+        gcd(r0, r1)     -> r0 = q1 * r1 + r2     -> r2 = s2 * r0 + t2 * r1
+        gcd(r1, r2)     -> r1 = q2 * r2 + r3     -> r3 = s3 * r0 + t3 * r1
+        gcd(rx-2, rx-1) -> rx-2 = qx-1 * rx-1 + rx -> rx = sx * r0 + tx * r1 = gcd(r0, r1), but also with values for s and t.
+
+        Example:
+
+            gcd(973, 301) = s * 973 + t * 301 = 7 -> Solve for s and t.
+
+            iteration
+            ---------
+            2           973(r0) = 3 * 301(r1) + 70(r2)      -> r2 = 70 = 1(s2) * 973 + -3(t2) * 301
+            3           301(r1) = 4 *  70(r2) + 21(r3)      -> r3 = 21 = 301 - 4 * 70
+                                                                       = 301 - 4(973 - 3 * 301)
+                                                                       = -4(s3) * 973 + 13(t3) 301
+            4            70(r2) = 3 *  21(r3) +  7(r4)      -> r4 =  7 = 70 - 3 * 21
+                                                                       = (973 - 3 * 301) -3(-4 * 973 + 13 * 301)
+                                                                       = 13(s4) * 973 + -42(t4) * 301
+                                                       7 = gcd(r0, r1) = 13(s4) * 973 + -42(t4) * 301
+
+            In general:
+            ri-2 = si-2 * r0 + ti-2 * r1
+            ri-1 = si-1 * r0 + ti-1 * r1
+            Next iteration:
+            EA: ri-2 = qi-1 * ri-1 + ri
+                ri   = ri-2 - qi-1 * ri-1
+                ri   = (si-2 * r0 + ti-2 * r1) - qi-1 * (si-1 * r0 + ti-1 * r1) -> by substitution from above.
+                ri   = [si-2 - qi-1 * si-1] r0 + [ti-2 - qi-1 * ti-1] r1 -> by reordering
+                ri   = si                 * r0 + ti                 * r1
+
+        Recursive formulae (always start with iteration 2):
+
+        si = si-2 - qi-1 * si-1
+        ti = ti-2 - qi-1 * ti-1, where s0 = 1, s1 = 0, t0 = 0 and t1 = 1
+
+        WHY?!
+
+        The main application of the EEA is to compute inverses modulo n. The problem is a^-1 = ? mod n. Think of a and n as r0 and r1 in the preceding examples. So, a^-1 * a = 1 mod n (inverse multiplied by itself = 1 mod n). Plug a and n into the EEA to compute inverse; i.e. gcd(n, a). The answer must be 1; i.e.
+
+        gcd(n,1) = 1 = s * n + t * a = 1 mod n
+                           0 + t * a = 1 mod n -> the s * n term disappears because s * n mod n = 0.
+                               t * a = 1 mod n -> the inverse of a is t! (i.e. same as a^-1 * a = 1 mod n...a^-1 is the same as t).
+        
+        The parameter t of the EEA is the inverse of r1 mod r0. Addition, subtraction and multiplication modulo n are simple; division modulo n is a huge pain in the ass.
+
+    3.  Theorems
+
+        a) Euler's phi function.
+
+            Set of integers {0,1,...,n-1}. How many numbers in the set are relatively prime to n?
+            gcd(0,n)   = ?
+            gcd(1,n)   = ? 
+            gcd(2,n)   = ? 
+            ...
+            gcd(n-1,n) = ?
+
+            Example:
+
+                n = 6 {0,1,2,3,4,5,6}
+                gcd(1,6) = 1 (1 and 6 are relatively prime)
+                gcd(2,6) = 2 (2 and 6 are not...)
+                gcd(3,6) = 3
+                gcd(4,6) = 2
+                gcd(5,6) = 1
+
+                Therefore, phi(6) = 2
+
+            If you can compute phi(n), you can break RSA. Simple with small numbers, not so much with big numbers. Brute force is not possible. Is there a quicker way to compute Euler's phi function? Yes, if we have the prime factors of n.
+
+            Example:
+
+                n = 240, phi(240)
+                n = 16 * 15     -> factor n
+                n = 2^4 * 3 * 5 -> factor n (3 = 3^1, 5 = 5^1)
+                n = p1^e1 * p2^e2 * p3^e3
+                n = 3           -> number of distinct relatively prime factors
+
+        b) Fermat's little theorem
+
+            a^p-1 = 1 mod p (a is an integer, p is a prime)
+
+        c) Euler's theorem
+
+            a^phi(n) = 1 mod n (a and n are integers, and gcd(a,n) = 1)
+
+XII. The RSA Cryptosystem and Efficient Exponentiation (https://youtu.be/QSlWzKNbKrU)
+
+    1.  Introduction to Public Key Cryptography and RSA
+
+        Encrypt with public key, decrypt with private key.
+
+        a) Invented in 1977 by Ron Rivest, Adi Shamir and Leonard Adleman (RSA). Many of the ideas for RSA came from Diffie, Hellman and Merkle. RSA is the most widely used PKC. Discrete Logarithm System and Elliptic Curve Cryptography are two alternatives to RSA for PKC.
+
+    2.  RSA Algorithm
+
+        a) Key Generation. Unlike symmetric algorithms (DES, AES), public key PK require the compution of the pair Kpub and Kpr. Key generation in symmetric ciphers is not so complicated as it is in asymmetric (PK) ciphers.
+
+            i) Choose randomly large primes p and q.
+           ii) Multiply the primes to get n. This is the modulus.
+          iii) Compute phi(n). In order to do this, you need the prime factors; i.e. p-1 and q-1, or (p-1)(q-1).
+           iv) Compute public key e. In symmetric ciphers the key is chosen randomly; in asymmetric it is computed. It must be in the set {1,2,...,phi(n)-1}, such that gcd(e, phi(n)) = 1. Recall that this property ensures the inverse exists.
+            v) Compute the private key d, such that d * e = 1 mod phi(n).
+
+        The public key consists of (n,e). The private key consists of solely (d).
+
+        Remarks:
+
+            - p and q should be >= 2^512 (or 512 bits long). n thus is 2^1024.
+            - EEA is used to compute d.
+
+        b) RSA encryption and decryption.
+            - Encryption: given Kpub = (n,e), x in the set {0,1,...,n-1}, y = e(x) = x^e mod n.
+            - Decryption: given Kpr  = d,     y in the set {0,1,...,n-1}, x = d(y) = y^e mod n.
+
+        If an attacker knows phi(n), he can compute d. In order to compute phi(n) quickly, he needs to know the factors of n (p and q). Without knowing these, however, he has to use brute force to find the factors.
+
+        Example:
+
+            i) p = 3, q = 11
+           ii) n = 33
+          iii) phi(n) = 20
+           iv) e = 3 (gcd(3,20) = 1) -> coincidental that this is equal to p
+            v) d = e^-1 = 7 mod 20 (d * e = 7 * 3 = 1 mod 20)
+           vi) Alice encrypts x where x = 4 -> 4^3 mod 33 = 64 mod 33 = 31 = y
+          vii) Bob decrypts y where y = 31 -> 31^7 = 4 mod 33
+
+        A quick way to reduce 31^7 is the following:
+            - 31^7 = (-2)^7 mod 33. Why? Because 31 is 2 less than 33, and -2 is in the same equivalence class as 31 mod 33.
+                   = -128 mod 33
+                   = -4 * 33 mod 33
+                   = -132 + 4 -> 4 is the remainder.
+                   = -128
+
+        Remarks:
+
+            - There is a proof for x^d mod n is the inverse of x^e mod n. This is a "proof of correctness."
+            - Real-world RSA parameters are very large.
+
+    3.  Fast exponentiation
+
+        a) RSA is computationally expensive, particularly exponentiation. Therefore e is typically defaulted to 17. Enormous values for d are not practical.
+
+        Example:
+
+            x^4    = x * x = x^2
+                   = x^2 * x = x^3
+                   = x^3 * x = x^4   -> 3 multiplications.
+                   = x^2 * x^2       -> 2 multiplications.
+            x^8    = x * x = x^2
+                   = x^2 * x = x^3
+                   ...
+                   = x^7 * x = x^8   -> 7 multiplications.
+                   = x * x = x^2
+                   = x^2 * x^2 = x^4
+                   = x^4 * x^4 = x^8 -> 3 multiplications.
+            x^1024 = as before...    -> 2^1023 multiplications (linear complexity)
+                   = x^2 * x^2 = x^4
+                   ...
+                   = x^1023 * x^1023 -> 1024 multiplications (logarithmic complexity)
+
+        All exponents are powers of 2 in the above examples. For real-world examples, use the square and multiply algorithm. Other name for this is the binary method, or left-to-right exponentiation.
+
+        Example:
+
+            x^26   = x * x       = x^2  -> square
+                   = x * x^2     = x^3  -> multiply
+                   = x^3 * x^3   = x^6  -> square
+                   = x^6 * x^6   = x^12 -> square
+                   = x * x^12    = x^13 -> multiply
+                   = x^13 * x^13 = x^26 -> square
+
+            x^26   = x^11010 -> in binary
+                   = (x^1)^2     = x^10
+                   = x^1 * x^10... multiplying is a left bit-shift
+
+        i) Scan the exponent bits from left to right.
+       ii) For each exponent bit, in each iteration you square.
+      iii) If the bit in the current iteration is 1, multiply by x.
+
+XIII. Diffie-Hellman Key Exchange and the Discrete Log Problem (https://youtu.be/aeOzBCbwxUo)
+
+    There are far fewer implementations of asymmetric-key (RSA, Discrete Log, and EC) cryptography than symmetric-key.
+
+    Diffie-Hellman is the domain of the Discrete Logarithm Problem (DLP). A key problem in symmetric-key cryptography is securely sharing the symmetric key.
+
+    1.  Diffie-Hellman summary
+
+        See cryptography spreadsheet.
+
+    2.  Finite Groups
+
+        A group is (roughly) a set with elements, and 1 group operation (e.g. addition, multiplication). Definition: A group is a set of elements G with an operation * (just a multiplication sign, but could be any operator) which combines two elements of G. A group has the following properties:
+
+            1. The group operation * is closed. That is, for all a, b in the set G, it holds that if a * b = c, then c is in the set G.
+            2. The group operation is associative. That is, a * (b * c) = (a * b) * c for all a, b, c in the set G.
+            3. There is an element 1 in the set G, called the neutral element (or identity element) such that a * 1 = 1 * a = a for all a in the set G. (For addition the neutral element is 0, for multiplication it is 1.)
+            4. For each a in the set G, there exists an element a^-1, called the inverse of a, such that a * a^-1 = a^-1 * a = 1.
+            5. A group G is Abelian (or commutative) if, furthermore, a * b = b * a for all a, b in the set G. If first 4 properties are satisfied, we have a group. If this one is included, we have an Abelien (named after mathematician Abel) group.
+
+        Example:
+
+            Z9 = {0,1,2,3,4,5,6,7,8}
+            *  = x mod 9
+
+            Is (Z9, *) a group?
+
+            No. Inverses only exist for elements where gcd(a, 9) = 1 mod 9 (where a is an element of the set G). Only 1, 2, 4, 5, 7 and 8 have inverses. 0, 3 and 6 do not.
+
+            Z9* = {1,2,4,5,7,8} -> This, however, is a multiplicative group.
+
+        Theorem: The set Zn* which consists of all integers i=0,1,...,n-1 for which gcd(i, n) = 1 forms an Abelian group under multiplication modulo n. The identity element is e = 1. What about property 1? If we remove elements to get rid of non-inverses, what if we wind up with a result that was thrown out of the set to satisfy property 4?
+
+        Note that in all cases Zp*, p is a prime number. Zp* = {1,2,3,...p-1}; i.e. throw out 0.
+
+    3.  Cyclic Groups
+
+        Finite Group definition: A group (G, *) is finite if it has a finite number of elements. We denote the cardinality, or order (i.e. the number of elements in the group) of the group G by |G|.
+
+        Therefore, |Z9*| = 6
+
+        Example 1:
+
+            Z11* = {1,2,3,4,5,6,7,8,9,10}
+
+            What happens if we compute all powers of a=3?
+
+            3^1                   = 3 mod 11
+            3^2                   = 9 mod 11
+            3^3 = 27              = 5 mod 11
+            3^4 = 3^3 * 3 = 5 * 3 = 4 mod 11
+            3^5 = 3^4 * 3 = 4 * 3 = 1 mod 11 
+            3^6 = 3^5 * 3 = 1 * 3 = 3 mod 11
+            3^7 = 3^6 * 3 = 3 * 3 = 9 mod 11
+
+            This is a cyclic group because the remainders repeat. The order of 3 has the value 5; i.e. ord(3) = 5; i.e. the cycle length is 5 where the mantissa is 3.
+
+        Example 2:
+
+            Z11* = {1,2,3,4,5,6,7,8,9,10} -> What is ord(2)?
+
+            2^1  = 2
+            2^2  = 4
+            2^3  = 8
+            2^4  = 5
+            2^5  = 10
+            2^6  = 9
+            2^7  = 7
+            2^8  = 3
+            2^9  = 6
+            2^10 = 1
+            2^11 = 2
+
+            This cyclic group is exhaustive. The entire group is said to have been "generated" by the element 2 (the generator). So ord(2) = 10.
+
+        Definition: The order ord(a) of an element a of a group (G, *) is the smallest possible integer k such that a^k = a * a * ... * a (k times) = 1, where 1 is the identity element of G.
+
+        Definition: A group which contains an element a with maximum order ord(a) = |G| is said to be cyclic.
+
+        You can only build a cryptosystem if you have a cyclic group. Elements with maximum order are called primitive elements, or generators. a=2 is a generator of Z11*. (a, the generator, is often referred to as "alpha" in the literature).
+
+        Cyclic goups are the basis of discrete logarithm cryptosystems.
+
+        Theorem: For every prime p, the group (Zp*, *) is an abelian finite cyclic group.
+
+        Important properties of cyclic groups:
+
+            Let a be an element in G, G is a cyclic group...
+
+                1. a^|G| = 1 mod p
+
+                    Fermat's little theorem: For Zp*, a^p = a mod p, and a^(p-1) = 1 mod p, and |Zp*| = p - 1 :: a^(p-1) = a^|Zp*| = 1.
+
+                2. ord(a) divides |G|
+
+                    Example:
+
+                        |Z11*| = 10 -> What are the possible element orders in Z11*? Possible orders are {1,2,5,10} -> These represent the cycle lengths of each of the order elements.
+
+        What is the significance of all this? Cyclic groups make nice discrete logarithm problems. If there is a cyclic group Z47* with a generator a=5, solve for x where 5^x = 41 mod 47. This is a hard problem. This is the essense of DH.
+
+XIV. The Generalized Discrete Log Problem and the Security of Diffie-Hellman (https://youtu.be/IGqrbM52wtg)
+
+    RSA and Discrete Log Problem (DLP) algorithms need at least 1024 (to 2048) bit primes to make them secure. By leveraging the DLP, EC only needs 160 bits to achieve a 128-bit security level (recall "security level" is the number of operations required to break a key).
+
+    1.  Review of Discrete Log Problem (DLP).
+
+        Cyclic Group Z11* (* means omit the zero) = {1,2,3,4,5,6,7,8,9,10}. If you have a primitive element, or generator (i.e. ord(e) = |G|, where e is an element in the group, and |G| is the cardinality of--or number of elements in--the group), you have a cyclic group. If you have Zp*, where p is prime, you have an abelian finite cyclic group. |Z11*| = 10.
+
+        Let B be an element in Z11*. Then a^x = B mod 11 (where a is alpha, i.e. the generator, and x is any integer). For example, in the equation 2^x = 9 mod 11, solving for x is the Discrete Log Problem (DLP).
+
+        DLP definition: Given p (p is prime), B (any element) in the set Zp*, and primitive element a, find x such that a^x = B mod p. There is no efficient solution to this problem. Brute-force is it.
+
+    2.  The Diffie-Hellman Problem (DHP).
+
+        Recall DH key exchange:
+
+        Alice                                   Eve              Bob
+        ------------------------------------------------------------------------------------------
+        a = KprvA is in the set {2,...,p-2}     alpha,p          b = KprvB is in the set {2,...,p-2}
+        A = kpubA = alpha^a mod p                                B = KpubB = alpha^b mod p
+        A                                       ---------------> A
+        B                                       <--------------- B
+        KAB = B^a mod p                                          KAB = A^b mod p
+
+        Alice and Bob compute the same key KAB, which is not known to Eve. The key is a 1024 to 2048 bit number. Throw out all but the most significant 128 bits and use that for the AES symmetric key.
+
+        Proof of correctness: Alice computes B^a = (alpha^b)a = alpha^ab mod p. Bob computes A^b = (alpha^a)b = alpha^ba mod p.
+
+        Is this secure? Assume Eve can only listen (but not change) the messages; i.e. she is a passive attacker. Eve knows alpha, p, A and B, but she wants to know KAB (or alpha^ab). The difference between the set of knowns (aka the domain parameters) and the set of unknowns is known as the DH problem. One way to solve the problem is to extract a from A, or b from B, which is to say to determine the exponent in alpha^a|b, which is generally done with a log function; i.e. a = log base-alpha mod p, in this case, which is computationally very expensive if p is large enough (e.g. 1024 bits).
+
+        Is computing the discrete log the only way to solve the DH problem? The answer is not yet known, but this is the distinction between the DH problem and the DL problem. If the only way to solve the DH problem is to solve the DL problem, then they are equivalent problems. They are likely equivalent.
+
+        In the case of RSA, the situation is similar; i.e. is the factorization problem equivalent to the RSA problem?
+
+    3.  Generalized DLP (GDLP).
+
+        One powerful feature of the DLP is that it is not restricted to Zp*; other cyclic groups can also be used for building DL cryptosystems. Gcyclic = {alpha, alpha^2, alpha^3,...alpha^|G|=1}, where alpha is the primitive element.
+
+        Given cyclic group (G,*) (* can be multiplication or addition, but should be a little circle to denote either) and |G| = n, let alpha be a primitive element and B is in the group G. Find an integer x such that B = alpha * alpha * alpha...(x times). If the group operation is multiplication, then this is alpha^x. If the group operation is addition, then, this is alpha * x.
+
+        Which other cyclic groups make good DLPs?
+
+            a) Zp* -> Multiplicative group of a prime field.
+            b) GF(2^m)* [Galois Field] -> Multiplicative group of an extension field.
+            c) Elliptic Curves -> The group consists of points on a curve (x^2 + y^2 = r^2 -> equation for a circle). (EC is much faster than RSA.)
+            d) Generalizations of c, e.g. hyperelliptic curves.
+
+    4.  Attacks against the DLP.
+
+        Goal is to compute log base-alpha B = x. alpha, B are in the group G.
+        
+        a) Brute Force. Does alpha^1 = B, does alpha^2 = B, etc. The complexity is O(n). If this is the only possible attack, then use n >= 2^80 (at least).
+
+        b) Square-Root Attacks (require sqrt(n) steps).
+
+            i) Baby-step-giant-step algorithm.
+           ii) Pollard's rho method
+
+        To achieve the same security level with n = 2^80, you need n >= 2^160 bits with these attacks. This is why EC uses 160 bits. The sqrt attacks are the only known attacks on EC.
+
+        sqrt attacks work in any group. For EC, these are the best known attacks.
+
+          iii) Index-Calculus attacks.
+
+        These work only for certain types of DLPs. For certain groups G, the more powerful IC attack exists; in particular, the attack works in Zp* and GF(2^m) (e.g. Diffie-Hellman and RSA).
+
+        In practice p and 2^m must be much bigger than > 2^1024.
+
+        Decimal digits  Bit length Date
+        -------------------------------
+         58             193        1991
+         65             216        1996
+         85             282        1998
+        100             332        1999
+        120             399        2001
+        135             448        2006
+        160             532        2007
+
+        Records for breaking DLP in Zp*.
+
+XV. Elgamal Encryption Scheme.
+
+    1.  Encryption with DLP.
+
+        What can we do with PK algorithms?
+
+                            Algorithm Family
+                                                           (DLP)
+        Service             Integer Factorization   Zp*             EC
+        -----------------------------------------------------------------
+        Key Exchange        RSA                     DH              ECDH
+        Digital Signature   RSA                     ElgamalDSA      ECDSA
+        Encryption          RSA                     Elgamal         ECxxx
+
+        Goal is to develop an encryption scheme from DH key exchange (as an alternative to AES).
+
+        Alice                          (alpha, p)               Bob
+        -------------------------------------------------------------------------
+        [Key Exchange]
+        A = alpha^a mod p                                       B = alpha^b mod p
+        A                          ---------------------------> A
+        B                          <--------------------------- B
+        B^a = alpha^ab = KAB mod p                              A^b = alpha^ba = KAB mod p
+        .
+        .
+        .
+        [Encryption using shared key via multiplication]
+        y = x * KAB mod p
+        y                          ---------------------------> y
+                                                                x = y * KAB^-1 mod p (takes the inverse, or divides)
+
+        How do you use KAB for encryption? XOR is one solution (addition). Multiplication is another (see example above). This is basically Elgamal encryption.
+
+    2.  Elgamal Encryption (EE).
+
+        EE was invented ca 1985. It is very similar to DH, but with reordering of steps. ElGamal is an alternate spelling (surname of the cryptographer who invented it).
+
+        Alice                          (alpha, p)               Bob
+        -------------------------------------------------------------------------
+                                                                Chooses p and a prime element alpha (i.e. the generator)
+                                                                Kpr = d is an element in {2,3,...,p-2} (d is Bob's private key)
+                                                                Kpub = B = alpha^d mod p (B is Bob's public key)
+        (B,p,alpha)                <--------------------------- (B,p,alpha)
+        Chooses i is an element in {2,3,...,p-2}
+        Ke = alpha^i mod p (e in Ke stands for ephemeral key)
+        KM = B^i mod p (M stands for masking key)
+        y = x * KM mod p (y is ciphertext and x is plaintext)
+        (y, Ke)                    ---------------------------> (y,Ke)
+                                                                KM = Ke^d mod p (Bob derives shared key)
+                                                                x = y*KM^-1 mod p
+
+        This is basically identical to DH, except you change the steps and give the parameters different names.
+
+        Proof of correctness (that what Bob computes is the plaintext):
+
+        Substitutions:
+          y * KM^-1
+        = y * (Ke^d)^-1
+        = x * KM * Ke^-d
+        = x * B^i * (alpha^i)^-data
+        = x * (alpha^d)^i * (alpha^i)^-d
+        = x * alpha^id * alpha^-id
+        = x * alpha^id-id = x * alpha^0 = x * 1 = x (QED)
+
+        Remarks:
+
+            a) The advantage of Elgamal over direct DH encryption is that Bob's public key B is fixed, and (alpha,p) are chosen by him.
+            b) Ke must be different for every plaintext.
+            c) Therefore, ciphertext changes each time for each identical plaintext. The i parameter serves as a randomizer (and B stays the same). Elgamal is a probabalistic encryption scheme (unlike schoolbook RSA).
+
+    3.  Computational Aspects.
+
+        Alice and Bob have to compute B = alpha^d, Ke = alpha^i and KM = B^i. Square-and-multiply algorithm is used to compute these exponentiations. How do we compute KM = Ke^d mod p, KM^-1 and x = y * KM^-1? SAM is used to to compute the exponentiation, and EEA is used to compute the inverse. These can be combined using Fermat's little theorem. For all Ke in Zp*,
+        
+        Ke^p-1 = 1 mod p.
+        KM^-1 = (Ke^d)^-1 * 1
+        = Ke^-d * Ke^p-1
+        = Ke^p-1-d mod p
+        
+        x = y * KM^-1 = y * Ke^p-1-d mod p
+
+    4.  Attacks.
+
+        a) Compute DLP; either d = log base-alpha B, or i = log base-alpha Ke. The DLP must be a computationally hard problem. This is done by using at least a 1024-bit p.
+
+        b) Reuse of secret exponent exposes vulnerability. This can happen if your RNG is defective or deliberatly compromised, and for example always produces the same output. Attacker knows this if shared key Ke if it doesn't change. With a known plaintext he can break the encryption.
+
+XVI. Introduction to Elliptic Curves.
+
+    PK is good for three things: a) key exchange, b) encryption and c) digital signatures. All three can be done with DLP using Zp*. All three can also be done with other implementations of DLP; e.g. EC.
+
+    1.  Introduction to Elliptic Curve (EC) cryptography.
+
+        The group operation in Zp* is multiplication -> a^b mod p. The group operation in EC is completely different. Why do we need a different approach? Because the bit-lengths required to get the same level of security as integer factorization (RSA) and discrete log (DH) are far shorter with EC; e.g. a 256-bit key yields a 128-bit security level in EC versus a 3072-bit key to achieve the same in RSA. EC is therefore much more efficient.
+
+        Can we find another cyclic group in which the DLP is difficult, ideally more difficult than in Zp*? The answer is EC.
+
+        Polynomials: x^2 + y^2 = r^2; the equation for a circle.
+
+        Introduce coefficients: ax^2 + by^2 = r^2; the equation for an ellipse.
+
+        For use in crypto, we need to consider polynomials over Zp.
+
+        Definition: The elliptic curve over Zp, where p > 3, is the set of all pairs (x,y) in the set Zp: y^2 = x^3 + ax + b mod p, together with an imaginary point at infinity, where a, b are in the set Zp and for a 4a^3 + 27 * b^2 != 0 mod p (the last condition makes an EC not suitable for crypto).
+
+        Example:
+
+            y^2 = x^3 + 3x + 3 (note you must leave out the mod p to graph this; however, mod p must be done in the cryptographic implementation).
+            y = sqrt(x^3 + ax + b)
+
+            The line this equation describes is symmetric wrt to the x axis.
+
+        For a DLP we need a cyclic group. For such a group we need:
+
+            i) A set of elements (in Zp*, the elements are all integers)
+           ii) A group operation that fulfills the group laws.
+
+        In EC, all the elements of the group must fall on the elliptic curve.
+
+    2.  Group operation for EC (plus, or addition)
+
+        How do you add two points on an EC? Draw a line through point p and q on the curve. The third point of intersection (not p or q) has a mirror point on the other side of the x axis. This is the result of the group operation. This is point addition; p + q = r. Adding a point to itself (e.g. p + p) is a special case; here the line becomes tangent to the curve. The mirror of the point of intersection of this tangent line is the result of the group operation in this case.
+
+        Formulae (or analytical expressions) for the group operation:
+
+        y^2 = x^3 + ax + b, p = (x1,y1), q = (x2,y2), r = (x3,y3)
+
+            i) The equation for a line l is y = sx + b (s = slope, b = y intercept)
+
+               y^2          = x^3 + ax + b
+               (sx + b)^2   = x^3 + ax + b -> substitue y^2 for equation for a line
+
+        Elliptic Curve Point Addition and Point Doubling:
+
+        x3 = s^2 - (x1 + x2) mod p
+        y3 = s(x1 - x3) - y1 mod p, where
+
+        s = y2 - y1 / x2 - x1 mod p         -> if p != q (point addition)
+        s = (3*x1)^2 + a / 2*y1 mod p       -> if p  = q (point doubling)
+
+        Again, these equations must fulfill the group laws. What is the neutral/identity element? p + x = p? What is x? There is no point on the curve that serves this purpose, so an artificial point is selected. We define a "point at infinity" O; i.e p + O = p. The point at infinity is on a line parallel to the y axis. What is the inverse of p? p + (-p) = O. Mirror the point on the curve; i.e. -p of p = (x,y) is by definition -p = (x,-y). In EC finding the inverse is easy--just mirror the point. Using EEA it is much more difficult to find an inverse.
+
+        Example:
+
+            2p = p + p = (5,1) + (5,1) = (x3,y3)
+             s = (3*x1)^2 + a / 2*y1 = (2*1)^-1(3*5^2 + 2) = 2^-1 * 9 = 9 * 9 = 13 mod 17
+            x3 = x^2 - x1 - x2 = 13^2 - 5 - 5 = 159 = 6 mod 17
+            y3 = s(x1 - y1) - y1 = 13(5-6) - 1 = -14 = 3 mod 17
+            2p = (5,1) + (5,1) = (6,3)
+
+        Theorem: The points on an elliptic curve, including the point at infinity O, have cyclic "subgroups". Under certain conditions, all points on an elliptic curve form a cyclic group. And in order for the group to be cyclic, there must be a generator element in the group.
+
+XVII. Elliptic Curve Cryptography (ECC).
+
+    1. EC Discrete Log Problem.
+
+        Example (EC as a cyclic group):
+
+        y^2 = x^3 + ax + b mod 17, where a = 2 and b = 2
+        y^2 = x^3 + 2x + 2 mod 17 -> For this specific curve, all points form a cyclic group.
+
+        One primitive element, or generator, for this group is:
+
+          p = (5,1)
+         2p = p + p  = (6,3)
+         3p = 2p + p = (10,6)
+        ...
+        18p = (5,16) = (5,-1) = -p
+        19p = 18p + p = (5,16) + (5,1) = -p + p = O (neutral element)
+        20p = 19p + p = O + p = p = (5,1)
+        21p = 20p + p = p + p = 2p -> We've completed, and started, a new cycle.
+
+        Elliptic Curve Discrete Logarithm Problem: Given an elliptic curve E, we consider a primitive element P and another element T. The DLP is finding the integer d, where 1 <= d <= #E, such that P + P + P + ... + P (d times) = d*P = T.
+
+        More generally, given the generator point, and the final point (which is the public key), what is the number of times (d, which is the private key) it took to reach the final point? This is a very hard problem for which there is no efficient solution. This is the essence of EC.
+
+        Example:
+
+            P = (5,1)           -> Generator
+            T = (16,4) = d*P    -> Kpub
+            T = (16,4) = d(2,5) -> What is d?
+
+        d = Kpr. d is simply an integer (i.e. the number of hops to get to T).
+        T = Kpub. T is a point on the EC (i.e. a group element (xi, yi)).
+
+        The group cardinality, or order, of E is the number of points on the curve. In the previous example there are 19 points in E (point 19 is the point at infinity). The cardinality (denoted #E) is 19 -> #E = 19.
+
+        Hasse's Theorem: Given and elliptic curve E modulo p, the number of points on the curve is denoted by #E, and is bounded by p + 1 -2*sqrt(p) <= #E <= p + 1 + 2*sqrt(p). This theorem gives us lower/upper bounds for #E. In rough terms, this tells us #E is roughly equal to p. In practice, one needs the exact number of points in order to thwart certain attacks. Finding #E is computationally difficult. NIST proposes a set of standard curves (a, b, p and #E; i.e. the parameters that give the shape of the curve) that provide strong security.
+
+        All EC protocols rely on the difficulty of the ECDLP. If the EC is chosen carefully (e.g. one from NIST), the best known algorithm for computing the ECDLP requires roughly sqrt(p) steps (this is merely coincidental to the property in Hasse's theorem).
+
+        Example:
+
+            p = 2^160 -> Attack would require 2^160/2 = 2^80 steps. This is very hard (1M years given 2010s-era computing power).
+
+    2.  EC Diffie-Hellman (ECDH).
+
+        a) Setup: Instead of a large prime and a generator, you need E (i.e. y^2 = x^3 + ax + b mod p) and a primitive element P = (x1, y1)
+        b) Protocol: ECDH + AES128
+
+        Alice                          (E,P)                Bob
+        -------------------------------------------------------------------------
+        a = KprA (in the set {2,3,...,#E-1})                b = KprB (in the set {2,3,...,#E-1})
+        A = KpubA = a * P (P=(xA, yA))                      B = KpubB = b * P (P=(xB,yB))
+        A                                   --------------> A
+        B                                   <-------------- B
+        aB = (xAB, yAB)                                     bA = (xAB, yAB)
+
+        Alice and Bob compute the same point. Now, use the x coordinate as the symmetric key for encryption (AES, e.g.); or hash the x coordinate into a 128-bit key and use that.
+
+        Scalar multiplication; e.g. a * P. There is no multiplication operator in the group. Therefore, just translate a * P to P + P + P + P + ... + P (a times). Use double-and-add instead of square-and-multiply to make more efficient.
+
+        Example:
+
+            26P = 11010 * P
+            0   -> P = 1 * P
+            1a  -> P + P = 2P = 10 * P (double)
+            1b  -> 2P + P = 3P = 11 * P (add)
+            2a  -> 3P + 3P = 6P = 110 * P (double)
+            3a  -> 6P + 6P = 12P = 1100 * P (double)
+            3b  -> 12P + P = 13P = 1101 * P (add)
+            4a  -> 13P + 13P = 26P = 11010 * P (double)
+
+        Double on every iteration, but only add if there is a 1 bit.
+
+XVIII. Digital Signatures and Security Services
+
+    1.  Introduction to Digital Signatures.
+
+        Goal is proof of authenticity.
+
+    2.  Security Services.
+
+        The objectives of a security system are called "security services."
+
+            a) Confidentiality. Information is kept secret from all but the authorized parties. This is done with encryption.
+            b) Authentication. The sender of a message is who he/she says he/she is. This is done with digital signatures.
+            c) Integrity. The message has not been altered in transit. This is done with digital signatures.
+            d) Nonrepudiation. The sender of a message cannot deny the creation of the message. This is done with digital signatures...but only if message is signed with the sender's private key; i.e. this requires a PK cryptosystem. This is the inverse of encryption.
+
+        Basic protocol with digital signatures.
+
+        Alice                                           Bob
+        ----------------------------------------------------------------------
+        KprA, KpubA                 ------------------> KpubA
+        s = sig(x, KprA)            ------------------> (x,s)
+                                                        ver(x,s,KpubA) = true | false
+
+    3.  RSA Digital Signautes
+
+        Setup:
+
+            Compute KprA = (d)
+            Compute KpubA = (n,e)
+
+            Alice                                           Bob
+            ----------------------------------------------------------------------
+            KprA = d
+            kPubA = (n,e)                  ---------------> (n,e)
+            s = sig(x, KprA) = x^d mod n   ---------------> (x,s)
+                                                            x' = ver(x,s,KpubA) = s^e mod n = true (if x = x') | false (if x != x')
+
+        Proof of correctness:
+
+            s^e = (x^d)^e = x^de = x mod n
+
+        Computational aspects.
+
+            i) Signing; i.e. x^d mod n using square-and-multiply algorithm (this is costly; i.e. a factor of 1000 slower than AES).
+           ii) Verification; s^e mod n, but using a small e; e.g. e = 3, or 2^16 + 1 (this is very fast; i.e. as fast as AES).
+
+XIX. Elgamal Digital Signature Algorithm.
+
+    1.  Existential forgery attack against RSA digital signature.
+
+        Alice           Eve                             Bob
+        ----------------------------------------------------------------------
+                                                        Kpub = (n,e), Kpr = d
+        (n,e)           <------------------
+                                                        s = x^d mod n
+        (x,s)           <------------------
+        s^e = x' mod n
+                        1. Chooses signature s in the set Zn
+                        2. Computes x = s^e mod n
+        (x,s)           <---------
+        s^e = x' mod n  (Signature is validated, but x is garbage.)
+
+        Eve cannot directly control the semantics of the message x. But she can disrupt the communication significantly. Schoolbook RSA does not address problems like this. In practice, countermeasures are required. To address this, impose formatting rules on x, which can be checked by Alice. Put arbitrary bit pattern into padding; e.g. limit payload to 900 bits, and pad with 124 1 bits. The probability of generating a message using a chosen s with 124 1 bits at the end is 2^-124. This is a very simplified scheme; in practice they are much more sophisticated.
+
+    2.  Elgamal DSA
+
+        Alice                                           Bob
+        ----------------------------------------------------------------------
+                                                        (DL problem setup)
+                                                        a^d mod p (a=alpha/generator, d=randomly chosen private key in {2,...p-2}, p=randomly chosen prime modulus)
+                                                        B = a^d mod p = Kpub = (B,a,p)
+        (B,a,p)         <---------------------------
+                                                        Ephemeral key = Ke in {2,3,...,p-2} (per-message public key), s.t. gcd(Ke,p-1) = 1; i.e. inverse exists for Ke.
+                                                        r = a^Ke mod p
+                                                        s = (x - d*r)Ke^-1 mod p-1
+        x,(r,s)         <---------------------------
+        t = B^r * r^s mod p
+        t = a^x mod p?
+
+        Proof of correctness:
+
+            Alice computes B^r * r^s = ((a^d)^r) (a^Ke)^s mod p
+                                     = a^d*r+Ke*s mod p
+
+            Fermat: a^p-1 = 1 mod p
+                    a^m   = a^q(p-1)+r
+                          = (a^q)^p-1 * a^r
+                          = 1 * a^r
+                          = a^m(mod p-1) mod p
+
+            d * r + Ke + s = x mod p-1
+            Ke^s = x - dr mod p-1
+            s = (x - dr) * Ke^-1 mod p-1 (QED)
+
+        The signature (r,s) has twice the bit length of x. Elgamal DS is not widely used, but it is the basis for DSA.
+
+    3.  Weaknesses of Elgamal DS.
+
+        a) Reuse of ephemeral key. Exponentiation (with square-and-multiply algorithm) is very expensive. EEA to compute modular inverses is also very expensive. Every time Bob wants to send a message he has to do these computations. So it is tempting just to reuse the ephemeral key for each message. But this has a weakness.
+
+        Assume Eve knows x1,(r,s1) and x2,(r,s2):
+
+            s1 = (x1 - d*r) * Ke^1 mod p-1
+            s2 = (x2 - d*r) * Ke^1 mod p-1
+            Ke = x1 - x2 / s1 - s2 mod p-1 (now Eve has Ke, so all she has to do is solve for d).
+            d  = Kpr = x1 - s1 * Ke / r mod p-1
+
+        This is a huge problem. Don't reuse ephemeral keys in Elgamal DS.
+
+        b) Elgamal DS is also vulnerable to the existential forgery attack. Use same countermeasures as with RSA.
+
+X. Hash Functions.
+
+    1.  Hash functions are auxiliary functions in cryptography. They are used, e.g., for signatures, message authentication codes (MACs), key derivation, RNGs, etc.
+
+        Digital Signatures. The problem is that x (the message) is stricted to |x| <= 256 bits, e.g. One option is to chop the message into multiple 256-bit blocks, and sign each individually. This is computationally expensive. The solution is to use a hash function; i.e. compress the message x and then sign it.
+
+        Alice                                           Bob
+        ----------------------------------------------------------------------
+                                                        s = sig(Kpr,x)
+        (x,s)           <------------------------------
+
+        Basic protocol for digital signatures with hash functions.
+
+        Alice                                           Bob
+        ----------------------------------------------------------------------
+                                                        z = h(x)
+                                                        s = sig(Kpr,z)
+        (x,s)           <------------------------------
+        z = h(x)
+        ver(Kpub,z,s) = 1 | 0
+
+        z is also known as a "fingerprint", or "digest" of the message x.
+
+    2.  Requirements for hash functions.
+
+        a) Arbitrary input length.
+        b) Fixed (and short) output length.
+        c) Should be efficient (fast).
+        d) Lots of entropy, or diffusion; i.e. flip one bit in the input, and the output is completely different.
+        e) Preimage resistance; i.e. "one-wayness". Irreversibility ("preimage" means input).
+        f) Second preimage resistance; e.g. if you change the input/preimage (say $10 to $10,000 in the money-transfer message), the hash output should not change. Another term for this is "weak collision resistence."
+        g) Collision resistance.
+
+        Collision attack:
+
+        Eve has a valid message x1, and constructs a bogus message x2, and tricks Bob into signing x1 (which was chosen by Eve).
+
+        Alice                Eve                        Bob
+        ----------------------------------------------------------------------
+                             (x1,x2)
+                                                        z = h(x1)
+                                                        s = sig(Kpr,z)
+                             (x1,s) <------------------
+                  <--------- (x2,s)
+        z = h(x2)
+        ver(Kpub,z,s) = 1
+
+    3.  Collision Attacks and the Birthday Paradox.
+
+        Collision attacks are much harder to prevent than second preimage attacks. The former requires a number of steps that is equal to the square root of the latter.
+
+        Can we have hash functions without collisions? No; there are an infinite number of inputs relative to a fininte number of outputs. This is known as the pigeonhole principle (i.e. if you have 17 pigeons and only 16 pigeonholes, one pigeonhole will contain two pigeons).
+
+        Given this reality, collisions should be made very hard to find.
+
+        Second preimage attack:
+
+        h(x1) -> Transfer $10
+        h(x2) -> Transfer $10,000. Collision with x1?
+        h(x3) -> Transfer $10,000 + some random invisible bits that do not change the semantics of x2. Collision with x1?
+
+        If the bit-length of the hash is 80, then an attack requires 2^80 steps.
+
+        Collision attack:
+
+        How many people do I have to invite (on average) to a party before someone shows up with my birthday? 365. How many people do I have to invite in order for any two people to share a birthday? sqrt(365) = 23 (which is roughly the square root of 365). That is, there is a .5 probability of a collision after 23 guests.
+
+        t = 2^n+1/2 sqrt(ln(1/1-lamda)) = 2^81/2 * sqrt(ln(1/1-.5)) = 2^40
+
+        Therefore, you need a 160-bit output length to have an 80-bit security level.
+
+XXI. SHA-3 Hash Function (Secure Hash Algorithm)
+
+    1.  Collision Attacks/Birthday Paradox continued.
+
+        Find x1 and x2 such that h(x1) = h(x2). The complexity for finding a collision is 2^n+1/2, or sqrt(n).
+
+        How do we build a hash function? There are two big families: 1) Use a block cipher. 2) Much more common is a dedicated hash function. The most important of the latter is the MD4 (1980s), of which MD5 (1991), SHA-1 (1995) and SHA-2 (2001) are members. SHA-3 is brand new (as of 2017). MD5 has been broken (a collision has been found). SHA-1 was broken in 2017 (i.e. a collision was found in which the input messages were semantically sensical). SHA-2 is secure (as of the date of the lecture in 2010). SHA-2 has outputs of 224, 256, 384 and 512 bits. SHA-2 is still considered secure, but not ideal. Hence SHA-3 (2017). SHA-3 was born out of an RFP from NIST, with a submission deadline of October 2008. There were 64 submissions. In December 2010 this number was reduced to 5; these were called the round-3 algorithms. On October 2, 2012, a finalist was selected (Keccak algorithm). NIST required output lengths of 224, 256, 384 and 512. The security levels of each of these is half the bit length (because of the birthday paradox).
+
+    2.  Overview of SHA-3.
+
+        SHA-3, unlike any of its predecessors, is based on the sponge construction. In the absorbing phase the input is consumed; in the squeezing phase the output is produced.
+
+        Keccak parameters:
+
+        State b (bus width) = 25 * 2^l, where l in {0,1,2,3,4,...,6}.
