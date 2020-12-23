@@ -1235,7 +1235,7 @@ XVII. Elliptic Curve Cryptography (ECC).
 
         The group cardinality, or order, of E is the number of points on the curve. In the previous example there are 19 points in E (point 19 is the point at infinity). The cardinality (denoted #E) is 19 -> #E = 19.
 
-        Hasse's Theorem: Given and elliptic curve E modulo p, the number of points on the curve is denoted by #E, and is bounded by p + 1 -2*sqrt(p) <= #E <= p + 1 + 2*sqrt(p). This theorem gives us lower/upper bounds for #E. In rough terms, this tells us #E is roughly equal to p. In practice, one needs the exact number of points in order to thwart certain attacks. Finding #E is computationally difficult. NIST proposes a set of standard curves (a, b, p and #E; i.e. the parameters that give the shape of the curve) that provide strong security.
+        Hasse's Theorem: Given an elliptic curve E modulo p, the number of points on the curve is denoted by #E, and is bounded by p + 1 -2*sqrt(p) <= #E <= p + 1 + 2*sqrt(p). This theorem gives us lower/upper bounds for #E. In rough terms, this tells us #E is roughly equal to p. In practice, one needs the exact number of points in order to thwart certain attacks. Finding #E is computationally difficult. NIST proposes a set of standard curves (a, b, p and #E; i.e. the parameters that give the shape of the curve) that provide strong security.
 
         All EC protocols rely on the difficulty of the ECDLP. If the EC is chosen carefully (e.g. one from NIST), the best known algorithm for computing the ECDLP requires roughly sqrt(p) steps (this is merely coincidental to the property in Hasse's theorem).
 

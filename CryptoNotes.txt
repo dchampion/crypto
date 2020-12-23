@@ -1,0 +1,34 @@
+- Elliptic Curve (EC) encryption: is it possible?
+
+    - Encrypt "directly", as is possible RSA? Indirectly it is possible, using a hybrid scheme; e.g. DH key agreement via EC (ECDH), and encryption with the symmetric key that is agreed on (e.g. AES).
+    
+    - Direct encryption with EC using ElGamal scheme (see answer #2 at https://crypto.stackexchange.com/questions/45040/can-elliptic-curve-cryptography-encrypt-with-public-key-and-decrypt-with-private).
+    
+    - Indeed you can encrypt "directly" with EC using a variant of ElGamal encryption, which itself is variant (or specialized version) of DH. This scheme relies on the generation of a per-message ephemeral key based on the public parameters of the DH setup; i.e. the generator, the modulus and the public key (see lecture notes on ElGamal encryption).
+    
+    - If you can encrypt/decrypt with EC, then by definition you can sign/verify with EC.
+    
+- Why does bitcoin use ECDSA, instead of plain old hashing, to secrute transaction outputs?
+
+    - Because using a hash-only scheme would require revealing the secret, whereas private-key signature does not (see answer #1 at https://bitcoin.stackexchange.com/questions/100691/why-does-bitcoin-use-ecdsa-instead-of-plain-old-hashing-to-secure-transaction)
+    
+- Bitcoin mining, proof of work and block validation.
+
+    - While mining current candidate block, collect validated transactions into mempool. The mempool is effectively a "buffer" that, if traffic on the network is sufficiently large, will be more than big enough to fill a new candidate block when either (a) the current candidate block is successfully mined and propagated, or much more likely, (b) a valid, mined block is received on the network.
+    
+    - Block validation consists of (a) block header validation, which includes, critically, that a SHA256 hash of the block header is less than the difficulty target and (b) validation of every transaction contained in the block.
+    
+    - When either (a) or (b) from step 1 occurs, add the new block to chain and immediately start mining a new block.
+    
+    - Subtract transactions in newly mined block from mempool, state-transition mempool to new candidate block (up to max block size) and start mining.
+    
+    - Current block will have a block header consisting of software/protocol version, previous block hash, merkle root of current block (note that the number and order of transactions in the block can, and likely will, differ from one miner to the next), timestamp (will also almost certainly differ), PoW target difficulty, and nonce initialized to zero (0).
+    
+    - SHA256-hash the block header repeatedly, incrementing the nonce on each iteration, until a value less than the difficulty target is found, or a new valid block is received from another node on network (again, likely the latter). If a value less than the target difficulty is found before a new, valid block is received, propagate the block to the network with the nonce field containing the value that produced the good hash (this becomes the hash of the candidate block, which becomes the previous block hash of the next mined block, and so on). If the block gets added to the chain, collect the coinbase transaction.
+
+- ECDSA
+
+    - Is based on ElGamal digital signature algorithm. See following resources:
+        - https://cryptobook.nakov.com/digital-signatures/ecdsa-sign-verify-messages
+        - https://en.wikipedia.org/wiki/ElGamal_signature_scheme
+        
