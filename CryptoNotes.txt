@@ -32,3 +32,16 @@
         - https://cryptobook.nakov.com/digital-signatures/ecdsa-sign-verify-messages
         - https://en.wikipedia.org/wiki/ElGamal_signature_scheme
         
+- K-anonymity as signature proof?
+
+    - What are the use cases for digital signature?
+        - Traditional:
+            - Message integrity
+            - Authentication of origin (or at least that the signer possesses the private key).
+            - Non-repudiation of origin (or at least that the signer possesses the private key).
+        - Novel:
+            - Proof of possession of the private key, which is useful in cryptocurrency because you can prove that you know a secret without revealing it. This can be thought of as the inverse of non-repudiation.
+            
+    - Is there a use case for proving (or otherwise just knowing) that someone else knows your secret, without revealing the secret?
+        - Traditional:
+            - To see if your secret appeared in a breach
