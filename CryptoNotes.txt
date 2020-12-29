@@ -31,6 +31,8 @@
     - Is based on ElGamal digital signature algorithm. See following resources:
         - https://cryptobook.nakov.com/digital-signatures/ecdsa-sign-verify-messages
         - https://en.wikipedia.org/wiki/ElGamal_signature_scheme
+        - https://www.instructables.com/Understanding-how-ECDSA-protects-your-data/
+        - Cryptography.xlsx spreadsheet.
         
 - K-anonymity as signature proof?
 
