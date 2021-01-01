@@ -1155,8 +1155,8 @@ XVI. Introduction to Elliptic Curves.
 
         Example:
 
-            y^2 = x^3 + 3x + 3 (note you must leave out the mod p to graph this; however, mod p must be done in the cryptographic implementation).
-            y = sqrt(x^3 + ax + b)
+            y^2 = x^3 + 3x + 3 (note you must leave out the mod p to graph this over the real numbers; however, mod p must be done in the cryptographic implementation).
+            y = +/- sqrt(x^3 + ax + b)
 
             The line this equation describes is symmetric wrt to the x axis.
 
