@@ -34,6 +34,16 @@
         - https://www.instructables.com/Understanding-how-ECDSA-protects-your-data/
         - Cryptography.xlsx spreadsheet.
         
+    - How can extracting k from G * k = K be so difficult if it takes only milliseconds to compute K for the key generator?
+        - The key generator can use the double-and-add algorithm to compute K. If the key generator selects the value of k, it can know its bit pattern to perform double-and-add. The attacker does not have this luxury, so must add every point until he reaches K, which is intractably hard.
+        - Also, since modular arithmetic is used, the distribution of points on the curve is non-monotonic, so binary search is not possible.
+        
+    - Is the security of ECDSA vulnerable to quantum computers?
+        - SHA256 "may" be quantum resistant.
+        - If SHA256 is quantum resistant, then your bitcoin is safe as long as it is assigned to an address (remember an address is a double-hash of ripemd160 on top of sha256) that hasn't been reused. Reused in this sense means bitcoin has been spent from the address. In such a case, the public key will have been revealed in the blockchain in the unlocking script to unlock the bitcoin.
+        - Given the above, if ECDSA is not quantum resistant, which appears to be the case, then a reused address easy derive a private key from.
+        - In order for bitcoin to be truly quantum resistant, the ECDSA will have to be replaced in the core code with a quantum resistant alternative.
+        
 - K-anonymity as signature proof?
 
     - What are the use cases for digital signature?
