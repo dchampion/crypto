@@ -14,7 +14,7 @@
     
 - Bitcoin mining, proof of work and block validation.
 
-    - While mining current candidate block, collect validated transactions into mempool. The mempool is effectively a "buffer" that, if traffic on the network is sufficiently large, will be more than big enough to fill a new candidate block when either (a) the current candidate block is successfully mined and propagated, or much more likely, (b) a valid, mined block is received on the network.
+    - While mining current candidate block, collect validated transactions into mempool. The mempool is effectively a "buffer" that, if traffic on the network is sufficiently large, will be more than big enough to fill a new candidate block when either (a) the current candidate block is successfully mined and propagated, or much more likely, (b) a valid, mined block is received from the network.
     
     - Block validation consists of (a) block header validation, which includes, critically, that a SHA256 hash of the block header is less than the difficulty target and (b) validation of every transaction contained in the block.
     
@@ -57,3 +57,17 @@
     - Is there a use case for proving (or otherwise just knowing) that someone else knows your secret, without revealing the secret?
         - Traditional:
             - To see if your secret appeared in a breach
+        - Novel:
+            - ???
+            
+- Bitcoin econonmics (https://seekingalpha.com/article/4169186-in-depth-look-economics-of-bitcoin)
+
+    - Supply is almost completely inelastic. That is, since the total quantity will never exceed 21m, no matter how high the price rises, more coins cannot be produced to meet the demand. What little elasticity there is comes from holders of bitcoin being willing to sell it, thereby resulting in a short-term increase in supply.
+    
+    - This inelasticity, as reflected in a vertical line on a supply/demand graph, results in big changes in price relative to small changes in demand (i.e. shifts left or right of the downward-sloping demand curve). This is why, at least in part, bitcoin price is so volatile.
+    
+    - These facts make bitcoin an unlikely candidate to be used as a medium of exchange. Does this fact affect the viability of BCh as a medium of exchange? Some would argue that only a deflationary asset can function effectively as a medium of exchange. Free of fear of inflation, people are more likely to hoard a deflationary asset like bitcoin.
+    
+- Cryptocurrency address reuse
+
+    - Discouraged even if you don't spend from the address (see https://en.bitcoin.it/wiki/Address_reuse and https://bitcoin.stackexchange.com/questions/20621/is-it-safe-to-reuse-a-bitcoin-address).
