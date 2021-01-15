@@ -71,3 +71,19 @@
 - Cryptocurrency address reuse
 
     - Discouraged even if you don't spend from the address (see https://en.bitcoin.it/wiki/Address_reuse and https://bitcoin.stackexchange.com/questions/20621/is-it-safe-to-reuse-a-bitcoin-address).
+    
+- Fermat's little theorem
+
+    - a^(p-1) = 1 mod p for all a that are coprime to p, where p is prime.
+
+    - Among other things, this theorem is useful for probing for large primes. For example, select a random large integer n and several integers a where 0 < a < n-1. If a^(n-1) = 1 mod n for all a, then n "may be" prime. See Miller-Rabin algorithm for finding large, probable primes.
+    
+- Euler's totient function
+
+    - phi(n) returns the number of positive integers from 1 to n that are coprime with n, where n is a positive integer.
+    
+    - Given the above definition, then phi(p) = p-1 if p is prime. And phi(n) = (p-1)(q-1) if n is composite (semiprime in fact), and p and q are its only factors.
+    
+- Euler's theorem
+
+    - For every positive integer n, and every a that is coprime to n, then a^phi(n) = 1 mod n. Note that when n is prime, phi(n) = (n-1). In this case, Euler's theorem reduces to Fermat's little theorem.
