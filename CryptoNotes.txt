@@ -87,3 +87,12 @@
 - Euler's theorem
 
     - For every positive integer n, and every a that is coprime to n, then a^phi(n) = 1 mod n. Note that when n is prime, phi(n) = (n-1). In this case, Euler's theorem reduces to Fermat's little theorem.
+    
+- RSA Digital Signature Verification
+
+    - RSA paper is wrong. You cannot "prove" a signature S was produced by Db(M), because Eb(S) will produce a valid M for any S. For proof, the signer must send the message M, a hash of the message h(M), and a signature of the hash Db(h(M)).
+    
+    - The verifier then hashes M, using the same hash procedure as the signer, decrypts the signed hash with Eb(h(M)), and compares the hashes. If the hashes agree, then the message is valid.
+    
+    - See (https://crypto.stackexchange.com/questions/88000/how-does-recovering-a-message-from-a-signature-as-described-by-rsa-prove-that)
+
