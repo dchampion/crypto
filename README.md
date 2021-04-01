@@ -9,9 +9,9 @@ A description of each artifact in this repository&mdash;excluding <i>meta</i> fi
 ## <i>Why did I do this?</i>
 <b>Short answer:</b> I was bored.
 <p>
-<b>Long answer:</b> When I was a kid I was fascinated by magic; as in the sleight-of-hand, illusion, <i>abracadabra</i>, senses of the word. I am attracted to cryptography for the same reasons. As Arthur C. Clarke once said, "Any sufficiently advanced technology is indistinguishable from magic."
+<b>Long answer:</b> When I was a kid I was fascinated by magic; as in the sleight-of-hand, illusion, <i>abracadabra</i>, senses of the word. I am attracted to cryptography for the same reasons. As Arthur C. Clarke once said, "<i>Any sufficiently advanced technology is indistinguishable from magic.</i>"
 <p>
-<b>Longer answer:</b> My interest was piqued in 2016, when as a software engineer I was tasked by my former employer with securing communications between microservices to ready them for migration to a public cloud environment. Coincidentally, at around the same time I developed a passing interest in cryptocurrency&mdash;<i>Bitcoin</i>, in particular&mdash;which has continued to this day. My research on these subjects invariably led to more questions, which my restless brain cannot seem to let go unanswered.
+<b>Longer answer:</b> My interest was piqued in 2016, when as a software engineer I was tasked by my former employer with securing communications between microservices to ready them for migration to a public cloud environment. Coincidentally, at around the same time, I developed a passing interest in cryptocurrency&mdash;<i>Bitcoin</i>, in particular&mdash;which has continued to this day. My research on these subjects invariably led to more questions, which my restless brain cannot seem to let go unanswered.
 
 ## <i>Artifact list (alphabetical):</i>
 <p>
