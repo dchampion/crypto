@@ -1,6 +1,6 @@
 # crypto
 ## <i>What did I do during the pandemic?</i>
-This repository contains findings and notes gathered over a period of roughly 12 months beginning in March 2020; let's call it  the <i>Pandemic Year</i>. It culminates in a 12k-word <a href=https://github.com/dchampion/crypto/blob/723b6b5a89dfb35c9d5806d381fe8cec55eacfd9/TheElementsOfPublicKeyCryptography.pdf>survey of <i>public-key</i> cryptography</a>; a (relatively) modern branch of the field that is (among other things) foundational to internet security.
+This repository contains findings and notes gathered over a period of roughly 12 months beginning in March 2020; let's call it  the <i>Pandemic Year</i>. It culminates in a 12k-word <a href=https://github.com/dchampion/crypto/blob/master/TheElementsOfPublicKeyCryptography.pdf>survey of <i>public-key</i> cryptography</a>; a (relatively) modern branch of the field that is (among other things) foundational to internet security.
 <p>
 If the mere sight of the phrase <i>12k-word survey</i> makes your eyes glaze over, read just the first page, which recounts a little-known and entertaining anecdote from the early days of the field.
 <p>
