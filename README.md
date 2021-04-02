@@ -21,4 +21,4 @@ Each artifact in this repository&mdash;excluding <i>meta</i> files like this <co
 <p>
 4. <b>TheElementsOfPublicKeyCryptography.docx</b> &ndash; A 12k-word survey on public-key cryptography in <i>MS-Word</i> format. This is the read-write version of the document.
 <p>
-5. <a href=https://github.com/dchampion/crypto/blob/723b6b5a89dfb35c9d5806d381fe8cec55eacfd9/TheElementsOfPublicKeyCryptography.pdf><b>TheElementsOfPublicKeyCryptography.pdf</b></a> &ndash; The read-only version of the above (this is the one that is intended to be read).
+5. <a href=https://github.com/dchampion/crypto/blob/master/TheElementsOfPublicKeyCryptography.pdf><b>TheElementsOfPublicKeyCryptography.pdf</b></a> &ndash; The read-only version of the above (this is the one that is intended to be read).
