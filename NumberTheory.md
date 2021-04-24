@@ -25,22 +25,22 @@ Let <i>n</i> be a positive number greater than 1. Let <i>d</i> be the smallest d
 There are an infinite number of primes.
 ## Proof (by contradiction):
 * Assume the number of primes is finite
-* Let <i>n</i> be the product of this set + 1; that is, <i>p1</i> * <i>p2</i> * <i>p3</i> * ... * <i>pk</i> + 1
+* Let <i>n</i> be the product of this set + 1; that is, <i>p<sub>1</sub></i> * <i>p<sub>2</sub></i> * <i>p<sub>3</sub></i> * ... * <i>p<sub>k</sub></i> + 1
 * Let <i>d</i> be the smallest divisor of <i>n</i>, which must be prime (Lemma 2)
 * None of the primes in the set is a divisor of <i>n</i> (they are instead divisors of <i>n</i> - 1); therefore, dividing <i>n</i> by any <i>p</i> in the set leaves a remainder of 1
 * Therefore, <i>d</i> is prime and it is not in the list (contradiction)
 # Fundamental Theorem of Arithmetic
 Any integer greater than 1 can be written in exactly one way as the product of primes (if you disregard the order in which they are written). For example, 15 = 3 * 5, and 60 = 2 * 2 * 3 * 5.
 # Computations Modulo a Prime
-* Any integer taken modulo <i>p</i> is always in the range 0, ...,<i>p</i> - 1.
+* Any integer taken modulo <i>p</i> is always in the range 0, ..., <i>p</i> - 1.
 # Groups and Finite Fields
 * The set of numbers modulo a prime is a finite field.
 * You can always add and subtract any multiple of <i>p</i> without changing the result (equivalence classes).
 * Results are always in the range 0, 1, ..., <i>p</i> - 1.
-* The finite field of integers modulo <i>p</i> is written Z<sub>p</sub>.
+* The finite field of integers modulo <i>p</i> is written <i>Z<sub>p</sub></i>.
 * A group is a finite field together with an operation.
-* The numbers in Z<sub>p</sub> form a group together with addition.
-* A group whose operator is multiplication cannot contain 0 (because you cannot divide by 0), and consists of the set 1, ..., <i>p</i> - 1; this is known as the muliplicative group modulo <i>p</i>, and is written Z*<sub>p</sub>.
+* The numbers in <i>Z<sub>p</sub></i> form a group together with addition.
+* A group whose operator is multiplication cannot contain 0 (because you cannot divide by 0), and consists of the set 1, ..., <i>p</i> - 1; this is known as the muliplicative group modulo <i>p</i>, and is written <i>Z*<sub>p</sub></i>.
 * A group can contain a subgroup, which consists of some elements of the group.
 * If you apply an operation to two elements of the subgroup, you again get an element of the subgroup.
 * The inverse of multiplication is division.
