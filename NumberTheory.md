@@ -70,4 +70,5 @@ Any integer greater than 1 can be written in exactly one way as the product of p
 * These numbers do not form a finite field, but rather a <i>ring</i>.
 * For any prime <i>p</i>, for all <i>x</i> where 0 < <i>x</i> < <i>p</i> the equation <i>x<sup>p-1</sup> = 1</i> (mod <i>p</i>) holds. This is <i>Fermat's Little Theorem</i>.
 * For a composite <i>n</i> that is the product of exactly two primes <i>p</i> and <i>q</i>, there is an exponent <i>t</i> such that <i>x<sup>t</sup></i> = 1 mod <i>n</i> for <i>almost</i> all <i>x</i>; the exceptions are values of <i>x</i> that are multiples of either <i>p</i> or <i>q</i>.
+* The frequency of such exceptions is in the proportion (<i>p</i> + <i>q</i>) / <i>pq</i>.
 * The smallest <i>t</i> that is a multiple of <i>p</i> - 1 and <i>q</i> - 1 is their least common mulitple, or <i>lcm</i>(<i>p</i> - 1, <i>q</i> - 1).
