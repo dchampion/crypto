@@ -19,7 +19,7 @@ Each artifact in this repository&mdash;excluding <i>meta</i> files like this REA
 <p>
 3. <a href=https://github.com/dchampion/crypto/blob/master/LectureNotes.txt><b>LectureNotes.txt</b></a> &ndash; Lecture notes taken from a two-semester, college-level survey course on cryptography I took online.
 <p>
-4. <a href=https://github.com/dchampion/crypto/blob/master/NumberTheory.md><b>NumberTheory.md</b></a> &ndash; Helpful mnemonics on the number theoretical underpinnings of DH and RSA.
+4. <a href=https://github.com/dchampion/crypto/blob/master/NumberTheory.md><b>NumberTheory.md</b></a> &ndash; Helpful mnemonics on the number-theoretic underpinnings of DH and RSA.
 <p>
 5. <b>TheElementsOfPublicKeyCryptography.docx</b> &ndash; A 12k-word survey on public-key cryptography in <i>MS-Word</i> format (this is the read-write version of the document).
 <p>
