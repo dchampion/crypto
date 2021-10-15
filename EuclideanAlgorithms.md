@@ -53,21 +53,21 @@ That is, we are looking for a decryption exponent <i>d</i>  that satisfies the e
 
 To find the answer, we use the divisors, quotients and remainders version of the Euclidean Algorithm presented in the last part of the previous section, but with a small enhancement.
 
-To understand the mechanics of this enhancement, we'll start with a discussion of B&eacute;zout's identity, from which it follows.
+To understand the mechanics of this enhancement, we'll start with a discussion of B&eacute;zout's identity, from which the enhanced method derives.
 
 B&eacute;zout's identity asserts the following:
 <pre>
 ax + by = gcd(a,b)
 </pre>
-In English, B&eacute;zout's identity asserts that for any given natural numbers <code>a</code> and <code>b</code>, there are integer solutions <code>x</code> and <code>y</code> such that <code>ax + by = gcd(a,b)</code>. In the present example, since we know that <code>gcd(a,b)=1</code> (where <code>a</code>=60 and <code>b</code>=7), we can rewrite the identity as follows:
+In English, B&eacute;zout's identity asserts that for any given natural numbers <i>a</i> and <i>b</i>, there are integer solutions <i>x</i> and <i>y</i> such that <code>ax + by = gcd(a,b)</code>. In the present example, since we know that <code>gcd(a,b)=1</code> (where <i>a</i>=60 and <i>b</i>=7), we can rewrite the identity as follows:
 <pre>
 ax + by = 1
 </pre>
-And since we are looking for the inverse of 7 in the group of integers modulo 60, we can substitute 60 for <code>a</code> and 7 for <code>b</code>, thus further fleshing out the identity as follows:
+And since we are looking for the inverse of 7 in the group of integers modulo 60, we can substitute 60 for <i>a</i> and 7 for <i>b</i>, thus further fleshing out the identity as follows:
 <pre>
 60x + 7y = 1
 </pre>
-Specifically, we are interested in the value <code>y</code> that, when mulitplied by 7, and added to some multiple of 60 (i.e. 60<code>x</code>), results in 1. This value is the inverse of 7 in the group of integers modulo 60 or, algebraically, <code>7y = 1 (mod 60)</code>.
+Specifically, we are interested in the value <i>y</i> that, when mulitplied by 7, and added to some multiple of 60 (i.e. 60<i>x</i>), results in 1. This value is the inverse of 7 in the group of integers modulo 60 or, algebraically, <code>7y = 1 (mod 60)</code>.
 
 First, we repeat the divisors, quotients and remainders version of the Euclidean Algorithm demonstrated in the previous section to find GCD(60,7):
 <pre>
@@ -76,13 +76,13 @@ GCD(60,7) = 60 = 7(8) + 4
              4 = 3(1) + 1 -> Last nonzero remainder is GCD
              3 = 3(1) + 0 -> Stop at 0
 </pre>
-Next, we rewrite each line of the previous procedure (except the stop-line in which the remainder is 0), subtracting the dividend and quotient from both sides to isolate the remainder:
+Next, we rewrite each line of the previous procedure (except the stop-line in which the remainder is 0), subtracting the dividend and quotient from both sides to isolate the remainder on the right-hand side of the equation:
 <pre>
-60 = 7(8) + 4 becomes 4 = 60 - 7(8)
- 7 = 4(1) + 3 becomes 3 = 7 - 4(1)
- 4 = 3(1) + 1 becomes 1 = 4 - 3(1)
+60 = 7(8) + 4 becomes 60 - 7(8) = 4
+ 7 = 4(1) + 3 becomes  7 - 4(1) = 3
+ 4 = 3(1) + 1 becomes  4 - 3(1) = 1
 </pre>
-Finally, starting from the bottom, where the last remainder is 1, we work our way backwards, using substitution to work our way to a solution for <code>ax + by = 1</code>.
+Finally, starting from the bottom, where the last remainder is 1, we use backward substitution to work our way to a solution for <code>ax + by = 1</code>.
 <pre>
 1 = 4 - 3(1)          -> Start with last line
   = 4 - 3             -> Simplify 3(1)
@@ -94,8 +94,8 @@ Finally, starting from the bottom, where the last remainder is 1, we work our wa
   = 2(60) - 16(7) - 7 -> Distribute
   = 2(60) - 17(7)     -> Done!
 </pre>
-To test the result, verify that 2(60) - 17(7) = 1 (it does). In this case, 60 and 7 represent our givens <code>a</code> and <code>b</code>, and <code>2</code> and <code>-17</code> our variables <code>x</code> and <code>y</code>, respectively. This means that the value of <code>y</code>, or -17, is the inverse of 7 in the group of integers modulo 60.
+To test the result, verify that 2(60) - 17(7) = 1 (it does). In this case, 60 and 7 represent our givens <i>a</i> and <i>b</i>, and 2 and -17 our variables <i>x</i> and <i>y</i>, respectively. This means that the value of <i>y</i>, or -17, is the inverse of 7 in the group of integers modulo 60.
 
-But we're not quite done yet. Since we are working modulo 60, we need to take -17 modulo 60. -17 mod 60 = 43, so 43 is the inverse of 7 in the group of integers modulo 60.
+But we're not quite done yet. Since we are working modulo 60, we need to take -17 modulo 60, and -17 mod 60 = 43. This means 43 is the inverse of 7 in the group of integers modulo 60.
 
 We can test this result by plugging it into the equation <code>ed mod 60 = 1</code>. Indeed, 7 x 43 mod 60 = 301 mod 60 = 1.
