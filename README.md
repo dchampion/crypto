@@ -1,6 +1,6 @@
 # crypto
 ## <i>What did I do during the pandemic?</i>
-This repository contains notes, research and other artifacts concerning cryptography that I started curating in March 2020, and that I continue to revise and maintain. It culminates in a ~12k-word <a href=https://raw.githubusercontent.com/dchampion/crypto/master/TheElementsOfPublicKeyCryptography.pdf>survey of <i>public-key</i> cryptography</a>; a relatively modern branch of the field that is&mdash;among other things&mdash;foundational to internet security.
+This repository contains notes, research and other artifacts concerning cryptography that I started curating in March 2020, and that I continue to revise and maintain. It culminates in a ~12k-word <a href=https://raw.githubusercontent.com/dchampion/crypto/master/TheElementsOfPublicKeyCryptography.pdf>survey of <i>public-key</i> cryptography</a>; a relatively modern branch of the field that is (among other things) foundational to internet security.
 <p>
 If the mere thought of <i>12k-word survey</i> makes your eyes glaze over, read only the first page, which recounts a little-known and entertaining anecdote from the early days of academic cryptography.
 <p>
