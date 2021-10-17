@@ -69,7 +69,7 @@ And since we are looking for the inverse of 7 in the group of integers modulo 60
 <pre>
 60x + 7y = 1
 </pre>
-Specifically, we are interested in the value <i>y</i> that, when mulitplied by 7, and added to some multiple of 60 (i.e. 60<i>x</i>), results in 1 modulo 60. This value will the inverse of 7 in the group of integers modulo 60 or, expressed algebraically, <code>7y = 1 (mod 60)</code>.
+Specifically, we are interested in the value <i>y</i> that, when mulitplied by 7, and added to some multiple of 60 (i.e. 60<i>x</i>), results in 1 modulo 60. This value will be the inverse of 7 in the group of integers modulo 60 or, expressed algebraically, <code>7y = 1 (mod 60)</code>.
 
 First, we repeat the divisors, quotients and remainders version of the Euclidean Algorithm demonstrated in the previous section to find GCD(60,7):
 <pre>
