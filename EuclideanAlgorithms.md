@@ -2,13 +2,13 @@
 ## Using the Euclidean Algorithm to Find the Greatest Common Divisor (<i>GCD</i>) of Two Natural Numbers
 In the procedure for RSA encryption described in <a href=https://raw.githubusercontent.com/dchampion/crypto/master/TheElementsOfPublicKeyCryptography.pdf><i>The Elements of Public Key Cryptography</i></a>, step 5 requires Alice to compute an encryption exponent <i>e</i>.
 
-Recall that the requirement for <i>e</i> is that it be a positive integer that is relatively prime to the totient of <i>n</i>, or <i>&phi;(n)</i>. Recall that <i>n</i> is the product of two primes <i>p</i> and <i>q</i>, which in the example are 7 and 11, respectively, thus giving us <i>n</i>=77. And recall that &phi;(77)=60 (because there are 60 integers in the range 1 to 77 that are relatively prime to 77). Another way of saying this is that there are 60 integers in the range 1 to 77 whose greatest common divisor (<i>GCD</i>) with 77 is 1.
+Recall that the requirement for <i>e</i> is that it be a positive integer that is relatively prime to the totient of <i>n</i>, or <i>&phi;(n)</i>. Recall that <i>n</i> is the product of the two primes <i>p</i> and <i>q</i>, which in the example are 7 and 11, respectively, thus giving us <i>n</i>=77. And recall that <i>&phi;</i>(77)=60 (because there are 60 integers in the range 1 to 77 that are relatively prime to 77). Another way of saying this is that there are 60 integers in the range 1 to 77 whose <i>greatest common divisor</i> (<i>GCD</i>) with 77 is 1.
 
 The Euclidean Algorithm gives us an efficient method for finding the GCD of two integers, which is especially useful for real-world, cryptographically strong (i.e. very large) numbers. We'll demonstrate it here, using the small numbers from the example, to compute a suitable encryption exponent <i>e</i>.
 
-In the present case we must identify a value in the range 1 to 60 whose GCD with 60 is 1, expressed formulaically as <i>GCD(60,e)=1</i>. We must use such a value for <i>e</i> because it will have an inverse in the group of integers modulo 60 (values with GCDs greater than 1 will not), and we need an inverse in order to decrypt messages.
+In the present case we must identify a value in the range 1 to 60 whose GCD with 60 is 1, expressed formulaically as <i>GCD(60,e)=1</i>. We must use such a value for <i>e</i> because it will have an inverse in the group of integers modulo 60 (values with GCDs greater than 1 will not have an inverse), and we need an inverse in order to decrypt messages.
 
-We find the GCD of two integers by taking the larger integer modulo the smaller, recursively, until we reach 0. For example, let's select the value 8 as a candidate for <i>e</i>. To find the GCD of 60 and 8, we do the following:
+We find the GCD of two integers by taking the larger integer modulo the smaller, recursively, until we reach 0. For example, let's randomly select the value 8 as a candidate for <i>e</i>. To find the GCD of 60 and 8, we do the following:
 <pre>
 GCD(60,8) = GCD(60 mod 8,8) -> 60 mod 8 = 4
           = GCD(4,8)        -> Result of previous operation
@@ -21,7 +21,7 @@ When 0 is reached, the remaining non-zero parameter&mdash;4 in this case&mdash;i
 
 Of course, with small parameters, like 60 and 8, we can skip the ceremony and work out in our heads that 4 is the largest number that divides both. But for very large numbers we need the help of the Euclidean Algorithm. Because GCD(60,8) is greater than 1, 8 is not suitable for use as an encryption exponent.
 
-Let's try again with 7:
+Let's try again, this time with 7:
 <pre>
 GCD(60,7) = GCD(60 mod 7,7) -> 60 mod 7 = 4
           = GCD(4,7)        -> Result of previous operation
@@ -49,9 +49,9 @@ GCD(60,7) = 60 = 7(8) + 4 -> 60 is 7 (divisor) times 8 (quotient), plus 4 (remai
 </pre>
 The last non-zero remainder is 1, which is the GCD of 60 and 7.
 ## Using the <i>Extended</i> Euclidean Algorithm to Find the Inverse of the Encryption Exponent
-Now that Alice has identified her encryption exponent <i>e</i>, she must next find a suitable decryption exponent <i>d</i>. This number must be the inverse of <i>e</i> (7 in the present example) in the group of integers modulo &phi;(77). This exponent will be used by Alice to recover the plaintext from a message <i>M</i> encrypted with the procedure <i>M<sup>e</sup> mod n</i> (where <i>M</i> is a natural number in the range 1 to <i>n</i>-1, <i>e</i>=7 and <i>n</i>=77).
+Now that Alice has identified her encryption exponent <i>e</i>, she must next find a suitable decryption exponent <i>d</i>. This number must be the inverse of <i>e</i> (which is 7 in the present example) in the group of integers modulo <i>&phi;</i>(77). This exponent will be used by Alice to recover the plaintext from a message <i>M</i> encrypted with the procedure <i>M<sup>e</sup> mod n</i> (where <i>M</i> is a natural number in the range 1 to <i>n</i>-1, <i>e</i>=7 and <i>n</i>=77).
 
-That is, we are looking for a decryption exponent <i>d</i>  that satisfies the equation <i>ed mod &phi;(n) = 1</i> or, plugging in the values we know so far, <i>7d mod 60 = 1</i>. Soving for <i>d</i> in this equation will tell us by what integer <i>e</i> must be multiplied to produce 1 mod &phi;(n).
+That is, we are looking for a decryption exponent <i>d</i>  that satisfies the equation <i>ed mod &phi;(n) = 1</i> or, plugging in the values we know so far, <i>7d mod 60 = 1</i>. Soving for <i>d</i> in this equation will tell us by what integer <i>e</i> must be multiplied to produce 1 mod <i>&phi;</i>(n).
 
 To find the answer, we'll use the divisors, quotients and remainders version of the Euclidean Algorithm presented in the previous section, but with a small enhancement.
 
