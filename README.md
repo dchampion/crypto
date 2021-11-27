@@ -1,15 +1,9 @@
 # crypto
-## <i>What did I do during the pandemic?</i>
-This repository contains notes, research and other artifacts concerning cryptography that I started curating in March 2020, and that I continue to revise and maintain. It culminates in a ~12k-word <a href=https://raw.githubusercontent.com/dchampion/crypto/master/TheElementsOfPublicKeyCryptography.pdf>survey of <i>public-key</i> cryptography</a>; a relatively modern branch of the field that is (among other things) foundational to internet security.
+This repository contains notes, research and other artifacts involving cryptography that I started curating in March 2020, and that I continue to revise and maintain. It culminates in a ~12k-word <a href=https://raw.githubusercontent.com/dchampion/crypto/master/TheElementsOfPublicKeyCryptography.pdf>survey of <i>public-key</i> cryptography</a>; a relatively modern branch of the field that is (among other things) foundational to internet security.
 <p>
 If the mere thought of <i>12k-word survey</i> makes your eyes glaze over, read only the first page, which recounts a little-known and entertaining anecdote from the early days of academic cryptography.
 <p>
 Each artifact in this repository&mdash;excluding <i>meta</i> files like this README&mdash;is enumerated with a short description below.
-
-## <i>Why did I do this?</i>
-<b>Short answer:</b> I was bored.
-<p>
-<b>Long answer:</b> When I was a kid I was fascinated by magic. The same fascination attracts me to the profound elegance of modern cryptography. As Arthur C. Clarke once said, "<i>Any sufficiently advanced technology is indistinguishable from magic.</i>"
 
 ## List of Substantive Artifacts (alphabetical)
 <p>
@@ -23,4 +17,6 @@ Each artifact in this repository&mdash;excluding <i>meta</i> files like this REA
 <p>
 5. <a href=https://github.com/dchampion/crypto/blob/master/NumberTheory.md><b>NumberTheory.md</b></a> &ndash; Helpful mnemonics on the number-theoretic underpinnings of DH and RSA.
 <p>
-6. <a href=https://raw.githubusercontent.com/dchampion/crypto/master/TheElementsOfPublicKeyCryptography.pdf><b>TheElementsOfPublicKeyCryptography.pdf</b></a> &ndash; A 12k-word survey of public-key cryptography.
+6. <a href=https://github.com/dchampion/crypto/blob/master/src><b>Source code (/src folder)</b></a> &ndash; Source code implementations of some of the cryptographic primitives discussed in these documents.
+<p>
+7. <a href=https://raw.githubusercontent.com/dchampion/crypto/master/TheElementsOfPublicKeyCryptography.pdf><b>TheElementsOfPublicKeyCryptography.pdf</b></a> &ndash; A 12k-word survey of public-key cryptography.

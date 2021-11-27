@@ -1,5 +1,8 @@
 # Euclidean Algorithms
 ## Using the Euclidean Algorithm to Find the Greatest Common Divisor (<i>GCD</i>) of Two Natural Numbers
+
+<i>For implementations of these algorithms in the C programming language, see <a href=https://github.com/dchampion/crypto/blob/master/src/euclid.c>here</a>.</i>
+
 In the procedure for RSA encryption described in <a href=https://raw.githubusercontent.com/dchampion/crypto/master/TheElementsOfPublicKeyCryptography.pdf><i>The Elements of Public Key Cryptography</i></a>, step 5 requires Alice to compute an encryption exponent <i>e</i>.
 
 Recall that the requirement for <i>e</i> is that it be a positive integer that is relatively prime to the totient of <i>n</i>, or <i>&phi;(n)</i>. Recall that <i>n</i> is the product of the two primes <i>p</i> and <i>q</i>, which in the example are 7 and 11, respectively, thus giving us <i>n</i>=77. And recall that <i>&phi;</i>(77)=60 (because there are 60 integers in the range 1 to 77 that are relatively prime to 77). Another way of saying this is that there are 60 integers in the range 1 to 77 whose <i>greatest common divisor</i> (<i>GCD</i>) with 77 is 1.
