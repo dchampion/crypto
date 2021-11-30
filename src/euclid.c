@@ -12,12 +12,13 @@ int inverse(int a, int b, bool recurse);
 
 /**
  * Driver code for the Euclidean algorithms. Make this code executable using a C (or C++)
- * compiler specific to the platform you wish to run it on; i.e. gcc (or g++) euclid.c -o euclid.
+ * compiler specific to the platform you wish to run it on; e.g., gcc (or g++) euclid.c -o euclid.
  * 
  * Usage: euclid a b (where a and b are the positive integer values for which to compute
  * the greatest common divisor, and the modular multiplicative inverse of a modulo b.)
  * 
  * Example:
+ *
  * $ ./euclid 60 7
  * GCD of 7 and 60     (via recursion) is 1
  * GCD of 7 and 60     (via iteration) is 1
@@ -38,8 +39,8 @@ int main(int argc, char** argv) {
 
     printf("GCD of %d and %d     (via recursion) is %d\n", a, b, gcd_r(a, b));
     printf("GCD of %d and %d     (via iteration) is %d\n", a, b, gcd_i(a, b));
-    printf("Inverse of %d mod %d (via recursion) is %d\n", b, a, inverse(a, b, true));
-    printf("Inverse of %d mod %d (via iteration) is %d\n", b, a, inverse(a, b, false));
+    printf("Inverse of %d mod %d (via recursion) is %d\n", a, b, inverse(a, b, true));
+    printf("Inverse of %d mod %d (via iteration) is %d\n", a, b, inverse(a, b, false));
 }
 
 /**
