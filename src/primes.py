@@ -38,22 +38,22 @@ def is_prime(n, rounds=128):
                     883,887,907,911,919,929,937,941,947,953,967,971,977,983,991,997]
 
     # Before doing any heavy lifting, return True for an n that matches any of the first 168
-    # primes (up to 1k). Any multiples thereof are composites and should also return, but in
-    # that case False.
-    for i, val in enumerate(small_primes):
-        if n % val == 0:
-            return val == n
+    # primes (up to 1k). Any multiples thereof are composites, and should therefore also fall
+    # out, but in that case we return False.
+    for prime in small_primes:
+        if n % prime == 0:
+            return prime == n
 
-    # Resort to the heavy lifting.
+    # n is neither a small prime (up to 1k), nor is it a multiple of thereof, so use Miller-Rabin.
     return miller_rabin(n, rounds)
 
 '''
 The Miller-Rabin primality test.
 
-Returns True, with a very high degree of probability, if the supplied natural number (positive
-integer) n prime. The probability of a false positive is a function of the value of rounds, and
-is 2^-128 given its default value of 128 (i.e., it is vanishingly small); otherwise, if n is
-composite, this method returns False.
+With a very high degree of probability, returns True if the supplied natural number (positive
+integer) n is prime. The probability of a false positive is a function of the magnitude of
+rounds, and is 2^-128 given its default value of 128 (i.e., it is vanishingly small). Otherwise,
+if n is composite, this method will return False with a probability of 1.
 
 '''
 def miller_rabin(n, rounds=128):
@@ -62,25 +62,22 @@ def miller_rabin(n, rounds=128):
     assert n % 2 != 0,    'n must be an odd number'
     assert rounds >= 128, 'rounds must be no less than 128'
 
-    r, d = factor_n(n)
+    mult, exp = factor_n(n)
 
     random.seed()
     
-    while rounds > 0:
-        rounds -= 1
+    for _ in range(rounds):
         
-        a = random.randrange(2, n - 2)
+        base = random.randrange(2, n - 2)
         
-        x = fast_mod_exp(a, r, n)
+        x = fast_mod_exp(base, mult, n)
         if x == 1 or x == n - 1:
             continue
     
         try:
-            while d > 1:
-                d -= 1
-        
+            for _ in range(1, exp):
                 x = fast_mod_exp(x, 2, n)
-                if x == (n - 1):
+                if x == n - 1:
                     raise Exception
 
         except Exception:
@@ -91,23 +88,25 @@ def miller_rabin(n, rounds=128):
     return True
 
 '''
-Converts n to the form 2^r * d + 1, where d is an odd divisor of n - 1, and returns r and d.
+Converts input n to the form 2^exp * mult + 1, where mult is the least odd
+divisor of n - 1, and returns mult and exp.
+
 '''
 def factor_n(n):
 
     assert n >= 3,        'n must be no less than 3'
     assert n % 2 != 0,    'n must be an odd number'
 
-    r = n - 1
-    d = 0
+    mult = n - 1
+    exp = 0
 
-    while r % 2 == 0:
-        r //= 2
-        d += 1
+    while mult % 2 == 0:
+        mult //= 2
+        exp += 1
     
-    assert (2 ** d) * r == n - 1
+    assert (2 ** exp) * mult == n - 1
 
-    return r, d
+    return mult, exp
 
 '''
 A fast algorithm for modular exponentiation (see square-and-multiply)
@@ -119,10 +118,7 @@ def fast_mod_exp(a, b, n):
     result = a if (b & 1) else 1
     exp_bit_len = b.bit_length()
 
-    x = 0
-    while x < exp_bit_len:
-        x += 1
-        
+    for x in range(1, exp_bit_len):
         temp = (a ** 2) % n
         if (b >> x) & 1:
             result *= temp % n
