@@ -62,40 +62,39 @@ def miller_rabin(n, rounds=128):
     assert n % 2 != 0,    'n must be an odd number'
     assert rounds >= 128, 'rounds must be no less than 128'
 
+    if n == 3:
+        return True
+
     mult, exp = factor_n(n)
 
     random.seed()
     
     for _ in range(rounds):
         
-        base = random.randrange(2, n - 2)
+        base = random.randrange(2, n - 1)
         
         x = fast_mod_exp(base, mult, n)
-        if x == 1 or x == n - 1:
-            continue
-    
-        try:
-            for _ in range(1, exp):
-                x = fast_mod_exp(x, 2, n)
-                if x == n - 1:
-                    raise Exception
-
-        except Exception:
-            continue
+        if x != 1:
         
-        return False
-    
+            i = 0
+            while x != n - 1:
+                if i == exp - 1:
+                    return False
+                else:
+                    x = (x ** 2) % n
+                    i += 1
+
     return True
 
 '''
-Converts input n to the form 2^exp * mult + 1, where mult is the least odd
+Converts input n to the form 2^exp * mult + 1, where mult is the greatest odd
 divisor of n - 1, and returns mult and exp.
 
 '''
 def factor_n(n):
 
-    assert n >= 3,        'n must be no less than 3'
-    assert n % 2 != 0,    'n must be an odd number'
+    assert n >= 3,      'n must be no less than 3'
+    assert n % 2 != 0,  'n must be an odd number'
 
     mult = n - 1
     exp = 0
@@ -110,21 +109,23 @@ def factor_n(n):
 
 '''
 A fast algorithm for modular exponentiation (see square-and-multiply)
+
 '''
-def fast_mod_exp(a, b, n):
+def fast_mod_exp(base, exp, n):
 
-    assert a > 1 and b > 1 and n > 1, 'Base, exponent and modulus must all be greater than 1'
+    assert base > 1,    'Base must be greater than 1'
+    assert exp >= 1,    'Exponent must be greater than 0'
+    assert n > 1,       'Modulus must be greater than 1'
 
-    result = a if (b & 1) else 1
-    exp_bit_len = b.bit_length()
+    result = base if (exp & 1) else 1
+    exp_bit_len = exp.bit_length()
 
     for x in range(1, exp_bit_len):
-        temp = (a ** 2) % n
-        if (b >> x) & 1:
-            result *= temp % n
-        a = temp
+        base = (base ** 2) % n
+        if (exp >> x) & 1:
+            result = (result * base) % n
 
-    return result % n
+    return result
 
 if __name__ == '__main__':
     main()
