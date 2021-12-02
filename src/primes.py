@@ -113,9 +113,9 @@ A fast algorithm for modular exponentiation (see square-and-multiply)
 '''
 def fast_mod_exp(base, exp, n):
 
-    assert base > 1,    'Base must be greater than 1'
+    assert base >= 1,   'Base must be greater than 0'
     assert exp >= 1,    'Exponent must be greater than 0'
-    assert n > 1,       'Modulus must be greater than 1'
+    assert n >= 1,      'Modulus must be greater than 0'
 
     result = base if (exp & 1) else 1
     exp_bit_len = exp.bit_length()
@@ -126,6 +126,28 @@ def fast_mod_exp(base, exp, n):
             result = (result * base) % n
 
     return result
+
+'''
+The Fermat primality test.
+
+Returns True if the the natural number n is prime; otherwise False. This test will,
+however, falsely report as prime any of the so-called Carmichael numbers
+(e.g. 561, 41041, 825265...) because such numbers, although they are composite,
+satisfy the congruence relation a^n = a (mod n) for all 1 < a < n. The Miller-Rabin
+primality test accounts for the existence of these numbers, and therefore reports
+with a much higher degree of probability the primality of n.
+'''
+def fermat(n):
+
+    assert n >= 3
+    assert n % 2 != 0
+
+    for i in range(1, n):
+        result = fast_mod_exp(i, n, n)
+        if result != i:
+            return False
+
+    return True
 
 if __name__ == '__main__':
     main()
