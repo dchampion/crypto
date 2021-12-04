@@ -1,4 +1,6 @@
 import random
+import secrets
+import math
 
 small_primes =  [ 3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
                  73, 79, 83, 83, 89, 97,101,103,107,109,113,127,131,137,139,149,151,157,163,
@@ -23,12 +25,12 @@ def main():
     for n in small_primes:
         mult, exp = factor_n(n)
         assert (2 ** exp) * mult == n - 1
-    print('factor_n passed for all primes < 1000')
+    print(f'factor_n passed for all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}')
 
     for n in large_primes:
         mult, exp = factor_n(n)
         assert (2 ** exp) * mult == n - 1
-    print('factor_n passed for large primes')
+    print(f'factor_n passed for {len(large_primes)} large primes')
     ### End tests for factor_n
 
     ### Begin tests for fast_mod_exp
@@ -43,39 +45,46 @@ def main():
     ### Begin tests for fermat
     for n in small_primes:
         assert fermat(n)
-    print('fermat passed for all primes < 1000')
+    print(f'fermat passed for all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}')
 
     for n in odd_composites:
         assert not fermat(n)
-    print('fermat passed for odd composites')
+    print(f'fermat passed for {len(odd_composites)} odd composites')
 
     for n in carmichaels:
         assert fermat(n)
-    print('fermat passed with false positives for the first 3 carmichael numbers')
+    print(f'fermat passed with false positives for {len(carmichaels)} Carmichael numbers')
     ### End tests for fermat
 
     ### Begin tests for is_prime
     for n in small_primes:
         assert is_prime(n)
-    print('is_prime passed for all primes < 1000')
+    print(f'is_prime passed for all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}')
 
     for n in small_primes:
         n = n ** 2
         assert not is_prime(n)
-    print(f'is_prime passed for the squares of all primes < 1000')
+    print(f'is_prime passed for the squares of all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}')
 
     for n in odd_composites:
         assert not is_prime(n)
-    print('is_prime passed for odd composites')
+    print(f'is_prime passed for {len(odd_composites)} odd composites')
 
     for n in carmichaels:
         assert not is_prime(n)
-    print('is_prime passed with true negatives for the first 3 carmichael numbers')
+    print(f'is_prime passed with true negatives for {len(carmichaels)} Carmichael numbers')
 
     for n in large_primes:
         assert is_prime(n)
-    print('is_prime passed for large primes')
+    print(f'is_prime passed for {len(large_primes)} large primes')
     ### End tests for is_prime
+
+    ### Begin tests for generate_large_prime
+    for x in range(3, 12):
+        p = generate_large_prime(2 ** x)
+        assert is_prime(p)
+    print('generate_large_primes passed for primes up to 2048 bits in length')
+    ### End tests for generate_large_prime
 
 '''
 Returns True if the supplied natural number (positive integer) n is prime. If n < 1000, the
@@ -200,6 +209,22 @@ def fermat(n):
             return False
 
     return True
+
+'''
+Returns a prime number of k bits in length by generating a sensible number of random
+k-bit strings and testing them for primality. If a prime is not found is as many tries,
+an exception is raised (this should be rare).
+
+'''
+def generate_large_prime(k):
+    tries = math.floor(math.log2(k)+1) * 100 # Check this!
+    for _ in range(tries):
+        p = secrets.randbits(k) | 1 # Check this!
+        if is_prime(p):
+            return p
+
+    err_str = f'Unable to find a {k}-bit prime in {tries} random selections'
+    raise Exception(err_str)
 
 if __name__ == '__main__':
     main()
