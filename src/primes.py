@@ -81,7 +81,7 @@ def main():
 
     ### Begin tests for generate_large_prime
     for x in range(3, 12):
-        p = generate_large_prime(2 ** x)
+        p = generate_prime(2 ** x - 1, 2 ** x)
         assert is_prime(p)
     print('generate_large_primes passed for primes up to 2048 bits in length')
     ### End tests for generate_large_prime
@@ -211,19 +211,21 @@ def fermat(n):
     return True
 
 '''
-Returns a prime number of k bits in length by generating a sensible number of random
-k-bit strings and testing them for primality. If a prime is not found is as many tries,
-an exception is raised (this should be rare).
+Returns a prime number between l and u bits in length. The function randomly selects numbers
+in the range 2^l to 2^u and tests them for primality. If a prime is not found in a sensible
+number of tries, an exception is raised (this should be rare), in which case the function can
+be tried again.
 
 '''
-def generate_large_prime(k):
-    tries = math.floor(math.log2(k)+1) * 100 # Check this!
+def generate_prime(l, u):
+    secure_random = secrets.SystemRandom()
+    tries = 100 * math.floor(math.log2(u)+1)
     for _ in range(tries):
-        p = secrets.randbits(k) | 1 # Check this!
+        p = secure_random.randrange(2**l, 2**u) | 1
         if is_prime(p):
             return p
 
-    err_str = f'Unable to find a {k}-bit prime in {tries} random selections'
+    err_str = f'Unable to find a prime between {l} and {u} bits in {tries} random selections'
     raise Exception(err_str)
 
 if __name__ == '__main__':
