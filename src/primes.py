@@ -1,3 +1,6 @@
+"""
+Various functions for generating large random numbers and testing them for primality.
+"""
 import random
 import secrets
 import math
@@ -25,12 +28,12 @@ def main():
     for n in small_primes:
         mult, exp = factor_n(n)
         assert (2 ** exp) * mult == n - 1
-    print(f'factor_n passed for all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}')
+    print(f"factor_n passed for all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}")
 
     for n in large_primes:
         mult, exp = factor_n(n)
         assert (2 ** exp) * mult == n - 1
-    print(f'factor_n passed for {len(large_primes)} large primes')
+    print(f"factor_n passed for {len(large_primes)} large primes")
     ### End tests for factor_n
 
     ### Begin tests for fast_mod_exp
@@ -39,62 +42,60 @@ def main():
         exp = random.randrange(1000,1000000)
         n = random.randrange(1000, 1000000)
         assert fast_mod_exp(base, exp, n) == pow(base, exp, n)
-    print('fast_mod_exp passed for 100 large random inputs')
+    print("fast_mod_exp passed for 100 large random inputs")
     ### End tests for fast_mod_exp
 
     ### Begin tests for fermat
     for n in small_primes:
         assert fermat(n)
-    print(f'fermat passed for all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}')
+    print(f"fermat passed for all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}")
 
     for n in odd_composites:
         assert not fermat(n)
-    print(f'fermat passed for {len(odd_composites)} odd composites')
+    print(f"fermat passed for {len(odd_composites)} odd composites")
 
     for n in carmichaels:
         assert fermat(n)
-    print(f'fermat passed with false positives for {len(carmichaels)} Carmichael numbers')
+    print(f"fermat passed with false positives for {len(carmichaels)} Carmichael numbers")
     ### End tests for fermat
 
     ### Begin tests for is_prime
     for n in small_primes:
         assert is_prime(n)
-    print(f'is_prime passed for all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}')
+    print(f"is_prime passed for all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}")
 
     for n in small_primes:
         n = n ** 2
         assert not is_prime(n)
-    print(f'is_prime passed for the squares of all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}')
+    print(f"is_prime passed for the squares of all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}")
 
     for n in odd_composites:
         assert not is_prime(n)
-    print(f'is_prime passed for {len(odd_composites)} odd composites')
+    print(f"is_prime passed for {len(odd_composites)} odd composites")
 
     for n in carmichaels:
         assert not is_prime(n)
-    print(f'is_prime passed with true negatives for {len(carmichaels)} Carmichael numbers')
+    print(f"is_prime passed with true negatives for {len(carmichaels)} Carmichael numbers")
 
     for n in large_primes:
         assert is_prime(n)
-    print(f'is_prime passed for {len(large_primes)} large primes')
+    print(f"is_prime passed for {len(large_primes)} large primes")
     ### End tests for is_prime
 
     ### Begin tests for generate_large_prime
     for x in range(3, 12):
         p = generate_prime(2 ** x - 1, 2 ** x)
         assert is_prime(p)
-    print('generate_large_primes passed for primes up to 2048 bits in length')
+    print("generate_large_primes passed for primes up to 2048 bits in length")
     ### End tests for generate_large_prime
 
-'''
-Returns True if the supplied natural number (positive integer) n is prime. If n < 1000, the
-probability of a correct answer is 1 (that is, this function is deterministic). If n > 1000,
-the probability of a correct answer is 1 - (2^-128); i.e., it is infinitesimally small.
-
-'''
 def is_prime(n):
-    
-    assert n >= 3 and n % 2 != 0,   'n must be an odd integer > 2'
+    """
+    Returns True if the supplied natural number (positive integer) n is prime. If n < 1000, the
+    probability of a correct answer is 1 (that is, this function is deterministic). If n > 1000,
+    the probability of a correct answer is 1 - (2^-128); i.e., it is infinitesimally small.
+    """
+    assert n >= 3 and n % 2 != 0,   "n must be an odd integer > 2"
 
     # Before doing any heavy lifting, return True for an n that matches any of the first 168
     # primes (up to 1k). Any multiples thereof are composites, and should therefore also fall
@@ -106,18 +107,16 @@ def is_prime(n):
     # n is neither a small prime (up to 1k), nor is it a multiple of thereof, so use Miller-Rabin.
     return miller_rabin(n)
 
-'''
-The Miller-Rabin primality test.
-
-With a very high degree of probability, returns True if the supplied natural number (positive
-integer) n is prime. The probability of a false positive is 1 - (2^-128); i.e., it is
-infinitesimally small. Otherwise, if n is composite, this method will return False with
-a probability of 1.
-
-'''
 def miller_rabin(n):
+    """
+    The Miller-Rabin primality test.
 
-    assert n >= 3 and n % 2 != 0,   'n must be an odd integer > 2'
+    With a very high degree of probability, returns True if the supplied natural number (positive
+    integer) n is prime. The probability of a false positive is 1 - (2^-128); i.e., it is
+    infinitesimally small. Otherwise, if n is composite, this method will return False with
+    a probability of 1.
+    """
+    assert n >= 3 and n % 2 != 0,   "n must be an odd integer > 2"
 
     if n == 3:
         # return True in this most trivial edge case.
@@ -151,14 +150,12 @@ def miller_rabin(n):
     # then n is prime with a 1-2^-128 degree of probability.
     return True
 
-'''
-Converts input n to the form 2^exp * mult + 1, where mult is the greatest odd
-divisor of n - 1, and returns mult and exp.
-
-'''
 def factor_n(n):
-
-    assert n >= 3 and n % 2 != 0,   'n must be an odd integer > 2'
+    """
+    Converts input n to the form 2^exp * mult + 1, where mult is the greatest odd
+    divisor of n - 1, and returns mult and exp.
+    """
+    assert n >= 3 and n % 2 != 0,   "n must be an odd integer > 2"
 
     mult = n - 1
     exp = 0
@@ -169,13 +166,11 @@ def factor_n(n):
 
     return mult, exp
 
-'''
-A fast algorithm for modular exponentiation (see square-and-multiply)
-
-'''
 def fast_mod_exp(base, exp, n):
-
-    assert base >= 1 and exp >= 1 and n >= 1,   'Base, exp and n must all be > 0'
+    """
+    A fast algorithm for modular exponentiation (see square-and-multiply).
+    """
+    assert base >= 1 and exp >= 1 and n >= 1,   "Base, exp and n must all be > 0"
 
     result = base if (exp & 1) else 1
     exp_bit_len = exp.bit_length()
@@ -187,20 +182,18 @@ def fast_mod_exp(base, exp, n):
 
     return result
 
-'''
-The Fermat primality test.
-
-Returns True if the the natural number n is prime; otherwise False. This test will,
-however, falsely report as prime any of the so-called Carmichael numbers
-(e.g. 561, 41041, 825265, ...) because such numbers, although they are composite,
-satisfy the congruence relation a^n = a (mod n) for all 1 < a < n. The Miller-Rabin
-test should therefore be preferred, because it accounts for the Carmichael numbers,
-and therefore reports with a much higher degree of probability the primality of n.
-
-'''
 def fermat(n):
+    """
+    The Fermat primality test.
 
-    assert n >= 3 and n % 2 != 0,   'n must be an odd integer > 2'
+    Returns True if the the natural number n is prime; otherwise False. This test will,
+    however, falsely report as prime any of the so-called Carmichael numbers
+    (e.g. 561, 41041, 825265, ...) because such numbers, although they are composite,
+    satisfy the congruence relation a^n = a (mod n) for all 1 < a < n. The Miller-Rabin
+    test should therefore be preferred, because it accounts for the Carmichael numbers,
+    and therefore reports with a much higher degree of probability the primality of n.
+    """
+    assert n >= 3 and n % 2 != 0,   "n must be an odd integer > 2"
 
     for i in range(1, n):
         result = fast_mod_exp(i, n, n)
@@ -209,14 +202,13 @@ def fermat(n):
 
     return True
 
-'''
-Returns a prime number between l and u bits in length. The function randomly selects numbers
-in the range 2^l to 2^u and tests them for primality. If a prime is not found in a sensible
-number of tries, an exception is raised (this should be rare), in which case the function can
-be tried again.
-
-'''
 def generate_prime(l, u):
+    """
+    Returns a prime number between l and u bits in length. The function randomly selects numbers
+    in the range 2^l to 2^u and tests them for primality. If a prime is not found in a sensible
+    number of tries, an exception is raised (this should be rare), in which case the function can
+    be tried again.
+    """
     secure_random = secrets.SystemRandom()
     tries = 100 * math.floor(math.log2(u)+1)
     for _ in range(tries):
@@ -224,8 +216,8 @@ def generate_prime(l, u):
         if is_prime(p):
             return p
 
-    err_str = f'Unable to find a prime between {l} and {u} bits in {tries} random selections'
+    err_str = f"Unable to find a prime between {l} and {u} bits in {tries} random selections"
     raise Exception(err_str)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
