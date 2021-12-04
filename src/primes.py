@@ -89,9 +89,7 @@ def main():
 '''
 Returns True if the supplied natural number (positive integer) n is prime. If n < 1000, the
 probability of a correct answer is 1 (that is, this function is deterministic). If n > 1000,
-the probability of a correct answer is 1 - (2^-128), and increases as the value of rounds
-increases. The default value of rounds is 128, which should be sufficient for most
-cryptographic purposes.
+the probability of a correct answer is 1 - (2^-128); i.e., it is infinitesimally small.
 
 '''
 def is_prime(n):
@@ -112,9 +110,9 @@ def is_prime(n):
 The Miller-Rabin primality test.
 
 With a very high degree of probability, returns True if the supplied natural number (positive
-integer) n is prime. The probability of a false positive is a function of the magnitude of
-rounds, and is 2^-128 given its default value of 128 (i.e., it is vanishingly small). Otherwise,
-if n is composite, this method will return False with a probability of 1.
+integer) n is prime. The probability of a false positive is 1 - (2^-128); i.e., it is
+infinitesimally small. Otherwise, if n is composite, this method will return False with
+a probability of 1.
 
 '''
 def miller_rabin(n):
@@ -194,10 +192,11 @@ The Fermat primality test.
 
 Returns True if the the natural number n is prime; otherwise False. This test will,
 however, falsely report as prime any of the so-called Carmichael numbers
-(e.g. 561, 41041, 825265...) because such numbers, although they are composite,
+(e.g. 561, 41041, 825265, ...) because such numbers, although they are composite,
 satisfy the congruence relation a^n = a (mod n) for all 1 < a < n. The Miller-Rabin
-primality test accounts for the existence of these numbers, and therefore reports
-with a much higher degree of probability the primality of n.
+test should therefore be preferred, because it accounts for the Carmichael numbers,
+and therefore reports with a much higher degree of probability the primality of n.
+
 '''
 def fermat(n):
 
