@@ -20,20 +20,19 @@ odd_composites = [9,15,27,35,49,133,339,589,711,999,2**521+1,2**607+1]
 # Large Mersenne primes
 large_primes =  [2**521-1,2**607-1,2**1279-1,2**2203-1,2**2281-1]
 
-carmichaels =   [561,41041,825265]
+carmichaels =   [561,1105,1729,2465,2821,6601,8911,41041,62745,63973,825265]
 
 def main():
-
     ### Begin tests for factor_n
     for n in small_primes:
         mult, exp = factor_n(n)
-        assert (2 ** exp) * mult == n - 1
-    print(f"factor_n passed for all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}")
+        assert (2 ** exp) * mult == n - 1, f"factor_n() failed to factor {n} into {mult} and {exp}"
+    print(f"factor_n() passed for all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}")
 
     for n in large_primes:
         mult, exp = factor_n(n)
-        assert (2 ** exp) * mult == n - 1
-    print(f"factor_n passed for {len(large_primes)} large primes")
+        assert (2 ** exp) * mult == n - 1, f"factor_n() failed to factor {n} into {mult} and {exp}"
+    print(f"factor_n() passed for {len(large_primes)} large primes")
     ### End tests for factor_n
 
     ### Begin tests for fast_mod_exp
@@ -41,52 +40,56 @@ def main():
         base = random.randrange(1000, 1000000)
         exp = random.randrange(1000,1000000)
         n = random.randrange(1000, 1000000)
-        assert fast_mod_exp(base, exp, n) == pow(base, exp, n)
-    print("fast_mod_exp passed for 100 large random inputs")
+        assert fast_mod_exp(base, exp, n) == pow(base, exp, n), f"fast_mod_exp({base}, {exp}, {n}) failed"
+    print("fast_mod_exp() passed for 100 large random inputs")
     ### End tests for fast_mod_exp
 
     ### Begin tests for fermat
     for n in small_primes:
-        assert fermat(n)
-    print(f"fermat passed for all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}")
+        assert fermat(n), f"fermat() failed to identify {n} as prime"
+    print(f"fermat() passed for all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}")
 
     for n in odd_composites:
-        assert not fermat(n)
-    print(f"fermat passed for {len(odd_composites)} odd composites")
+        assert not fermat(n), f"fermat() failed to identify {n} as composite"
+    print(f"fermat() passed for {len(odd_composites)} odd composites")
 
     for n in carmichaels:
-        assert fermat(n)
-    print(f"fermat passed with false positives for {len(carmichaels)} Carmichael numbers")
+        assert not fermat(n), f"fermat() failed to identify {n} as composite"
+    print(f"fermat() passed with true negatives for {len(carmichaels)} Carmichael numbers")
+
+    for n in large_primes:
+        assert fermat(n), f"fermat() failed to identify {n} as prime"
+    print(f"fermat() passed for {len(large_primes)} large primes")
     ### End tests for fermat
 
     ### Begin tests for is_prime
     for n in small_primes:
-        assert is_prime(n)
-    print(f"is_prime passed for all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}")
+        assert is_prime(n), f"is_prime() failed to identify {n} as prime"
+    print(f"is_prime() passed for all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}")
 
     for n in small_primes:
         n = n ** 2
-        assert not is_prime(n)
-    print(f"is_prime passed for the squares of all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}")
+        assert not is_prime(n), f"is_prime() failed to identify {n} as composite"
+    print(f"is_prime() passed for the squares of all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}")
 
     for n in odd_composites:
-        assert not is_prime(n)
-    print(f"is_prime passed for {len(odd_composites)} odd composites")
+        assert not is_prime(n), f"is_prime() failed to identify {n} as composite"
+    print(f"is_prime() passed for {len(odd_composites)} odd composites")
 
     for n in carmichaels:
-        assert not is_prime(n)
-    print(f"is_prime passed with true negatives for {len(carmichaels)} Carmichael numbers")
+        assert not is_prime(n), f"is_prime() failed to identify {n} as composite"
+    print(f"is_prime() passed with true negatives for {len(carmichaels)} Carmichael numbers")
 
     for n in large_primes:
-        assert is_prime(n)
-    print(f"is_prime passed for {len(large_primes)} large primes")
+        assert is_prime(n), f"is_prime() failed to identify {n} as prime"
+    print(f"is_prime() passed for {len(large_primes)} large primes")
     ### End tests for is_prime
 
     ### Begin tests for generate_large_prime
     for x in range(3, 12):
         p = generate_prime(2 ** x - 1, 2 ** x)
-        assert is_prime(p)
-    print("generate_large_primes passed for primes up to 2048 bits in length")
+        assert is_prime(p), f"generate_prime() returned {p}, which is not prime"
+    print("generate_large_prime() passed for primes up to 2048 bits in length")
     ### End tests for generate_large_prime
 
 def is_prime(n):
@@ -111,10 +114,10 @@ def miller_rabin(n):
     """
     The Miller-Rabin primality test.
 
-    With a very high degree of probability, returns True if the supplied natural number (positive
-    integer) n is prime. The probability of a false positive is 1 - (2^-128); i.e., it is
-    infinitesimally small. Otherwise, if n is composite, this method will return False with
-    a probability of 1.
+    With a very high degree of probability, returns True if the supplied natural number
+    (positive integer) n is prime. The probability of a false positive is .5^128; i.e.,
+    it is infinitesimally small. Otherwise, if n is composite, this method will return
+    False with a probability of 1.
     """
     assert n >= 3 and n % 2 != 0,   "n must be an odd integer > 2"
 
@@ -150,6 +153,32 @@ def miller_rabin(n):
     # then n is prime with a 1-2^-128 degree of probability.
     return True
 
+def fermat(n):
+    """
+    The Fermat primality test.
+
+    With a very high degree of probability, returns True if the supplied natural number
+    (positive integer) n is prime. The probability of a false positive is .5^128; i.e.,
+    it is infinitesimally small. Otherwise, if n is composite, this method will return
+    False with a probability of 1.
+    """
+    # TODO This test shouldn't work on the Carmichaels; why does it???
+    assert n >= 3 and n % 2 != 0,   "n must be an odd integer > 2"
+
+    if n == 3:
+        return True
+
+    random.seed()
+
+    for _ in range(0, 128):
+        base = random.randrange(2, n - 1)
+        result = fast_mod_exp(base, n-1, n)
+        if result != 1:
+            #print(f"{base} ** {n-1} mod {n} = {result}")
+            return False
+
+    return True
+
 def factor_n(n):
     """
     Converts input n to the form 2^exp * mult + 1, where mult is the greatest odd
@@ -182,26 +211,6 @@ def fast_mod_exp(base, exp, n):
 
     return result
 
-def fermat(n):
-    """
-    The Fermat primality test.
-
-    Returns True if the the natural number n is prime; otherwise False. This test will,
-    however, falsely report as prime any of the so-called Carmichael numbers
-    (e.g. 561, 41041, 825265, ...) because such numbers, although they are composite,
-    satisfy the congruence relation a^n = a (mod n) for all 1 < a < n. The Miller-Rabin
-    test should therefore be preferred, because it accounts for the Carmichael numbers,
-    and therefore reports with a much higher degree of probability the primality of n.
-    """
-    assert n >= 3 and n % 2 != 0,   "n must be an odd integer > 2"
-
-    for i in range(1, n):
-        result = fast_mod_exp(i, n, n)
-        if result != i:
-            return False
-
-    return True
-
 def generate_prime(l, u):
     """
     Returns a prime number between l and u bits in length. The function randomly selects numbers
@@ -216,7 +225,7 @@ def generate_prime(l, u):
         if is_prime(p):
             return p
 
-    err_str = f"Unable to find a prime between {l} and {u} bits in {tries} random selections"
+    err_str = f"Failed to find a prime between {l} and {u} bits in {tries} random selections"
     raise Exception(err_str)
 
 if __name__ == "__main__":
