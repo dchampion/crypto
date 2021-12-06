@@ -5,8 +5,8 @@ import random
 import secrets
 import math
 
-small_primes =  [ 3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
-                 73, 79, 83, 83, 89, 97,101,103,107,109,113,127,131,137,139,149,151,157,163,
+small_primes =  [  3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
+                  73, 79, 83, 83, 89, 97,101,103,107,109,113,127,131,137,139,149,151,157,163,
                  167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,
                  271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,367,373,379,383,
                  389,397,401,409,419,421,431,433,439,443,449,457,461,463,467,479,487,491,499,
@@ -17,10 +17,16 @@ small_primes =  [ 3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59,
 
 odd_composites = [9,15,27,35,49,133,339,589,711,999,2**521+1,2**607+1]
 
-# Large Mersenne primes
+# Large (Mersenne) primes
 large_primes =  [2**521-1,2**607-1,2**1279-1,2**2203-1,2**2281-1]
 
-carmichaels =   [561,1105,1729,2465,2821,6601,8911,41041,62745,63973,825265]
+small_carmichaels = [561,1105,1729,2465,2821,6601,8911,41041,62745,63973,825265]
+
+large_carmichaels = [((6*925968953850065)+1)*((12*925968953850065)+1)*((18*925968953850065)+1),
+                     ((6*8522851273339146)+1)*((12*8522851273339146)+1)*((18*8522851273339146)+1),
+                     ((6*9510693751425636)+1)*((12*9510693751425636)+1)*((18*9510693751425636)+1),
+                     ((6*9510693751431925)+1)*((12*9510693751431925)+1)*((18*9510693751431925)+1),
+                     ((6*9510693751446670)+1)*((12*9510693751446670)+1)*((18*9510693751446670)+1)]
 
 def main():
     ### Begin tests for factor_n
@@ -38,7 +44,7 @@ def main():
     ### Begin tests for fast_mod_exp
     for _ in range(100):
         base = random.randrange(1000, 1000000)
-        exp = random.randrange(1000,1000000)
+        exp = random.randrange(1000, 1000000)
         n = random.randrange(1000, 1000000)
         assert fast_mod_exp(base, exp, n) == pow(base, exp, n), f"fast_mod_exp({base}, {exp}, {n}) failed"
     print("fast_mod_exp() passed for 100 large random inputs")
@@ -53,9 +59,13 @@ def main():
         assert not fermat(n), f"fermat() failed to identify {n} as composite"
     print(f"fermat() passed for {len(odd_composites)} odd composites")
 
-    for n in carmichaels:
+    for n in small_carmichaels:
         assert not fermat(n), f"fermat() failed to identify {n} as composite"
-    print(f"fermat() passed with true negatives for {len(carmichaels)} Carmichael numbers")
+    print(f"fermat() passed with true negatives for {len(small_carmichaels)} small Carmichael numbers")
+
+    for n in large_carmichaels:
+        assert fermat(n), f"fermat() failed to identify {n} as composite"
+    print(f"fermat() passed with false positives for {len(large_carmichaels)} large Carmichael numbers")
 
     for n in large_primes:
         assert fermat(n), f"fermat() failed to identify {n} as prime"
@@ -76,9 +86,13 @@ def main():
         assert not is_prime(n), f"is_prime() failed to identify {n} as composite"
     print(f"is_prime() passed for {len(odd_composites)} odd composites")
 
-    for n in carmichaels:
+    for n in small_carmichaels:
         assert not is_prime(n), f"is_prime() failed to identify {n} as composite"
-    print(f"is_prime() passed with true negatives for {len(carmichaels)} Carmichael numbers")
+    print(f"is_prime() passed with true negatives for {len(small_carmichaels)} small Carmichael numbers")
+
+    for n in large_carmichaels:
+        assert not is_prime(n), f"is_prime() failed to identify {n} as composite"
+    print(f"is_prime() passed with true negatives for {len(large_carmichaels)} large Carmichael numbers")
 
     for n in large_primes:
         assert is_prime(n), f"is_prime() failed to identify {n} as prime"
@@ -162,7 +176,6 @@ def fermat(n):
     it is infinitesimally small. Otherwise, if n is composite, this method will return
     False with a probability of 1.
     """
-    # TODO This test shouldn't work on the Carmichaels; why does it???
     assert n >= 3 and n % 2 != 0,   "n must be an odd integer > 2"
 
     if n == 3:
@@ -174,7 +187,6 @@ def fermat(n):
         base = random.randrange(2, n - 1)
         result = fast_mod_exp(base, n-1, n)
         if result != 1:
-            #print(f"{base} ** {n-1} mod {n} = {result}")
             return False
 
     return True
