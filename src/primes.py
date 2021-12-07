@@ -108,10 +108,11 @@ def main():
 
 def is_prime(n):
     """
-    Returns True if the supplied natural number (positive integer) n is prime. If n < 1000, the
-    probability of a correct answer is 1 (that is, this function is deterministic). If n > 1000,
-    the probability of an incorrect answer, or false-positive, is 1 - (2^-128); i.e., it is
-    infinitesimally small.
+    Returns True if the supplied natural number (positive integer) n is prime, or
+    False if it is composite. If n < 1000, the probability of a correct answer is
+    1 (that is, this function is deterministic). If n > 1000, the probability this
+    function will return an incorrect answer, or false positive, is .5^-128; i.e.,
+    it is infinitesimally small.
     """
     assert n >= 3 and n % 2 != 0,   "n must be an odd integer > 2"
 
@@ -130,9 +131,10 @@ def miller_rabin(n):
     The Miller-Rabin primality test.
 
     With a very high degree of probability, returns True if the supplied natural number
-    (positive integer) n is prime. The probability of a false positive is .5^128; i.e.,
-    it is infinitesimally small. Otherwise, if n is composite, this method will return
-    False with a probability of 1.
+    (positive integer) n is prime. The probability of a false positive (i.e., that this
+    function will return True if in fact n is composite) is .5^128; i.e., it is
+    infinitesimally small. Otherwise, if n is composite, this method will return False
+    with a probability of 1.
     """
     assert n >= 3 and n % 2 != 0,   "n must be an odd integer > 2"
 
@@ -173,11 +175,13 @@ def fermat(n):
     The Fermat primality test.
 
     With a very high degree of probability, returns True if the supplied natural number
-    (positive integer) n is prime, or False if n is composite. The probability of a
-    false positive is .5^128; i.e., it is infinitesimally small, *unless* n happens
-    to be a Carmichael number with very large prime factors (there are not many of
-    these, but they do exist). Because of this, the Miller-Rabin test, which accounts
-    for large Carmichael numbers, should be preferred to this one.
+    (positive integer) n is prime, or False if it is composite. The probability of a
+    false positive (i.e., that this function will return True if in fact n is composite)
+    is .5^128; i.e., it is infinitesimally small. However, if n happens to be a Carmichael
+    number, in particular one with very large prime factors, this function will very likely
+    return True, even though n is composite. While Carmichael numbers of this sort are rare,
+    they do exist. Because of this, the Miller-Rabin test, which controls for them, should
+    be preferred.
     """
     assert n >= 3 and n % 2 != 0,   "n must be an odd integer > 2"
 
@@ -228,10 +232,10 @@ def fast_mod_exp(base, exp, n):
 
 def generate_prime(l, u):
     """
-    Returns a prime number between l and u bits in length. The function randomly selects numbers
-    in the range 2^l to 2^u and tests them for primality. If a prime is not found in a sensible
-    number of tries, an exception is raised (this should be rare), in which case the function can
-    be tried again.
+    Returns a prime number between l and u bits in length. The function selects random values
+    in the range 2^l to 2^u and tests them for primality. If a prime is not found after a sensible
+    number of tries, an exception is raised (this should be rare), in which case the function
+    should be called again.
     """
     secure_random = secrets.SystemRandom()
     tries = 100 * math.floor(math.log2(u)+1)
@@ -240,7 +244,7 @@ def generate_prime(l, u):
         if is_prime(p):
             return p
 
-    err_str = f"Failed to find a prime between {l} and {u} bits in {tries} random selections"
+    err_str = f"Failed to find a prime between {l} and {u} bits after {tries} random selections"
     raise Exception(err_str)
 
 if __name__ == "__main__":
