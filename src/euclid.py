@@ -155,6 +155,12 @@ def gcdx(a, b):
 
     return gcd, x, y
 
+def lcm(a, b):
+    """ Returns the least common multiple (or lcm) of a and b. """
+    assert a >= 0 and b >= 0
+
+    return (a*b) / gcd(a, b)
+
 def inverse(a, b):
     """
     Returns the modular multiplicative inverse of a modulo b;
