@@ -238,7 +238,7 @@ def generate_prime(l, u):
     should be called again.
     """
     secure_random = secrets.SystemRandom()
-    tries = 100 * math.floor(math.log2(u)+1)
+    tries = 100 * math.floor(math.log2(2**u)+1)
     for _ in range(tries):
         p = secure_random.randrange(2**l, 2**u) | 1
         if is_prime(p):
