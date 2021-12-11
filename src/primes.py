@@ -31,6 +31,7 @@ large_carmichaels = [((6*925968953850065)+1)*((12*925968953850065)+1)*((18*92596
 secure_random = secrets.SystemRandom()
 
 def main():
+    print("Running tests...")
     ### Begin tests for factor_n
     for n in small_primes:
         mult, exp = factor_n(n)
@@ -103,7 +104,8 @@ def main():
 
     ### Begin tests for generate_large_prime
     for x in range(3, 12):
-        p = generate_prime(2 ** x - 1, 2 ** x)
+        p = generate_prime(2**x)
+        assert p.bit_length() == 2**x, f"expected bit length {2**x}, got {p.bit_length()}"
         assert is_prime(p), f"generate_prime() returned {p}, which is not prime"
     print("generate_large_prime() passed for primes up to 2048 bits in length")
     ### End tests for generate_large_prime
@@ -238,22 +240,20 @@ def fast_mod_exp(base, exp, n):
 
     return result
 
-def generate_prime(l, u):
+def generate_prime(bit_len):
     """
-    Returns a prime number between l and u bits in length. The function selects random values
-    in the range 2^l to 2^u and tests them for primality. If a prime is not found after a sensible
-    number of tries, an exception is raised (this should be rare), in which case the function
-    should be called again.
+    Returns a prime number of bit_len bits in length. The function selects random values in the
+    range 2**bit_len-1 to 2**bit_len, and tests them for primality. If a prime is not found after
+    a sensible number of tries, an exception is raised (this should be rare), in which case the
+    function should be called again.
     """
-    assert l < u, "Lower bound l must be less than upper bound u"
-
-    tries = 100 * math.floor(math.log2(2**u)+1)
+    tries = 100 * math.floor(math.log2(2**bit_len)+1)
     for _ in range(tries):
-        p = secure_random.randrange(2**l, 2**u) | 1
+        p = secure_random.randrange(2**(bit_len-1), 2**bit_len) | 1
         if is_prime(p):
             return p
 
-    err_str = f"Failed to find a prime between {l} and {u} bits after {tries} random selections"
+    err_str = f"Failed to find a {bit_len}-bit prime in {tries} random selections"
     raise Exception(err_str)
 
 if __name__ == "__main__":
