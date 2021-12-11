@@ -1,6 +1,7 @@
 
 """ Implementations of the simple and extended Euclidean algorithms. """
 def main():
+    print("Running tests...")
     ### Begin tests for swap
     a, b = swap(1,2)
     assert b > a, f"expected {b} > {a}, got {a} > {b}"
