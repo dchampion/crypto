@@ -28,6 +28,8 @@ large_carmichaels = [((6*925968953850065)+1)*((12*925968953850065)+1)*((18*92596
                      ((6*9510693751431925)+1)*((12*9510693751431925)+1)*((18*9510693751431925)+1),
                      ((6*9510693751446670)+1)*((12*9510693751446670)+1)*((18*9510693751446670)+1)]
 
+secure_random = secrets.SystemRandom()
+
 def main():
     ### Begin tests for factor_n
     for n in small_primes:
@@ -114,7 +116,13 @@ def is_prime(n):
     function will return an incorrect answer, or false positive, is .5^-128; i.e.,
     it is infinitesimally small.
     """
-    assert n >= 3 and n % 2 != 0,   "n must be an odd integer > 2"
+    assert n > 1,   "n must be greater than 1"
+
+    # Handle most trivial cases.
+    if n == 2:
+        return True
+    elif n % 2 == 0:
+        return False
 
     # Before doing any heavy lifting, return True for an n that matches any of the first 168
     # primes (up to 1k). Any multiples thereof are composites, and should therefore also fall
@@ -237,7 +245,8 @@ def generate_prime(l, u):
     number of tries, an exception is raised (this should be rare), in which case the function
     should be called again.
     """
-    secure_random = secrets.SystemRandom()
+    assert l < u, "Lower bound l must be less than upper bound u"
+
     tries = 100 * math.floor(math.log2(2**u)+1)
     for _ in range(tries):
         p = secure_random.randrange(2**l, 2**u) | 1
