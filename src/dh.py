@@ -31,45 +31,42 @@ def main():
 
 def generate_parameters(p_bit_len):
     """
-    Returns the domain (i.e., public) parameters p (the modulus), q (the subgroup
-    from which private exponents are selected and g (the generator of the subgroup)
-    to set up symmetric key agreement between 2 parties.
+    Returns the domain (i.e., public) parameters of the Diffie-Hellman setup.
+    These are p, the modulus; q, the order (size) of the the only non-trivial
+    subgroup of p; and g, a generator of that subgroup.
     """
     assert p_bit_len >= min_p_bit_len, f"Modulus p bit-length must be >= {min_p_bit_len}"
 
-    # Generate a 256-bit prime, which is the upper bound of the subgroup to which
-    # all powers of the generator g will belong (and the subgroup from which
-    # parties will select private exponents).
+    # Generate q; a 256-bit prime which is the order of the only non-trivial
+    # subgroup of p.
     q = primes.generate_prime(q_bit_len)
     
     # Find an n and p satisfying the equation p = q*n+1, where p is prime, and
-    # the only non-trivial subgroup of p-1 is of size q, and consists of the elements
-    # 1, ..., q-1.
+    # the only non-trivial subgroup of p is of order q.
     n, p = generate_p(q, p_bit_len)
     
-    # Find a generator g that generates all elements of the subgroup 1, ..., q-1.
+    # Find a generator g that generates all elements of the subgroup of order q.
     g = generate_g(q, n, p)
 
-    # Return the public parameters to be used by both parties for the DH setup.
     return p, q, g
 
 def generate_p(q, p_bit_len):
     """
     Return the numbers p and n that satisfy the equation p = q*n+1, where p is prime,
-    and the only non-trivial subgroup of p-1 is the size of q (the trivial subgroups
-    being a) the subgroup containing the number 1, b) the subgroup consisting of 1 and
-    p-1 and c) the full group of size q*n). It is to this non-trivial subgroup that any
-    public parameter that is a power of the generator g (e.g. public keys) will belong.
-    Since q is prime, it has no non-trivial subgroups.
+    and the only non-trivial subgroup of p is the order (size) of q (the trivial
+    subgroups being a) the subgroup containing just the number 1, b) the subgroup
+    consisting of 1 and p-1 and c) the full group of size q*n). Since q is prime,
+    q itself has no non-trivial subgroups.
     """
-    # Compute lower and upper bounds from which to select a random n.
+    # Compute bounds from which to select a random n.
     n_bit_len = p_bit_len - q.bit_length()
     l, u = 2**(n_bit_len-1), 2**n_bit_len
 
-    tries = 100 * math.floor(math.log2(u)+1)
+    tries = 100 * math.floor(math.log2(u)+1) # TODO: Find a better estimate for tries.
     for _ in range(tries):
         while True:
-            # Don't bother if n is not even (because if it is not, then p cannot be odd).
+            # Don't bother if n is not even, because if it is not, then p cannot be odd
+            # (and even numbers can't be prime).
             n = secure_random.randrange(l, u)
             if n % 2 == 0:
                 break
@@ -85,20 +82,22 @@ def generate_p(q, p_bit_len):
 
 def generate_g(q, n, p):
     """
-    Returns a generator g, which is a primitive root of the group 1, ..., q-1;
-    that is, it generates every member of the group.
+    Returns a generator g, which generates the entire subgroup of p which is the order
+    (size) of q.
     """
     while True:
         a = secure_random.randrange(2, p-2)
         g = primes.fast_mod_exp(a, n, p)
-        if g != 1 and primes.fast_mod_exp(g, q, p) == 1:
+        #x = primes.fast_mod_exp(g, q, p)
+        #assert x == 1
+        if g != 1: #and primes.fast_mod_exp(g, q, p) == 1: # TODO: Should always be 1, right?
             break
 
     return g
 
 def generate_keypair(g, q, p):
     """
-    Returns a private key k_priv randomly selected from the group 1, ..., q-1, and
+    Returns a private key k_priv randomly selected from the set (1, ..., q-1), and
     a public key of the form g**k_priv % p.
     """
     k_priv = secure_random.randrange(1, q-1)
@@ -106,19 +105,19 @@ def generate_keypair(g, q, p):
 
 def validate_pub_key(k, q, p):
     """
-    Validates the public key.
+    Validates the public key k.
     """
     assert 1 < k < p, f"Public key is out of range"
     assert primes.fast_mod_exp(k, q, p) == 1, f"public key is invalid"
 
 def validate_parameters(p, q, g):
     """
-    Validates the public parameters.
+    Validates the public parameters p, q and g.
     """
     assert p.bit_length() >= min_p_bit_len, f"p.bit_length() {p.bit_length()} \
-        is less than min_p_bit_len {min_p_bit_len}"
+is less than min_p_bit_len {min_p_bit_len}"
     assert q.bit_length() == q_bit_len, f"q.bit_length() {q.bit_length()} does \
-        not equal q_bit_len {q_bit_len}"
+not equal q_bit_len {q_bit_len}"
     assert primes.is_prime(p), f"p is not prime"
     assert primes.is_prime(q), f"q is not prime"
     assert (p - 1) % q == 0, f"q is not a divisor of p-1"
