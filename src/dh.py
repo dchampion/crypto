@@ -33,19 +33,20 @@ def generate_parameters(p_bit_len):
     """
     Returns the domain (i.e., public) parameters of the Diffie-Hellman setup.
     These are p, the modulus; q, the order (size) of the the only non-trivial
-    subgroup of p; and g, a generator of that subgroup.
+    subgroup modulo p; and g, a generator of that subgroup.
     """
     assert p_bit_len >= min_p_bit_len, f"Modulus p bit-length must be >= {min_p_bit_len}"
 
     # Generate q; a 256-bit prime which is the order of the only non-trivial
-    # subgroup of p.
+    # subgroup modulo p.
     q = primes.generate_prime(q_bit_len)
     
     # Find an n and p satisfying the equation p = q*n+1, where p is prime, and
-    # the only non-trivial subgroup of p is of order q.
+    # the only non-trivial subgroup modulo p is of order q.
     n, p = generate_p(q, p_bit_len)
     
-    # Find a generator g that generates all elements of the subgroup of order q.
+    # Find a generator g that generates all elements of the subgroup modulo p
+    # of order q.
     g = generate_g(q, n, p)
 
     return p, q, g
@@ -82,15 +83,15 @@ def generate_p(q, p_bit_len):
 
 def generate_g(q, n, p):
     """
-    Returns a generator g, which generates the entire subgroup of p which is the order
-    (size) of q.
+    Returns a generator g that generates the entire subgroup modulo p of order (size) q.
     """
     while True:
         a = secure_random.randrange(2, p-2)
         g = primes.fast_mod_exp(a, n, p)
         #x = primes.fast_mod_exp(g, q, p)
         #assert x == 1
-        if g != 1: #and primes.fast_mod_exp(g, q, p) == 1: # TODO: Should always be 1, right?
+        # TODO: Should always be 1, right?
+        if g != 1: # and primes.fast_mod_exp(g, q, p) == 1:
             break
 
     return g
@@ -121,8 +122,8 @@ not equal q_bit_len {q_bit_len}"
     assert primes.is_prime(p), f"p is not prime"
     assert primes.is_prime(q), f"q is not prime"
     assert (p - 1) % q == 0, f"q is not a divisor of p-1"
-    # TODO Make sure second test is not an unnecessary duplicate of the previous assert.
-    assert g != 1 and primes.fast_mod_exp(g, q, p) == 1, f"g has illegal value"
+    assert g != 1, f"g has illegal value"
+    #assert primes.fast_mod_exp(g, q, p) == 1, f"g has illegal value"
 
 if __name__ == '__main__':
     main()
