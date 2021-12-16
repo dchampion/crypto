@@ -2,7 +2,7 @@
 import primes
 import secrets
 import math
-import time
+import hashlib
 
 q_bit_len = 256
 min_p_bit_len = 2048
@@ -24,9 +24,11 @@ def main():
 
     k_secret1 = primes.fast_mod_exp(k_pub_2, k_priv_1, p)
     k_secret2 = primes.fast_mod_exp(k_pub_1, k_priv_2, p)
-
-    # Keys should be hashed (see 14.6)
     assert k_secret1 == k_secret2, "Secrets don't match"
+
+    k_hashed1 = hash_key(k_secret1)
+    k_hashed2 = hash_key(k_secret2)
+    assert k_hashed1 == k_hashed2, "Hashed secrets don't match"
     print("Secrets match; all tests passed")
 
 def generate_parameters(p_bit_len):
@@ -103,6 +105,12 @@ def generate_keypair(g, q, p):
     """
     k_priv = secure_random.randrange(1, q-1)
     return k_priv, primes.fast_mod_exp(g, k_priv, p)
+
+def hash_key(k):
+    """
+    Returns the input k (a large integer key) as a hashed byte array.
+    """
+    return hashlib.sha256(str(k).encode()).digest()
 
 def validate_pub_key(k, q, p):
     """
