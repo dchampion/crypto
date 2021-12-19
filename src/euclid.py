@@ -47,6 +47,34 @@ def main():
     print("gcd tests passed")
     ### End tests for gcd
 
+    ### Begin tests for _gcd
+    a = _gcd(7,60)
+    assert a == 1, f"expected 1, got {a}"
+
+    a = _gcd(60,7)
+    assert a == 1, f"expected 1, got {a}"
+
+    a = _gcd(3,26)
+    assert a == 1, f"expected 1, got {a}"
+
+    a = _gcd(26,3)
+    assert a == 1, f"expected 1, got {a}"
+
+    a = _gcd(7,997)
+    assert a == 1, f"expected 1, got {a}"
+
+    a = _gcd(997,7)
+    assert a == 1, f"expected 1, got {a}"
+
+    a = _gcd(8,60)
+    assert a == 4, f"expected 4, got {a}"
+
+    a = _gcd(60,8)
+    assert a == 4, f"expected 4, got {a}"
+
+    print("_gcd tests passed")
+    ### End tests for _gcd
+
     ### Begin tests for gcdx
     a, x, y = gcdx(7,60)
     assert a == 1,   f"expected 1, got {a}"
@@ -90,6 +118,50 @@ def main():
 
     print("gcdx tests passed")
     ### End tests for gcdx
+
+    ### Begin tests for _gcdx
+    a, x, y = _gcdx(7,60)
+    assert a == 1,   f"expected 1, got {a}"
+    assert x == -17, f"expected -17, got {x}"
+    assert y == 2,   f"expected 2, got {y}"
+
+    a, x, y = _gcdx(60,7)
+    assert a == 1,   f"expected 1, got {a}"
+    assert x == -17, f"expected -17, got {x}"
+    assert y == 2,   f"expected 2, got {y}"
+
+    a, x, y = _gcdx(3,26)
+    assert a == 1,   f"expected 1, got {a}"
+    assert x == 9,   f"expected 9, got {x}"
+    assert y == -1,  f"expected -1, got {y}"
+
+    a, x, y = _gcdx(26,3)
+    assert a == 1,   f"expected 1, got {a}"
+    assert x == 9,   f"expected 9, got {x}"
+    assert y == -1,  f"expected -1, got {y}"
+
+    a, x, y = _gcdx(7,997)
+    assert a == 1,   f"expected 1, got {a}"
+    assert x == 285, f"expected 285, got {x}"
+    assert y == -2,  f"expected -2, got {y}"
+
+    a, x, y = _gcdx(997,7)
+    assert a == 1,   f"expected 1, got {a}"
+    assert x == 285, f"expected 285, got {x}"
+    assert y == -2,  f"expected -2, got {y}"
+
+    a, x, y = _gcdx(8,60)
+    assert a == 4,  f"expected 4, got {a}"
+    assert x == -7, f"expected -7, got {x}"
+    assert y == 1,  f"expected 1, got {y}"
+
+    a, x, y = _gcdx(60,8)
+    assert a == 4,  f"expected 4, got {a}"
+    assert x == -7, f"expected -7, got {x}"
+    assert y == 1,  f"expected 1, got {y}"
+
+    print("_gcdx tests passed")
+    ### End tests for _gcdx
 
     ### Begin tests for lcm
     assert lcm(9,2) == math.lcm(9,2), f"expected {math.lcm(9,2)}, got {lcm(9,2)}"
@@ -143,7 +215,22 @@ def swap(a, b):
 
 def gcd(a, b):
     """ Returns the greatest common divisor (or gcd) of a and b. """
-    
+
+    assert a >= 0 and b >= 0
+
+    while b != 0:
+        a, b = swap(a, b)
+        b = b % a
+
+    return a
+
+def _gcd(a, b):
+    """
+    Returns the greatest common divisor (or gcd) of a and b. Note
+    this function uses recursion, which can cause stack overflow if
+    its inputs a and/or b are too large. A safer alternative is to
+    use gcd(a,b) instead.
+    """
     assert a >= 0 and b >= 0
 
     if b == 0:
@@ -158,6 +245,36 @@ def gcdx(a, b):
     Returns the greatest common divisor (or gcd) of a and b, and the
     x and y solutions for the relation ax = bx = gcd(a,b) (see Bezout's
     identity).
+    """
+    assert a >= 0 and b >= 0
+
+    a, b = swap(a, b)
+
+    a1, b1, x1, y1 = 1, 0, 1, 0
+    while b != 0:
+        q = a // b
+        temp = b
+
+        b = a - q * b
+        a = temp
+
+        temp = a1
+        a1 = y1 - q * a1
+        y1 = temp
+
+        temp = b1
+        b1 = x1 - q * b1
+        x1 = temp
+
+    return a, x1, y1
+
+def _gcdx(a, b):
+    """
+    Returns the greatest common divisor (or gcd) of a and b, and the
+    x and y solutions for the relation ax = bx = gcd(a,b) (see Bezout's
+    identity). Note this function uses recursion, which can cause stack
+    overflow if its inputs a and/or b are too large. A safer alternative
+    is to use gcdx(a,b) instead.
     """
     assert a >= 0 and b >= 0
 
