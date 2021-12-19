@@ -56,7 +56,7 @@ def generate_parameters(p_bit_len):
 def generate_p(q, p_bit_len):
     """
     Return the numbers p and n that satisfy the equation p = q*n+1, where p is prime,
-    and the only non-trivial subgroup of p is the order (size) of q (the trivial
+    and the only non-trivial subgroup modulo p is the order (size) of q (the trivial
     subgroups being a) the subgroup containing just the number 1, b) the subgroup
     consisting of 1 and p-1 and c) the full group of size q*n). Since q is prime,
     q itself has no non-trivial subgroups.
