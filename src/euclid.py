@@ -1,5 +1,6 @@
-
 """ Implementations of the simple and extended Euclidean algorithms. """
+import math
+
 def main():
     print("Running tests...")
     ### Begin tests for swap
@@ -15,7 +16,7 @@ def main():
     a, b = swap(2,2)
     assert b == a, f"expected {a} == {b}, got {a} != {b}"
     
-    print("swap passed")
+    print("swap tests passed")
     ### End tests for swap
 
     ### Begin tests for gcd
@@ -43,7 +44,7 @@ def main():
     a = gcd(60,8)
     assert a == 4, f"expected 4, got {a}"
 
-    print("gcd passed")
+    print("gcd tests passed")
     ### End tests for gcd
 
     ### Begin tests for gcdx
@@ -87,8 +88,24 @@ def main():
     assert x == -7, f"expected -7, got {x}"
     assert y == 1,  f"expected 1, got {y}"
 
-    print("gcdx passed")
+    print("gcdx tests passed")
     ### End tests for gcdx
+
+    ### Begin tests for lcm
+    assert lcm(9,2) == math.lcm(9,2), f"expected {math.lcm(9,2)}, got {lcm(9,2)}"
+    assert lcm(2,9) == math.lcm(2,9), f"expected {math.lcm(2,9)}, got {lcm(2,9)}"
+    assert lcm(2,9) == math.lcm(9,2), f"expected {math.lcm(9,2)}, got {lcm(2,9)}"
+    assert lcm(9,2) == math.lcm(2,9), f"expected {math.lcm(9,2)}, got {lcm(9,2)}"
+    assert lcm(887083423,3499734995) == math.lcm(887083423,3499734995),\
+        f"expected {math.lcm(887083423,3499734995)}, got {lcm(887083423,3499734995)}"
+    assert lcm(3499734995,887083423) == math.lcm(3499734995,887083423),\
+        f"expected {math.lcm(3499734995,887083423)}, got {lcm(3499734995,887083423)}"
+    assert lcm(3499734995,887083423) == math.lcm(887083423,3499734995),\
+        f"expected {math.lcm(887083423,3499734995)}, got {lcm(3499734995,887083423)}"
+    assert lcm(887083423,3499734995) == math.lcm(3499734995,887083423),\
+        f"expected {math.lcm(3499734995,887083423)}, got {lcm(887083423,3499734995)}"
+    print("lcm tests passed")
+    ### End tests for lcm
 
     ### Begin tests for inverse
     a = inverse(60,7)
@@ -115,7 +132,7 @@ def main():
     except Exception as e:
         print(e)
 
-    print("inverse passed")
+    print("inverse tests passed")
     ### End tests for inverse
 
 def swap(a, b):
@@ -160,7 +177,7 @@ def lcm(a, b):
     """ Returns the least common multiple (or lcm) of a and b. """
     assert a >= 0 and b >= 0
 
-    return (a*b) / gcd(a, b)
+    return (a*b) // gcd(a, b)
 
 def inverse(a, b):
     """
