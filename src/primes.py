@@ -36,71 +36,73 @@ def main():
     ### Begin tests for factor_n
     for n in small_primes:
         mult, exp = factor_n(n)
-        assert (2 ** exp) * mult == n - 1, f"factor_n() failed to factor {n} into {mult} and {exp}"
-    print(f"factor_n() passed for all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}")
+        assert (2 ** exp) * mult == n - 1, f"factor_n failed to factor {n} into {mult} and {exp}"
+    print(f"factor_n passed for all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}")
 
     for n in large_primes:
         mult, exp = factor_n(n)
-        assert (2 ** exp) * mult == n - 1, f"factor_n() failed to factor {n} into {mult} and {exp}"
-    print(f"factor_n() passed for {len(large_primes)} large primes")
+        assert (2 ** exp) * mult == n - 1, f"factor_n failed to factor {n} into {mult} and {exp}"
+    print(f"factor_n passed for {len(large_primes)} large primes")
     ### End tests for factor_n
 
     ### Begin tests for fermat
     for n in small_primes:
-        assert fermat(n), f"fermat() failed to identify {n} as prime"
-    print(f"fermat() passed for all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}")
+        assert fermat(n), f"fermat failed to identify {n} as prime"
+    print(f"fermat passed for all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}")
 
     for n in odd_composites:
-        assert not fermat(n), f"fermat() failed to identify {n} as composite"
-    print(f"fermat() passed for {len(odd_composites)} odd composites")
+        assert not fermat(n), f"fermat failed to identify {n} as composite"
+    print(f"fermat passed for {len(odd_composites)} odd composites")
 
     for n in small_carmichaels:
-        assert not fermat(n), f"fermat() failed to identify {n} as composite"
-    print(f"fermat() passed with true negatives for {len(small_carmichaels)} small Carmichael numbers")
+        assert not fermat(n), f"fermat failed to identify {n} as composite"
+    print(f"fermat passed with true negatives for {len(small_carmichaels)} small Carmichael numbers")
 
     for n in large_carmichaels:
-        assert fermat(n), f"fermat() failed to identify {n} as composite"
-    print(f"fermat() passed with false positives for {len(large_carmichaels)} large Carmichael numbers")
+        assert fermat(n), f"fermat failed to identify {n} as composite"
+    print(f"fermat passed with false positives for {len(large_carmichaels)} large Carmichael numbers")
 
     for n in large_primes:
-        assert fermat(n), f"fermat() failed to identify {n} as prime"
-    print(f"fermat() passed for {len(large_primes)} large primes")
+        assert fermat(n), f"fermat failed to identify {n} as prime"
+    print(f"fermat passed for {len(large_primes)} large primes")
     ### End tests for fermat
 
     ### Begin tests for is_prime
     for n in small_primes:
-        assert is_prime(n), f"is_prime() failed to identify {n} as prime"
-    print(f"is_prime() passed for all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}")
+        assert is_prime(n), f"is_prime failed to identify {n} as prime"
+    print(f"is_prime passed for all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}")
 
     for n in small_primes:
         n = n ** 2
-        assert not is_prime(n), f"is_prime() failed to identify {n} as composite"
-    print(f"is_prime() passed for the squares of all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}")
+        assert not is_prime(n), f"is_prime failed to identify {n} as composite"
+    print(f"is_prime passed for the squares of all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}")
 
     for n in odd_composites:
-        assert not is_prime(n), f"is_prime() failed to identify {n} as composite"
-    print(f"is_prime() passed for {len(odd_composites)} odd composites")
+        assert not is_prime(n), f"is_prime failed to identify {n} as composite"
+    print(f"is_prime passed for {len(odd_composites)} odd composites")
 
     for n in small_carmichaels:
-        assert not is_prime(n), f"is_prime() failed to identify {n} as composite"
-    print(f"is_prime() passed with true negatives for {len(small_carmichaels)} small Carmichael numbers")
+        assert not is_prime(n), f"is_prime failed to identify {n} as composite"
+    print(f"is_prime passed with true negatives for {len(small_carmichaels)} small Carmichael numbers")
 
     for n in large_carmichaels:
-        assert not is_prime(n), f"is_prime() failed to identify {n} as composite"
-    print(f"is_prime() passed with true negatives for {len(large_carmichaels)} large Carmichael numbers")
+        assert not is_prime(n), f"is_prime failed to identify {n} as composite"
+    print(f"is_prime passed with true negatives for {len(large_carmichaels)} large Carmichael numbers")
 
     for n in large_primes:
-        assert is_prime(n), f"is_prime() failed to identify {n} as prime"
-    print(f"is_prime() passed for {len(large_primes)} large primes")
+        assert is_prime(n), f"is_prime failed to identify {n} as prime"
+    print(f"is_prime passed for {len(large_primes)} large primes")
     ### End tests for is_prime
 
     ### Begin tests for generate_large_prime
     for x in range(3, 12):
         p = generate_prime(2**x)
         assert p.bit_length() == 2**x, f"expected bit length {2**x}, got {p.bit_length()}"
-        assert is_prime(p), f"generate_prime() returned {p}, which is not prime"
-    print("generate_large_prime() passed for primes up to 2048 bits in length")
+        assert is_prime(p), f"generate_prime returned {p}, which is not prime"
+    print("generate_large_prime passed for primes up to 2048 bits in length")
     ### End tests for generate_large_prime
+
+    print("all tests passed")
 
 def is_prime(n):
     """

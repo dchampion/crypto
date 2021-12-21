@@ -13,15 +13,15 @@ def main():
     print("Running tests...")
     p, q, g = generate_parameters(2048)
     validate_parameters(p, q, g)
-    print("validate_parameters() passed")
+    print("validate_parameters passed")
     
     k_priv_1, k_pub_1 = generate_keypair(g, q, p)
     validate_pub_key(k_pub_1, q, p)
-    print("validate_pub_key() 1 passed")
+    print("validate_pub_key 1 passed")
 
     k_priv_2, k_pub_2 = generate_keypair(g, q, p)
     validate_pub_key(k_pub_2, q, p)
-    print("validate_pub_key() 2 passed")
+    print("validate_pub_key 2 passed")
 
     k_secret1 = util.fast_mod_exp(k_pub_2, k_priv_1, p)
     k_secret2 = util.fast_mod_exp(k_pub_1, k_priv_2, p)
@@ -30,7 +30,8 @@ def main():
     k_hashed1 = hash_key(k_secret1)
     k_hashed2 = hash_key(k_secret2)
     assert k_hashed1 == k_hashed2, "Hashed secrets don't match"
-    print("Secrets match")
+    print("secrets match")
+
     print("all tests passed")
 
 def generate_parameters(p_bit_len):

@@ -1,7 +1,7 @@
 """ Crypto helper functions """
 import random
 import euclid
-import primes
+import primes # Remove this circular dependency
 
 def main():
     print("Running tests...")
@@ -24,7 +24,7 @@ def main():
         n = random.randrange(1000, 1000000)
         assert fast_mod_exp(b, e, n) == pow(b, e, n),\
             f"fast_mod_exp({b}, {e}, {n}) failed"
-    print("fast_mod_exp() passed for 100 large random inputs")
+    print("fast_mod_exp passed for 100 large random inputs")
     ### End tests for fast_mod_exp
 
     ### Begin tests for fast_mod_exp_crt
@@ -38,6 +38,7 @@ def main():
             f"fast_mod_exp_crt({b}, {e}, {p}, {q}) failed"
     print("fast_mod_exp_crt passed for 10 random inputs")
     ### End tests for fast_mod_exp_crt
+
     print("all tests passed")
 
 def fast_mod_exp(b, e, n):

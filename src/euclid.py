@@ -207,6 +207,8 @@ def main():
     print("inverse tests passed")
     ### End tests for inverse
 
+    print("all tests passed")
+
 def swap(a, b):
     """ Returns a and b in increasing order from left-to-right. """
     if a > b:
@@ -305,7 +307,7 @@ def inverse(a, b):
 
     gcd, x, y = gcdx(a, b)
     if gcd != 1:
-        err_str = f"{a} has no inverse modulo {b}."
+        err_str = "a has no inverse modulo b"
         raise Exception(err_str)
     
     inverse = x if a < b else y
