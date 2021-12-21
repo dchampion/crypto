@@ -3,6 +3,7 @@ import primes
 import secrets
 import math
 import hashlib
+import util
 
 q_bit_len = 256
 min_p_bit_len = 2048
@@ -22,14 +23,15 @@ def main():
     validate_pub_key(k_pub_2, q, p)
     print("validate_pub_key() 2 passed")
 
-    k_secret1 = primes.fast_mod_exp(k_pub_2, k_priv_1, p)
-    k_secret2 = primes.fast_mod_exp(k_pub_1, k_priv_2, p)
+    k_secret1 = util.fast_mod_exp(k_pub_2, k_priv_1, p)
+    k_secret2 = util.fast_mod_exp(k_pub_1, k_priv_2, p)
     assert k_secret1 == k_secret2, "Secrets don't match"
 
     k_hashed1 = hash_key(k_secret1)
     k_hashed2 = hash_key(k_secret2)
     assert k_hashed1 == k_hashed2, "Hashed secrets don't match"
-    print("Secrets match; all tests passed")
+    print("Secrets match")
+    print("all tests passed")
 
 def generate_parameters(p_bit_len):
     """
@@ -89,11 +91,11 @@ def generate_g(q, n, p):
     """
     while True:
         a = secure_random.randrange(2, p-2)
-        g = primes.fast_mod_exp(a, n, p)
-        #x = primes.fast_mod_exp(g, q, p)
+        g = util.fast_mod_exp(a, n, p)
+        #x = util.fast_mod_exp(g, q, p)
         #assert x == 1
         # TODO: Should always be 1, right?
-        if g != 1: # and primes.fast_mod_exp(g, q, p) == 1:
+        if g != 1: # and util.fast_mod_exp(g, q, p) == 1:
             break
 
     return g
@@ -104,7 +106,7 @@ def generate_keypair(g, q, p):
     a public key of the form g**k_priv % p.
     """
     k_priv = secure_random.randrange(1, q-1)
-    return k_priv, primes.fast_mod_exp(g, k_priv, p)
+    return k_priv, util.fast_mod_exp(g, k_priv, p)
 
 def hash_key(k):
     """
@@ -117,7 +119,7 @@ def validate_pub_key(k, q, p):
     Validates the public key k.
     """
     assert 1 < k < p, f"Public key is out of range"
-    assert primes.fast_mod_exp(k, q, p) == 1, f"public key is invalid"
+    assert util.fast_mod_exp(k, q, p) == 1, f"public key is invalid"
 
 def validate_parameters(p, q, g):
     """
@@ -131,7 +133,7 @@ not equal q_bit_len {q_bit_len}"
     assert primes.is_prime(q), f"q is not prime"
     assert (p - 1) % q == 0, f"q is not a divisor of p-1"
     assert g != 1, f"g has illegal value"
-    #assert primes.fast_mod_exp(g, q, p) == 1, f"g has illegal value"
+    #assert util.fast_mod_exp(g, q, p) == 1, f"g has illegal value"
 
 if __name__ == '__main__':
     main()

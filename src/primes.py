@@ -4,6 +4,7 @@ Various functions for generating large random numbers and testing them for prima
 import random
 import secrets
 import math
+import util
 
 small_primes =  [  3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
                   73, 79, 83, 83, 89, 97,101,103,107,109,113,127,131,137,139,149,151,157,163,
@@ -43,15 +44,6 @@ def main():
         assert (2 ** exp) * mult == n - 1, f"factor_n() failed to factor {n} into {mult} and {exp}"
     print(f"factor_n() passed for {len(large_primes)} large primes")
     ### End tests for factor_n
-
-    ### Begin tests for fast_mod_exp
-    for _ in range(100):
-        base = random.randrange(1000, 1000000)
-        exp = random.randrange(1000, 1000000)
-        n = random.randrange(1000, 1000000)
-        assert fast_mod_exp(base, exp, n) == pow(base, exp, n), f"fast_mod_exp({base}, {exp}, {n}) failed"
-    print("fast_mod_exp() passed for 100 large random inputs")
-    ### End tests for fast_mod_exp
 
     ### Begin tests for fermat
     for n in small_primes:
@@ -161,7 +153,7 @@ def miller_rabin(n):
         
         base = random.randrange(2, n - 1)
         
-        x = fast_mod_exp(base, mult, n)
+        x = util.fast_mod_exp(base, mult, n)
         
         # if x is 1, repeated squaring will
         # not change the result, so don't bother continuing.
@@ -202,7 +194,7 @@ def fermat(n):
 
     for _ in range(0, 128):
         base = random.randrange(2, n - 1)
-        result = fast_mod_exp(base, n-1, n)
+        result = util.fast_mod_exp(base, n-1, n)
         if result != 1:
             return False
 
@@ -223,22 +215,6 @@ def factor_n(n):
         exp += 1
 
     return mult, exp
-
-def fast_mod_exp(base, exp, n):
-    """
-    A fast algorithm for modular exponentiation (see square-and-multiply).
-    """
-    assert base >= 1 and exp >= 1 and n >= 1,   "Base, exp and n must all be > 0"
-
-    result = base if (exp & 1) else 1
-    exp_bit_len = exp.bit_length()
-
-    for x in range(1, exp_bit_len):
-        base = (base ** 2) % n
-        if (exp >> x) & 1:
-            result = (result * base) % n
-
-    return result
 
 def generate_prime(bit_len):
     """

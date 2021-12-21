@@ -4,6 +4,7 @@ import euclid
 import secrets
 import math
 import hashlib
+import util
 
 factor_min_bit_len  = 1024
 factor_max_bit_len  = 4096
@@ -43,7 +44,7 @@ def main():
     for i in range(10):
         p, q, n, d3, d5 = generate_rsa_key(modulus_min_bit_len)
         K1, c = encrypt_random_key(n, 5)
-        K2 = decrypt_random_key(n, d5, c)
+        K2 = decrypt_random_key(n, d5, c, p, q)
         assert K1 == K2, "Keys don't match"
     print(f"encrypt/decrypt_random_key passed 10 tests using {modulus_min_bit_len}-bit moduli")
     ### End tests for encrypt_random_key and decrypt_random_key
@@ -115,18 +116,18 @@ def encrypt_random_key(n, e):
     r = secure_random.randrange(0, 2**k-1)
     
     K = hashlib.sha256(str(r).encode()).digest()
-    c = primes.fast_mod_exp(r, e, n)
+    c = util.fast_mod_exp(r, e, n)
     
     return K, c
 
-def decrypt_random_key(n, d, c):
+def decrypt_random_key(n, d, c, p, q):
     """
     Given a private RSA key (n, d), and a ciphertext c, returns a symmetric key K
     that is identical to that returned by the function encrypt_random_key
     """
     assert 0 <= c <= n
 
-    m = primes.fast_mod_exp(c, d, n)
+    m = util.fast_mod_exp_crt(c, d, p, q)
     K = hashlib.sha256(str(m).encode()).digest()
 
     return K
