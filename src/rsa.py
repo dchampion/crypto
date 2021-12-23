@@ -52,12 +52,11 @@ def main():
     ### End tests for encrypt_random_key and decrypt_random_key
 
     ### Begin tests for sign and verify
-    for _ in range(10):
+    for m in ["When", "in", "the", "course", "of", "human", "events..."]:
         p, q, n, d3, d5 = generate_rsa_key(modulus_min_bit_len)
-        bytes = insecure_random.randbytes(256)
-        o = sign(n, d3, p, q, str(bytes))
-        assert True == verify(n, 3, str(bytes), o)
-    print(f"sign/verify passed 10 tests using {modulus_min_bit_len}-bit moduli")
+        o = sign(n, d3, p, q, m)
+        assert True == verify(n, 3, m, o)
+    print(f"sign/verify passed multiple tests using {modulus_min_bit_len}-bit moduli")
     ### End tests for sign and verify
 
     print("all tests passed")
@@ -160,7 +159,7 @@ def msg_to_rsa_number(n, m):
 
     # Convert bytes to integer
     xi = int.from_bytes(xb, "little")
-    return xi % 2**k
+    return xi % (2**k)
 
 def sign(n, d, p, q, m):
     """
