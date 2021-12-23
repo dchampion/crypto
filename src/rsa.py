@@ -5,6 +5,7 @@ import secrets
 import math
 import hashlib
 import util
+import random
 
 factor_min_bit_len  = 1024
 factor_max_bit_len  = 4096
@@ -12,6 +13,7 @@ modulus_min_bit_len = 2048
 modulus_max_bit_len = 8192
 
 secure_random = secrets.SystemRandom()
+insecure_random = random.Random()
 
 def main():
     print("Running tests...")
@@ -27,7 +29,7 @@ def main():
     ### End tests for generate_rsa_prime
 
     ### Begin tests for generate_rsa_key
-    for i in range(10):
+    for _ in range(10):
         p, q, n, d3, d5 = generate_rsa_key(modulus_min_bit_len)
         t = euclid.lcm(p-1, q-1)
         assert primes.is_prime(p), "p is not prime"
@@ -41,13 +43,22 @@ def main():
     ### End tests for generate_rsa_prime
 
     ### Begin tests for encrypt_random_key and decrypt_random_key
-    for i in range(10):
+    for _ in range(10):
         p, q, n, d3, d5 = generate_rsa_key(modulus_min_bit_len)
         K1, c = encrypt_random_key(n, 5)
         K2 = decrypt_random_key(n, d5, c, p, q)
         assert K1 == K2, "Keys don't match"
     print(f"encrypt/decrypt_random_key passed 10 tests using {modulus_min_bit_len}-bit moduli")
     ### End tests for encrypt_random_key and decrypt_random_key
+
+    ### Begin tests for sign and verify
+    for _ in range(10):
+        p, q, n, d3, d5 = generate_rsa_key(modulus_min_bit_len)
+        bytes = insecure_random.randbytes(256)
+        o = sign(n, d3, p, q, str(bytes))
+        assert True == verify(n, 3, str(bytes), o)
+    print(f"sign/verify passed 10 tests using {modulus_min_bit_len}-bit moduli")
+    ### End tests for sign and verify
 
     print("all tests passed")
 
@@ -131,6 +142,45 @@ def decrypt_random_key(n, d, c, p, q):
     K = hashlib.sha256(str(m).encode()).digest()
 
     return K
+
+def msg_to_rsa_number(n, m):
+    """
+    Maps a message m to an integer suitable for signing.
+    """
+    # Seed the PRNG with m.
+    insecure_random.seed(hashlib.sha256(str(m).encode()).digest())
+
+    k = math.floor(math.log2(n))
+
+    # Here we want a byte string that is identical given
+    # the same m. We are not interested in random data per se,
+    # but rather a mapping from a 256-bit hash to a much larger
+    # number in order to enforce a reduction modulo n.
+    xb = insecure_random.randbytes(math.ceil(k//8))
+
+    # Convert bytes to integer
+    xi = int.from_bytes(xb, "little")
+    return xi % 2**k
+
+def sign(n, d, p, q, m):
+    """
+    Given a public modulus n, a private signing key d, and the private factors
+    of n (p,q), signs a message m and returns the signature.
+    """
+    s = msg_to_rsa_number(n, m)
+    o = util.fast_mod_exp_crt(s, d, p, q)
+
+    return o
+
+def verify(n, e, m, o):
+    """
+    Given a public modulus and exponent (n,e), a message m and a signature o,
+    returns True if the signature is valid for the message m, or False otherwise.
+    """
+    s = msg_to_rsa_number(n, m)
+    o1 = util.fast_mod_exp(o, e, n)
+
+    return o1 == s
 
 if __name__ == "__main__":
     main()
