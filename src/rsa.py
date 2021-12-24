@@ -146,18 +146,21 @@ def msg_to_rsa_number(n, m):
     """
     Maps a message m to an integer suitable for signing.
     """
-    # Seed the PRNG with m.
+    # Seed the PRNG with a hash of the message m, or h(m).
     insecure_random.seed(hashlib.sha256(str(m).encode()).digest())
 
+    # Compute the bit length of of the modulus n.
     k = math.floor(math.log2(n))
 
-    # Here we want a byte string that is identical given
-    # the same m. We are not interested in random data per se,
-    # but rather a mapping from a 256-bit hash to a much larger
-    # number in order to enforce a reduction modulo n.
+    # Here we want a byte string that is the same given the same
+    # m, and hence the same h(m). We are not interested in random
+    # data per se, but rather a deterministic mapping from the 256-
+    # bit result of h(m) to an n-bit number; that is, a number the
+    # size of the RSA modulus n (see RSA-FDH, or full-domain hash).
     xb = insecure_random.randbytes(math.ceil(k//8))
 
-    # Convert bytes to integer
+    # Convert bytes to an integer "representative" whose bit length
+    # is equal to that of the modulus n.
     xi = int.from_bytes(xb, "little")
     return xi % (2**k)
 
