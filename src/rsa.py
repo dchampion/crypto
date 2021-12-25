@@ -80,7 +80,7 @@ def generate_rsa_prime(factor_bit_len):
     respectively.
     """
     assert factor_min_bit_len <= factor_bit_len <= factor_max_bit_len,\
-        f"bit_len must be between {factor_min_bit_len} and {factor_max_bit_len}"
+        f"factor_bit_len must be between {factor_min_bit_len} and {factor_max_bit_len}"
 
     tries = 100 * factor_bit_len
     for r in range(tries):
