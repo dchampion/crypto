@@ -7,22 +7,22 @@ import hashlib
 import util
 import random
 
-# Allowable bit-length range for prime factors.
+# Allowable range, in bit length, of the 2 prime factors (p and q)
+# of the RSA modulus (n).
 factor_min_bit_len  = 1024
 factor_max_bit_len  = 4096
 
-# Allowable bit-length range for semi-prime moduli;i.e., numbers that
-# are the product of exactly 2 prime factors between factor_min_bitlen
-# and to factor_max_bit_len length.
+# Allowable range, in bit length, of the RSA modulus (n).
 modulus_min_bit_len = 2048
 modulus_max_bit_len = 8192
 
-# Use this PRNG for key generation.
+# A cryptographically secure pseudo-random number generator (PRNG)
+# for key generation.
 secure_random = secrets.SystemRandom()
 
-# Use this PRNG for deterministic mapping of k-bit values to n-bit
-# values, where k is the size of a hash output, and n is the size of
-# the RSA modulus.
+# A PRNG (not cryptographically secure) for deterministic mapping
+# of k-bit values to n-bit values, where k is the size of a hash
+# output, and n is the size of the RSA modulus (n).
 insecure_random = random.Random()
 
 def main():
@@ -73,7 +73,7 @@ def main():
 
 def generate_rsa_prime(factor_bit_len):
     """
-    Returns a prime factor of factor_bit_len length suitable for an RSA modulus.
+    Returns a prime number of factor_bit_len length suitable for an RSA modulus.
     A suitable factor p is one where p is prime, and p-1 is neither a multiple of
     3 nor 5; the latter restriction to ensure these small, computationally efficient
     values can be used as exponents for signature verification and encryption,
@@ -101,9 +101,10 @@ def generate_rsa_prime(factor_bit_len):
 def generate_rsa_key(modulus_bit_len):
     """
     Returns parameters necessary for an RSA setup; i.e., two prime factors (p and q)
-    of length modulus_bit_len/2, the product of these factors (n), the modular
-    multiplicative inverse of 3 modulo t (d3)--t being the least common multiple of
-    (p-1)(q-1))--and the modular multiplicative inverse of 5 modulo t (d5).
+    of length modulus_bit_len/2, the product of these factors (n), which is the RSA
+    modulus, the modular multiplicative inverse of 3 modulo t (d3), where t is the
+    least common multiple of (p-1)(q-1), and the modular multiplicative inverse of
+    5 modulo t (d5). d3 and d5 are the signing and decryption keys, respectively.
     """
     assert modulus_min_bit_len <= modulus_bit_len <= modulus_max_bit_len,\
         f"modulus_bit_len must be between {modulus_min_bit_len} and {modulus_max_bit_len}"
@@ -115,22 +116,22 @@ def generate_rsa_key(modulus_bit_len):
     # Bad PRNG?
     assert p != q, "p must not equal q"
 
-    # Compute the lcm of pq, or n, as it will behave the same as the totient
-    # of pq (see original RSA) but, because it is smaller, will result in better
-    # computational performance.
+    # Compute the lcm of pq, as it will behave the same as the totient of pq
+    # (see original RSA) but, because it is smaller, will result in faster
+    # computations.
     t = euclid.lcm(p-1, q-1)
 
     # Compute the signature and decryption exponents, d3 and d5, respectively.
     d3 = euclid.inverse(3, t)
     d5 = euclid.inverse(5, t)
 
-    # p, q, d3 and d5 must be kept private; only n (i.e., p*q), is part of the
-    # public key.
+    # p, q, d3 and d5 must be kept private; only n (i.e., pq), together with the
+    # encryption exponent e=3, is sharable as part of the public key.
     return p, q, p*q, d3, d5
 
 def encrypt_random_key(n, e):
     """
-    Given a public RSA key (n,e), returns a symmetric key K that is a hash of a
+    Given a public RSA key (n, e), returns a symmetric key K that is a hash of a
     random value r, and the ciphertext c thereof. The function decrypt_random_key
     can be used to recover r from c, and then rehashed using the same function to
     reproduce K. K must be kept secret; only c should be sent over an insecure
@@ -142,8 +143,9 @@ def encrypt_random_key(n, e):
     # Select a random value in the full range of n.
     r = secure_random.randrange(0, 2**k-1)
 
-    # Hash this random value; this will be the key (K) negotiated by two parties
-    # using a symmetric encryption/decryption scheme (see decrypt_random_key).
+    # Hash this random value; this will be the basis for the key (K)
+    # negotiated by two parties using a symmetric encryption/decryption
+    # scheme (see decrypt_random_key).
     K = hashlib.sha256(str(r).encode()).digest()
 
     # Encrypt r.
@@ -154,7 +156,7 @@ def encrypt_random_key(n, e):
 
 def decrypt_random_key(n, d, c, p, q):
     """
-    Given a private RSA key (n,d), and a ciphertext c, returns a symmetric key K
+    Given a private RSA key (n, d), and a ciphertext c, returns a symmetric key K
     that is identical to that returned by the function encrypt_random_key
     """
     assert 0 <= c <= n
@@ -179,22 +181,23 @@ def msg_to_rsa_number(n, m):
     # Compute the bit length of the modulus n.
     k = math.floor(math.log2(n))
 
-    # Here we want a byte string that is the same given the same m, and hence
-    # the same h(m). We are not interested in random data per se, but rather a
-    # deterministic mapping from the 256-bit result of h(m) to an n-bit number;
-    # that is, a number the size of the RSA modulus n (see RSA-FDH, or full-
-    # domain hash).
+    # Here we want a byte string that is always the same given the same m (and
+    # hence the same h(m)). We are not interested in random data per se, but
+    # rather a deterministic mapping from the 256-bit result of h(m) to an n-bit
+    # number; that is, a number in the range up to the size of the modulus n
+    # (see RSA-FDH, or full-domain hash).
     xb = insecure_random.randbytes(math.ceil(k//8))
 
     # Convert byte string to an integer "representative", whose bit length is
-    # equal to that of the modulus n.
-    xi = int.from_bytes(xb, "little")
-    return xi % (2**k)
+    # in the full range of the modulus n.
+    xi = int.from_bytes(xb, byteorder="little") % 2**k
+
+    return xi
 
 def sign(n, d, p, q, m):
     """
     Given a public modulus n, a private signing key d, and the private factors
-    of n (p,q), signs a message m and returns the signature. This function is
+    of n (p and q), signs a message m and returns the signature. This function is
     the inverse of the function verify.
     """
     # Map k-bit hash of m to an integer n bits in length.
@@ -207,7 +210,7 @@ def sign(n, d, p, q, m):
 
 def verify(n, e, m, o):
     """
-    Given a public modulus and exponent (n,e), a message m and a signature o,
+    Given a public modulus and exponent (n, e), a message m and a signature o,
     returns True if the signature is valid for the message m, or False otherwise.
     This function is the inverse of the function sign.
     """
