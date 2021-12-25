@@ -7,12 +7,22 @@ import hashlib
 import util
 import random
 
+# Allowable bit-length range for prime factors.
 factor_min_bit_len  = 1024
 factor_max_bit_len  = 4096
+
+# Allowable bit-length range for semi-prime moduli;i.e., numbers that
+# are the product of exactly 2 prime factors between factor_min_bitlen
+# and to factor_max_bit_len length.
 modulus_min_bit_len = 2048
 modulus_max_bit_len = 8192
 
+# Use this PRNG for key generation.
 secure_random = secrets.SystemRandom()
+
+# Use this PRNG for deterministic mapping of k-bit values to n-bit
+# values, where k is the size of a hash output, and n is the size of
+# the RSA modulus.
 insecure_random = random.Random()
 
 def main():
@@ -65,10 +75,10 @@ def generate_rsa_prime(factor_bit_len):
     """
     Returns a prime factor of factor_bit_len length suitable for an RSA modulus.
     A suitable factor p is one where p is prime, and p-1 is neither a multiple of
-    3 nor 5; the latter is necessary to ensure these values can be used as exponents
-    for signing and encryption, respectively.
+    3 nor 5; the latter restriction to ensure these small, computationally efficient
+    values can be used as exponents for signature verification and encryption,
+    respectively.
     """
-    
     assert factor_min_bit_len <= factor_bit_len <= factor_max_bit_len,\
         f"bit_len must be between {factor_min_bit_len} and {factor_max_bit_len}"
 
@@ -78,10 +88,11 @@ def generate_rsa_prime(factor_bit_len):
         # namely some of them prime, and neither multiples (-1) of 3 or 5.
         assert r < tries, f"Did not find a suitable prime after {tries} tries"
         
+        # Pick a random value in the specified range.
         n = secure_random.randrange(2**(factor_bit_len-1), 2**factor_bit_len-1)
         
-        # Ensure n-1 is neither a multiple of 3 nor 5, so that
-        # these values can be used for signing and encryption, respectively.
+        # Ensure n-1 is neither a multiple of 3 nor 5, so that these values can
+        # be used for signature verification and encryption, respectively.
         if n % 3 != 1 and n % 5 != 1 and primes.is_prime(n):
             break
 
@@ -89,57 +100,73 @@ def generate_rsa_prime(factor_bit_len):
 
 def generate_rsa_key(modulus_bit_len):
     """
-    Returns parameters necessary for an RSA setup; i.e., two prime factors p and q
-    of length modulus_bit_len / 2, the product of these factors n, the modular
-    multiplicative inverse of 3 modulo t (t being the least common multiple of
-    (p-1)(q-1)), and the modular multiplicative inverse of 5 modulo t.
+    Returns parameters necessary for an RSA setup; i.e., two prime factors (p and q)
+    of length modulus_bit_len/2, the product of these factors (n), the modular
+    multiplicative inverse of 3 modulo t (d3)--t being the least common multiple of
+    (p-1)(q-1))--and the modular multiplicative inverse of 5 modulo t (d5).
     """
     assert modulus_min_bit_len <= modulus_bit_len <= modulus_max_bit_len,\
         f"modulus_bit_len must be between {modulus_min_bit_len} and {modulus_max_bit_len}"
 
-    # Compute factors p and q.
+    # Compute prime factors p and q.
     p = generate_rsa_prime(math.floor(modulus_bit_len//2))
     q = generate_rsa_prime(math.floor(modulus_bit_len//2))
 
     # Bad PRNG?
     assert p != q, "p must not equal q"
 
-    # Compute the lcm of pq, as it will behave the same as the totient
-    # of pq but, because it is smaller, with better performance.
+    # Compute the lcm of pq, or n, as it will behave the same as the totient
+    # of pq (see original RSA) but, because it is smaller, will result in better
+    # computational performance.
     t = euclid.lcm(p-1, q-1)
 
-    # Compute the signing and encryption exponents.
+    # Compute the signature and decryption exponents, d3 and d5, respectively.
     d3 = euclid.inverse(3, t)
     d5 = euclid.inverse(5, t)
 
+    # p, q, d3 and d5 must be kept private; only n (i.e., p*q), is part of the
+    # public key.
     return p, q, p*q, d3, d5
 
 def encrypt_random_key(n, e):
     """
-    Given a public RSA key (n, e), returns a symmetric key K that is a hash of
-    a random value r, and the ciphertext c thereof. The function decrypt_random_key
+    Given a public RSA key (n,e), returns a symmetric key K that is a hash of a
+    random value r, and the ciphertext c thereof. The function decrypt_random_key
     can be used to recover r from c, and then rehashed using the same function to
-    reproduce K.
+    reproduce K. K must be kept secret; only c should be sent over an insecure
+    channel.
     """
-    
+    # Compute the bit length of the modulus n.
     k = math.floor(math.log2(n))
+
+    # Select a random value in the full range of n.
     r = secure_random.randrange(0, 2**k-1)
-    
+
+    # Hash this random value; this will be the key (K) negotiated by two parties
+    # using a symmetric encryption/decryption scheme (see decrypt_random_key).
     K = hashlib.sha256(str(r).encode()).digest()
+
+    # Encrypt r.
     c = util.fast_mod_exp(r, e, n)
-    
+
+    # K must be kept secret.
     return K, c
 
 def decrypt_random_key(n, d, c, p, q):
     """
-    Given a private RSA key (n, d), and a ciphertext c, returns a symmetric key K
+    Given a private RSA key (n,d), and a ciphertext c, returns a symmetric key K
     that is identical to that returned by the function encrypt_random_key
     """
     assert 0 <= c <= n
 
-    m = util.fast_mod_exp_crt(c, d, p, q)
-    K = hashlib.sha256(str(m).encode()).digest()
+    # Decrypt r.
+    r = util.fast_mod_exp_crt(c, d, p, q)
 
+    # Hash r to arrive at the same key K as that computed by the encrypting party
+    # (see encrypt_random_key).
+    K = hashlib.sha256(str(r).encode()).digest()
+
+    # K must be kept secret.
     return K
 
 def msg_to_rsa_number(n, m):
@@ -149,27 +176,31 @@ def msg_to_rsa_number(n, m):
     # Seed the PRNG with a hash of the message m, or h(m).
     insecure_random.seed(hashlib.sha256(str(m).encode()).digest())
 
-    # Compute the bit length of of the modulus n.
+    # Compute the bit length of the modulus n.
     k = math.floor(math.log2(n))
 
-    # Here we want a byte string that is the same given the same
-    # m, and hence the same h(m). We are not interested in random
-    # data per se, but rather a deterministic mapping from the 256-
-    # bit result of h(m) to an n-bit number; that is, a number the
-    # size of the RSA modulus n (see RSA-FDH, or full-domain hash).
+    # Here we want a byte string that is the same given the same m, and hence
+    # the same h(m). We are not interested in random data per se, but rather a
+    # deterministic mapping from the 256-bit result of h(m) to an n-bit number;
+    # that is, a number the size of the RSA modulus n (see RSA-FDH, or full-
+    # domain hash).
     xb = insecure_random.randbytes(math.ceil(k//8))
 
-    # Convert bytes to an integer "representative" whose bit length
-    # is equal to that of the modulus n.
+    # Convert byte string to an integer "representative", whose bit length is
+    # equal to that of the modulus n.
     xi = int.from_bytes(xb, "little")
     return xi % (2**k)
 
 def sign(n, d, p, q, m):
     """
     Given a public modulus n, a private signing key d, and the private factors
-    of n (p,q), signs a message m and returns the signature.
+    of n (p,q), signs a message m and returns the signature. This function is
+    the inverse of the function verify.
     """
+    # Map k-bit hash of m to an integer n bits in length.
     s = msg_to_rsa_number(n, m)
+
+    # Sign it.
     o = util.fast_mod_exp_crt(s, d, p, q)
 
     return o
@@ -178,10 +209,15 @@ def verify(n, e, m, o):
     """
     Given a public modulus and exponent (n,e), a message m and a signature o,
     returns True if the signature is valid for the message m, or False otherwise.
+    This function is the inverse of the function sign.
     """
+    # Map k-bit hash of m to an integer n bits in length.
     s = msg_to_rsa_number(n, m)
+
+    # Sign it.
     o1 = util.fast_mod_exp(o, e, n)
 
+    # Compare.
     return o1 == s
 
 if __name__ == "__main__":
