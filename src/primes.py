@@ -16,93 +16,7 @@ small_primes =  [  3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59
                  757,761,769,773,787,797,809,811,821,823,827,829,839,853,857,859,863,877,881,
                  883,887,907,911,919,929,937,941,947,953,967,971,977,983,991,997]
 
-odd_composites = [9,15,27,35,49,133,339,589,711,999,2**521+1,2**607+1]
-
-# Large (Mersenne) primes
-large_primes =  [2**521-1,2**607-1,2**1279-1,2**2203-1,2**2281-1]
-
-small_carmichaels = [561,1105,1729,2465,2821,6601,8911,41041,62745,63973,825265]
-
-large_carmichaels = [((6*925968953850065)+1)*((12*925968953850065)+1)*((18*925968953850065)+1),
-                     ((6*8522851273339146)+1)*((12*8522851273339146)+1)*((18*8522851273339146)+1),
-                     ((6*9510693751425636)+1)*((12*9510693751425636)+1)*((18*9510693751425636)+1),
-                     ((6*9510693751431925)+1)*((12*9510693751431925)+1)*((18*9510693751431925)+1),
-                     ((6*9510693751446670)+1)*((12*9510693751446670)+1)*((18*9510693751446670)+1)]
-
 secure_random = secrets.SystemRandom()
-
-def main():
-    print("Running tests...")
-    ### Begin tests for factor_n
-    for n in small_primes:
-        mult, exp = factor_n(n)
-        assert (2 ** exp) * mult == n - 1, f"factor_n failed to factor {n} into {mult} and {exp}"
-    print(f"factor_n passed for all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}")
-
-    for n in large_primes:
-        mult, exp = factor_n(n)
-        assert (2 ** exp) * mult == n - 1, f"factor_n failed to factor {n} into {mult} and {exp}"
-    print(f"factor_n passed for {len(large_primes)} large primes")
-    ### End tests for factor_n
-
-    ### Begin tests for fermat
-    for n in small_primes:
-        assert fermat(n), f"fermat failed to identify {n} as prime"
-    print(f"fermat passed for all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}")
-
-    for n in odd_composites:
-        assert not fermat(n), f"fermat failed to identify {n} as composite"
-    print(f"fermat passed for {len(odd_composites)} odd composites")
-
-    for n in small_carmichaels:
-        assert not fermat(n), f"fermat failed to identify {n} as composite"
-    print(f"fermat passed with true negatives for {len(small_carmichaels)} small Carmichael numbers")
-
-    for n in large_carmichaels:
-        assert fermat(n), f"fermat failed to identify {n} as composite"
-    print(f"fermat passed with false positives for {len(large_carmichaels)} large Carmichael numbers")
-
-    for n in large_primes:
-        assert fermat(n), f"fermat failed to identify {n} as prime"
-    print(f"fermat passed for {len(large_primes)} large primes")
-    ### End tests for fermat
-
-    ### Begin tests for is_prime
-    for n in small_primes:
-        assert is_prime(n), f"is_prime failed to identify {n} as prime"
-    print(f"is_prime passed for all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}")
-
-    for n in small_primes:
-        n = n ** 2
-        assert not is_prime(n), f"is_prime failed to identify {n} as composite"
-    print(f"is_prime passed for the squares of all {len(small_primes)} primes <= {small_primes[len(small_primes)-1]}")
-
-    for n in odd_composites:
-        assert not is_prime(n), f"is_prime failed to identify {n} as composite"
-    print(f"is_prime passed for {len(odd_composites)} odd composites")
-
-    for n in small_carmichaels:
-        assert not is_prime(n), f"is_prime failed to identify {n} as composite"
-    print(f"is_prime passed with true negatives for {len(small_carmichaels)} small Carmichael numbers")
-
-    for n in large_carmichaels:
-        assert not is_prime(n), f"is_prime failed to identify {n} as composite"
-    print(f"is_prime passed with true negatives for {len(large_carmichaels)} large Carmichael numbers")
-
-    for n in large_primes:
-        assert is_prime(n), f"is_prime failed to identify {n} as prime"
-    print(f"is_prime passed for {len(large_primes)} large primes")
-    ### End tests for is_prime
-
-    ### Begin tests for generate_large_prime
-    for x in range(3, 12):
-        p = generate_prime(2**x)
-        assert p.bit_length() == 2**x, f"expected bit length {2**x}, got {p.bit_length()}"
-        assert is_prime(p), f"generate_prime returned {p}, which is not prime"
-    print("generate_large_prime passed for primes up to 2048 bits in length")
-    ### End tests for generate_large_prime
-
-    print("all tests passed")
 
 def is_prime(n):
     """
@@ -233,6 +147,3 @@ def generate_prime(bit_len):
 
     err_str = f"Failed to find a {bit_len}-bit prime in {tries} random selections"
     raise Exception(err_str)
-
-if __name__ == "__main__":
-    main()

@@ -16,31 +16,6 @@ min_p_bit_len = 2048
 # key generation.
 secure_random = secrets.SystemRandom()
 
-def main():
-    print("Running tests...")
-    p, q, g = generate_parameters(2048)
-    validate_parameters(p, q, g)
-    print("validate_parameters passed")
-    
-    k_priv_1, k_pub_1 = generate_keypair(g, q, p)
-    validate_pub_key(k_pub_1, q, p)
-    print("validate_pub_key 1 passed")
-
-    k_priv_2, k_pub_2 = generate_keypair(g, q, p)
-    validate_pub_key(k_pub_2, q, p)
-    print("validate_pub_key 2 passed")
-
-    k_secret1 = util.fast_mod_exp(k_pub_2, k_priv_1, p)
-    k_secret2 = util.fast_mod_exp(k_pub_1, k_priv_2, p)
-    assert k_secret1 == k_secret2, "Secrets don't match"
-
-    k_hashed1 = hash_key(k_secret1)
-    k_hashed2 = hash_key(k_secret2)
-    assert k_hashed1 == k_hashed2, "Hashed secrets don't match"
-    print("secrets match")
-
-    print("all tests passed")
-
 def generate_parameters(p_bit_len):
     """
     Returns the domain (i.e., public) parameters for the shared key negotiation.
@@ -133,7 +108,7 @@ def validate_parameters(p, q, g):
     """
     Validates the public parameters p, q and g.
     """
-    assert p.bit_length() >= min_p_bit_len, f"p.bit_length() {p.bit_length()} \
+    assert p.bit_length() >= min_p_bit_len-1, f"p.bit_length() {p.bit_length()} \
 is less than min_p_bit_len {min_p_bit_len}"
     assert q.bit_length() == q_bit_len, f"q.bit_length() {q.bit_length()} does \
 not equal q_bit_len {q_bit_len}"
@@ -143,6 +118,3 @@ not equal q_bit_len {q_bit_len}"
     assert g != 1, f"g has illegal value"
     # TODO: Necessary?
     assert util.fast_mod_exp(g, q, p) == 1, f"g has illegal value"
-
-if __name__ == '__main__':
-    main()

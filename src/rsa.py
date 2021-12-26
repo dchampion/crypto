@@ -25,52 +25,6 @@ secure_random = secrets.SystemRandom()
 # output, and n is the size of the RSA modulus (n).
 insecure_random = random.Random()
 
-def main():
-    print("Running tests...")
-    ### Begin tests for generate_rsa_prime
-    for i in range(10):
-        n = generate_rsa_prime(factor_min_bit_len)
-        assert primes.is_prime(n), "n is not prime"
-        assert n.bit_length() == factor_min_bit_len,\
-            f"expected bit length {factor_min_bit_len}, got {n.bit_length()}"
-        assert n % 3 != 1, "n-1 must not be a multiple of 3"
-        assert n % 5 != 1, "n-1 must not be a multiple of 5"
-    print(f"generate_rsa_prime passed 10 tests using {factor_min_bit_len}-bit factors")
-    ### End tests for generate_rsa_prime
-
-    ### Begin tests for generate_rsa_key
-    for _ in range(10):
-        p, q, n, d3, d5 = generate_rsa_key(modulus_min_bit_len)
-        t = euclid.lcm(p-1, q-1)
-        assert primes.is_prime(p), "p is not prime"
-        assert primes.is_prime(q), "q is not prime"
-        assert n == p*q, "n != p*q"
-        assert euclid.inverse(d3, t) == 3,\
-            f"expected inverse of {d3} and {t} is 3, got {euclid.inverse(d3, t)}"
-        assert euclid.inverse(d5, t) == 5,\
-            f"expected inverse of {d5} and {t} is 5, got {euclid.inverse(d5, t)}"
-    print(f"generate_rsa_key passed 10 tests using {modulus_min_bit_len}-bit moduli")
-    ### End tests for generate_rsa_prime
-
-    ### Begin tests for encrypt_random_key and decrypt_random_key
-    for _ in range(10):
-        p, q, n, d3, d5 = generate_rsa_key(modulus_min_bit_len)
-        K1, c = encrypt_random_key(n, 5)
-        K2 = decrypt_random_key(n, d5, c, p, q)
-        assert K1 == K2, "Keys don't match"
-    print(f"encrypt/decrypt_random_key passed 10 tests using {modulus_min_bit_len}-bit moduli")
-    ### End tests for encrypt_random_key and decrypt_random_key
-
-    ### Begin tests for sign and verify
-    for m in ["When", "in", "the", "course", "of", "human", "events..."]:
-        p, q, n, d3, d5 = generate_rsa_key(modulus_min_bit_len)
-        o = sign(n, d3, p, q, m)
-        assert True == verify(n, 3, m, o)
-    print(f"sign/verify passed multiple tests using {modulus_min_bit_len}-bit moduli")
-    ### End tests for sign and verify
-
-    print("all tests passed")
-
 def generate_rsa_prime(factor_bit_len):
     """
     Returns a prime number of factor_bit_len length suitable for an RSA modulus.
@@ -222,6 +176,3 @@ def verify(n, e, m, o):
 
     # Compare.
     return o1 == s
-
-if __name__ == "__main__":
-    main()
