@@ -108,12 +108,12 @@ def encrypt_random_key(n, e):
     # K must be kept secret.
     return K, c
 
-def decrypt_random_key(n, d, c, p, q):
+def decrypt_random_key(d, c, p, q):
     """
-    Given a private RSA key (n, d), and a ciphertext c, returns a symmetric key K
+    Given a private RSA key (d, p, q), and a ciphertext c, returns a symmetric key K
     that is identical to that returned by the function encrypt_random_key
     """
-    assert 0 <= c <= n
+    assert 0 <= c <= p*q
 
     # Decrypt r.
     r = util.fast_mod_exp_crt(c, d, p, q)
