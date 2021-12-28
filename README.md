@@ -17,6 +17,6 @@ Each artifact in this repository&mdash;excluding <i>meta</i> files like this REA
 <p>
 5. <a href=https://github.com/dchampion/crypto/blob/master/NumberTheory.md><b>NumberTheory.md</b></a> &ndash; Helpful mnemonics on the number-theoretic underpinnings of Diffie-Hellman and RSA.
 <p>
-6. <a href=https://github.com/dchampion/crypto/blob/master/src><b>Source code (/src folder)</b></a> &ndash; Python implementations of many of the cryptographic primitives discussed in these documents; e.g. the Euclidean algorithms, primality testing, etc.
+6. <a href=https://github.com/dchampion/crypto/blob/master/src><b>Source Code</b></a> &ndash; Implementations of many of the cryptographic primitives covered in these documents in the Python programming language; e.g. the Euclidean algorithms, primality testing, Diffie-Hellman, RSA, etc.
 <p>
 7. <a href=https://raw.githubusercontent.com/dchampion/crypto/master/TheElementsOfPublicKeyCryptography.pdf><b>TheElementsOfPublicKeyCryptography.pdf</b></a> &ndash; A 12k-word survey of public-key cryptography.
