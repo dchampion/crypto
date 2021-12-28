@@ -94,7 +94,11 @@ def generate_keypair(g, q, p):
     public key of the form (g**kPriv) % p. The private key must be kept secret.
     """
     kPriv = secure_random.randrange(1, q-1)
-    return kPriv, util.fast_mod_exp(g, kPriv, p)
+    kPub = util.fast_mod_exp(g, kPriv, p)
+
+    validate_pub_key(kPub, q, p)
+
+    return kPriv, kPub
 
 def generate_session_key(kPub, kPriv, p):
     """

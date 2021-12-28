@@ -26,47 +26,56 @@ def test_dh_setup():
     print("dh setup passed")
 
 def test_setup_encrypt_decrypt():
-    # Alice generates the public parameters for a DH session with Bob; these are the public
-    # (and prime) modulus [p], the size of the subgroup modulo p within which generated
-    # values will fall [q], and the generator of the subgroup [g].
+    # Alice generates the public parameters for a DH session with Bob; these are the
+    # public modulus [p] (a prime), the size of the subgroup modulo p within which
+    # exchanged public keys must fall [q] (also a prime), and the generator of the
+    # subgroup [g].
     p, q, g = dh.generate_parameters(dh.min_p_bit_len)
 
-    # Alice must validate these parameters before transmitting them to Bob; Bob will run
-    # the same validation of these values when he receives them from Alice.
+    # Alice should validate these parameters before transmitting them to Bob; Bob
+    # must run the same validation of these parameters when he receives them from
+    # Alice.
     dh.validate_parameters(p, q, g)
 
     # Alice generates her private and public keys [kA, KA], using g, q and p as inputs.
     kA, KA = dh.generate_keypair(g, q, p)
-    # Alice validates her public key [KA].
-    dh.validate_pub_key(KA, q, p)
 
     ####################################################################################
     # Alice, having generated the public parameters p, q and g, and her public key KA, #
     # transmits all of these to Bob.                                                   #
+    #                                                                                  #
+    # Alice                        Bob                                                 #
+    # -------------                -------------                                       #
+    # [p, q, g, KA]      --->      [p, q, g, KA]                                       #
     ####################################################################################
 
-    # Bob repeats the same validation on the public parameters that Alice did before
-    # transmitting them to him.
+    # Bob MUST validate the public parameters [p, q, g] he receives from Alice.
     dh.validate_parameters(p, q, g)
 
-    # Bob generates his private and public keys [kB, KB], using as inputs the same g, q
-    # and p that Alice used.
-    kB, KB = dh.generate_keypair(g, p, p)
-    # Bob validates his public key [KB].
-    dh.validate_pub_key(KB, q, p)
+    # Bob MUST ALSO validate Alice's public key [KA].
+    dh.validate_pub_key(KA, q, p)
+
+    # Bob generates his own private and public keys [kB, KB], using as inputs the public
+    # parameters [p, q, g] he received, and validated, from Alice.
+    kB, KB = dh.generate_keypair(g, q, p)
 
     ####################################################################################
     # Bob transmits his public key [KB] to Alice.                                      #
+    #                                                                                  #
+    # Alice                        Bob                                                 #
+    # -------------                -------------                                       #
+    # [KB]               <---      [KB]                                                #
     ####################################################################################
 
     # Alice, having received Bob's public key [KB], uses it, along with her private key
-    # [kA] to generate her session key; this must be kept secret (i.e., it must not be
-    # transmitted to Bob, or otherwise revealed).
+    # [kA] to generate a session key; this must be kept secret (i.e., it must not be
+    # transmitted to Bob, or otherwise exposed in any other way).
     kSessionA = dh.generate_session_key(KB, kA, p)
 
     # Bob, having received Alice's public key [KA], uses it, along with his private key
-    # [kB] to generate his session key; this too must be kept secret. The session keys
-    # [kSessionA, kSessionB] that Alice and Bob compute must be equal.
+    # [kB] to generate a session key; this too must be kept secret. The session keys
+    # [kSessionA, kSessionB] that Alice and Bob compute should be equal, due to the
+    # properties of DH.
     kSessionB = dh.generate_session_key(KA, kB, p)
     assert kSessionA == kSessionB
 
@@ -75,12 +84,20 @@ def test_setup_encrypt_decrypt():
     mA = "8675309"
     mAC = sym_encrypt(kSessionA, mA)
 
+    ####################################################################################
+    # Alice transmits encrypted message [mAC] to Bob.                                  #
+    #                                                                                  #
+    # Alice                        Bob                                                 #
+    # -------------                -------------                                       #
+    # [mAC]               --->     [mAC]                                               #
+    ####################################################################################
+
     # Bob receives the ciphertext [mAC], and decrypts it using his session key [kSessionB].
     # The message Bob decrypts [mB] must equal the message Alice encrypted [mA].
     mB = sym_decrypt(kSessionB, mAC)
     assert mA == str(mB)
 
-    print("full protocol (setup-encrypt-decrypt) passed")
+    print("full protocol (setup-encrypt-decrypt) test passed")
 
 def sym_encrypt(key, msg):
     return int.from_bytes(key, byteorder="little") ^ int(msg)
