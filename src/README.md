@@ -1,7 +1,7 @@
 # Disclaimer
 The modules in this folder implement many of the public-key primitives one might expect to find in a cryptography library, such as key generation, encryption, decryption, digital signature and signature verification; they do not implement protocol-layer (or any other higher-level) services which, in addition to the primitives just mentioned, would be provided in a fully-featured cryptography library.
 
-Further, although the author believes the features of this library to provide security equal to that of reputable, industrial-strength implementations, he makes no waranties to that effect.
+Further, although the author believes the features of this library to provide security equal to that of reputable, industrial-strength implementations, he makes no warranties to that effect.
 
 As such, while this library may be of academic interest to someone studying public-key cryptography, it should probably not be used to secure sensitive data in real applications.
 
