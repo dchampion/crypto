@@ -39,7 +39,7 @@ def generate_parameters(p_bit_len):
 
 def generate_p(q, p_bit_len):
     """
-    Return the numbers p and n that satisfy the equation p = q * n + 1, where p is
+    Returns the numbers p and n that satisfy the equation p = q * n + 1, where p is
     prime, and the only non-trivial subgroup modulo p is the order (size) of q (the
     trivial subgroups being a) the subgroup containing just the number 1, b) the
     subgroup consisting of 1 and p-1 and c) the full group of size q*n).
@@ -91,7 +91,15 @@ def generate_keypair(g, q, p):
     k_priv = secure_random.randrange(1, q-1)
     return k_priv, util.fast_mod_exp(g, k_priv, p)
 
-def hash_key(k):
+def generate_session_key(kPub, kPriv, p):
+    """
+    Returns a hashed byte array to be used as a session key; this key must be kept
+    secret.
+    """
+    ki = util.fast_mod_exp(kPub, kPriv, p)
+    return _hash_key(ki)
+
+def _hash_key(k):
     """
     Returns the input k (a large integer key) as a hashed byte array.
     """
