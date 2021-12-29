@@ -11,8 +11,8 @@ def main():
     test_generate_rsa_key()
     test_encrypt_decrypt()
     test_sign_verify()
-    test_sign_encrypt_decrypt_verify()
-    print("rsa tests passed")
+    test_full_protocol()
+    print("all rsa tests passed")
 
 def test_generate_rsa_prime():
     for _ in range(10):
@@ -23,7 +23,7 @@ def test_generate_rsa_prime():
         assert n % 3 != 1, "n-1 must not be a multiple of 3"
         assert n % 5 != 1, "n-1 must not be a multiple of 5"
 
-    print(f"generate_rsa_prime passed 10 tests returning {rsa.factor_min_bit_len}-bit primes")
+    print(f"test_generate_rsa_prime passed 10 tests returning {rsa.factor_min_bit_len}-bit primes")
 
 def test_generate_rsa_key():
     for _ in range(10):
@@ -37,7 +37,7 @@ def test_generate_rsa_key():
         assert euclid.inverse(d5, t) == 5,\
             f"expected inverse of {d5} and {t} is 5, got {euclid.inverse(d5, t)}"
 
-    print(f"generate_rsa_key passed 10 tests using {rsa.modulus_min_bit_len}-bit moduli")
+    print(f"test_generate_rsa_key passed 10 tests using {rsa.modulus_min_bit_len}-bit moduli")
 
 def test_encrypt_decrypt():
     for _ in range(10):
@@ -46,7 +46,7 @@ def test_encrypt_decrypt():
         K2 = rsa.decrypt_random_key(d5, c, p, q)
         assert K1 == K2, "Keys don't match"
 
-    print(f"encrypt/decrypt_random_key passed 10 tests using {rsa.modulus_min_bit_len}-bit moduli")
+    print(f"test_encrypt_decrypt passed 10 tests using {rsa.modulus_min_bit_len}-bit moduli")
 
 def test_sign_verify():
     for m in ["When", "in", "the", "course", "of", "human", "events..."]:
@@ -54,11 +54,11 @@ def test_sign_verify():
         o = rsa.sign(n, d3, p, q, m)
         assert True == rsa.verify(n, 3, m, o)
 
-    print(f"sign/verify passed multiple tests using {rsa.modulus_min_bit_len}-bit moduli")
+    print(f"test_sign_verify passed multiple tests using {rsa.modulus_min_bit_len}-bit moduli")
 
-def test_sign_encrypt_decrypt_verify():
+def test_full_protocol():
     # Alice generates her RSA parameters, and sends the public component (the modulus nA)
-    # to Bob. In this "imaginary" protocol, we assume that Bob knows Alice's encryption
+    # to Bob. In this simulated protocol, we assume that Bob knows Alice's encryption
     # and signature-verification components--the exponents 3 and 5--respectively, because
     # they are part of Alice's public key.
     pA, qA, nA, d3A, d5A = rsa.generate_rsa_key(rsa.modulus_min_bit_len)
@@ -75,21 +75,20 @@ def test_sign_encrypt_decrypt_verify():
 
     # Alice computes and encrypts a symmetric key, using Bob's public key [nB, 5], and
     # stores it in KA; this she must keep private. cA is the ciphertext of the symmetric
-    # key input material, which Alice will transmit to Bob, and which he will use to
-    # reconstruct the symmetrick key [KA].
+    # key input material, which Alice will transmit to Bob, and which Bob will use to
+    # reconstruct the symmetric key [KA].
     KA, cA = rsa.encrypt_random_key(nB, 5)
 
     # Using the symmetric key [KA], Alice encrypts the message [mA] using a symmetric
     # scheme. For the purposes of this example, that scheme is a bitwise xor of the
-    # symmetric key [KA] with an integer representation of the message [mA]. As part
-    # of our imaginary protocol, the symmetric scheme (a bitwise xor of key and message)
-    # is public information, and will be known to Alice and Bob (and Eve).
+    # symmetric key [KA] with an integer representation of the message [mA].
     mAC = sym_encrypt(KA, mA)
 
     ################################################################################
-    # Alice transmits to Bob everything he needs to decrypt, verify and read her   #
-    # message. She does this without revealing any information about the contents  #
-    # of the message, nor how to decrypt or verify it, to a passive eavesdropper.  #
+    # Alice transmits to Bob everything he will need to decrypt, verify and read   #
+    # her message. She does this without revealing any information about the       #
+    # contents of the message, nor how to decrypt or verify it, to a passive       #
+    # eavesdropper.                                                                #
     #                                                                              #
     # Alice transmits to to Bob (1) the signature of the message [oA], (2) the     #
     # ciphertext of the message [mAC] (which was encrypted using the symmetric     #
@@ -99,15 +98,15 @@ def test_sign_encrypt_decrypt_verify():
 
     # From the ciphertext [cA], Bob decrypts Alice's symmetric key [KA] using his
     # private RSA decryption key [d5B, pB, qB]. He stores the result in KB (KB
-    # should be equal to KA).
+    # should be identical to KA).
     KB = rsa.decrypt_random_key(d5B, cA, pB, qB)
     assert KA == KB
 
-    # Bob decrypts Alice's encrypted message [mAC], using the agreed-upon symmetric
-    # scheme (i.e., bitwise xor of KB and mAC). He stores the result in mB (mB should
-    # be equal to mA). Bob can be confident the message Alice encrypted and sent to
-    # him can only be read by him, and not by any eavesdropper who may have interceted
-    # it.
+    # Bob decrypts Alice's ciphertext message [mAC] using the same symmetric scheme
+    # (bitwise xor of KB and mAC) Alice used to encrypt the message. He stores the
+    # result in mB (mB should be identical to mA). Bob can be confident the message
+    # Alice sent to him can only be read by him, and not by an eavesdropper who may
+    # have intercepted it.
     mB = sym_decrypt(KB, mAC)
     assert mA == str(mB)
 
@@ -115,15 +114,16 @@ def test_sign_encrypt_decrypt_verify():
     # precisely, his version of it, which he has decrypted and stored in mB).
     # This verification guarantees both the message's authenticity (it was signed
     # with Alice's private key) and integrity (it was not altered, or otherwise
-    # corrupted, in any way). We have thus acheived the three key characteristics
-    # required for a public-key scheme: message confidentiality (via encryption
-    # and decryption), authenticity and integrity (via signature and verification).
+    # corrupted, in any way after it was signed by Alice). We have thus acheived
+    # the three key characteristics required for a public-key scheme: confidentiality
+    # (via encryption), authenticity and integrity (via signature and verification).
     verified = rsa.verify(nA, 3, mB, oA)
     assert verified == True
 
-    print("full protocol (sign-encrypt-decrypt-verify) test passed")
+    print("full protocol test passed")
 
 def sym_encrypt(key, msg):
+    # Poor man's symmetric cipher.
     return int.from_bytes(key, byteorder="little") ^ int(msg)
 
 def sym_decrypt(key, msg):
