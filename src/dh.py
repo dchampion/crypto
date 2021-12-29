@@ -79,11 +79,8 @@ def generate_g(q, n, p):
         a = secure_random.randrange(2, p-2)
         g = util.fast_mod_exp(a, n, p)
 
-        # TODO: Should always be 1, right?
-        x = util.fast_mod_exp(g, q, p)
-        assert x == 1
-
-        if g != 1: # and util.fast_mod_exp(g, q, p) == 1:
+        # If g is not 1, it must be a generator of the subgroup.
+        if g != 1:
             break
 
     return g
