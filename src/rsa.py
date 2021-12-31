@@ -24,11 +24,11 @@ insecure_random = random.Random()
 
 def generate_rsa_prime(factor_bit_len):
     """
-    Returns a prime number of factor_bit_len length suitable for an RSA modulus.
-    A suitable factor p is one where p is prime, and p-1 is neither a multiple of
-    3 nor 5; the latter restriction to ensure these small, computationally efficient
-    values can be used as exponents for signature verification and encryption,
-    respectively.
+    Returns a prime number of factor_bit_len length suitable as a factor in an
+    RSA modulus. A suitable factor p is one where p is prime, and p-1 is neither
+    a multiple of 3 or 5; the latter restriction to allow these small,
+    computationally efficient values to be used as exponents for signature-
+    verification and encryption, respectively.
     """
     assert factor_min_bit_len <= factor_bit_len <= factor_max_bit_len,\
         f"factor_bit_len must be between {factor_min_bit_len} and {factor_max_bit_len}"
@@ -36,14 +36,16 @@ def generate_rsa_prime(factor_bit_len):
     tries = 100 * factor_bit_len
     for r in range(tries):
         # This loop counter helps ensure the PRNG is producing different values;
-        # namely some of them prime, and neither multiples (-1) of 3 or 5.
+        # namely some of them prime and, of those that are prime, some of them
+        # neither multiples of 3 or 5.
         assert r < tries, f"Did not find a suitable prime after {tries} tries"
 
         # Pick a random value in the specified range.
         n = secure_random.randrange(2**(factor_bit_len-1), 2**factor_bit_len-1)
 
-        # Ensure n-1 is neither a multiple of 3 nor 5, so that these values can
-        # be used for signature verification and encryption, respectively.
+        # Ensure n-1 is neither a multiple of 3 or 5, so that these values can
+        # be used for signature-verification and encryption, respectively. n must
+        # be prime.
         if n % 3 != 1 and n % 5 != 1 and primes.is_prime(n):
             break
 
