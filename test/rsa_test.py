@@ -65,11 +65,6 @@ def test_full_protocol():
     # kept secret). The direction arrows ---> and <--- indicate an exchange of information #
     # between Alice and Bob on an insecure channel.                                        #
     #                                                                                      #
-    # If, in the very last step, the result of the rsa_verify() operation performed by Bob #
-    # returns True, Bob can be sure the message (mB) he decrypts and verifies was signed   #
-    # by Alice's private key; and is therefore identical to the message (mA) that Alice    #
-    # signed and encrypted.                                                                #
-    #                                                                                      #
     # Alice                                       Bob                                      #
     # ----------------------------                ----------------------------             #
     # pA, qA, [nA], d3A, d5A =                    pB, qB, [nB], d3B, d5B =                 #
@@ -102,6 +97,11 @@ def test_full_protocol():
     #                                                                                      #
     #                                               result                                 #
     #                                                 = rsa_verify([nA], [v=3], mB, [oA])  #
+    #                                                                                      #
+    # If, in the very last step, the result of the rsa_verify() operation performed by Bob #
+    # returns True, Bob can be sure the message mB he decrypts and verifies was signed by  #
+    # Alice's private key; and is therefore identical to the message mA that Alice signed  #
+    # and encrypted.                                                                       #
     ########################################################################################
 
     # Alice generates her RSA parameters, and sends the public component (the modulus [nA])
