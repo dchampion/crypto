@@ -18,16 +18,13 @@ def main():
 def test_swap():
     a, b = euclid.swap(1,2)
     assert b > a, f"expected {b} > {a}, got {a} > {b}"
-    
+
     a, b = euclid.swap(2,1)
     assert b > a, f"expected {b} > {a}, got {a} > {b}"
-    
-    a, b = euclid.swap(-2,4)
-    assert b > a, f"expected {b} > {a}, got {a} > {b}"
-    
+
     a, b = euclid.swap(2,2)
     assert b == a, f"expected {a} == {b}, got {a} != {b}"
-    
+
     print("swap tests passed")
 
 def test_gcd():
