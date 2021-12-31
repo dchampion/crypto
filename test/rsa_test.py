@@ -59,26 +59,28 @@ def test_sign_verify():
 def test_full_protocol():
     ########################################################################################
     # The following diagram illustrates the protocol simulated in this test graphically.   #
-    # Values surrounded in square brackets [] are public, and those that are not private   #
-    # (i.e., they must be kept secret). The direction arrows ---> and <--- indicate an     #
-    # exchange of information between Alice and Bob on an insecure channel.                #
+    # Values surrounded in square brackets [] are public (i.e., they can be transmitted    #
+    # over an insecure channel with no compromise to the integrity of the system if they   #
+    # are intercepted by an adversary), and those that are not private (i.e., they must be #
+    # kept secret). The direction arrows ---> and <--- indicate an exchange of information #
+    # between Alice and Bob on an insecure channel.                                        #
     #                                                                                      #
-    # If, in the very last step, the result of the rsa_verify() operation performed by     #
-    # Bob returns True, Bob can be sure the message (mB) he decrypts and verifies was      #
-    # signed by Alice's private key; and is therefore identical to the message (mA) that   #
-    # Alice signed and encrypted.                                                          #
+    # If, in the very last step, the result of the rsa_verify() operation performed by Bob #
+    # returns True, Bob can be sure the message (mB) he decrypts and verifies was signed   #
+    # by Alice's private key; and is therefore identical to the message (mA) that Alice    #
+    # signed and encrypted.                                                                #
     #                                                                                      #
     # Alice                                       Bob                                      #
     # ----------------------------                ----------------------------             #
     # pA, qA, [nA], d3A, d5A =                    pB, qB, [nB], d3B, d5B =                 #
     #   generate_rsa_key(modulus_bit_length)         generate_rsa_key(modulus_bit_length)  #
     #                                                                                      #
-    # [nA]                                --->    [nA] (v=3 and e=5 are known)             #
+    # [nA]                                --->    [nA] (v=3 and e=5 are known.)            #
     #                                                                                      #
-    # [nB] (v=3 and e=5 are known)        <---    [nB]                                     #
+    # [nB] (v=3 and e=5 are known.)       <---    [nB]                                     #
     #                                                                                      #
-    # mA = "8675309" (message to be                                                        #
-    #         signed and encrypted)                                                        #
+    # mA = "8675309" (Message to be                                                        #
+    #         signed and encrypted.)                                                       #
     #                                                                                      #
     # [oA] =                                                                               #
     #   rsa_sign([nA], d3A, pA, qA, mA)                                                    #
@@ -88,10 +90,10 @@ def test_full_protocol():
     #                                                                                      #
     # [mAC] = sym_encrypt_message(KA, mA)                                                  #
     #                                                                                      #
-    # [oA, mAC, cA]                       --->      [oA, mAC, cA] (Bob receives signed     #
-    #                                                        message, encrypted message    #
+    # [oA, mAC, cA]                       --->      [oA, mAC, cA] (Bob receives message    #
+    #                                                        signature, encrypted message, #
     #                                                        and encrypted key material    #
-    #                                                        from Alice)                   #
+    #                                                        from Alice.)                  #
     #                                                                                      #
     #                                               KB                                     #
     #                                                 = rsa_decrypt_key(d5B, [cA], pB, qB) #
@@ -102,35 +104,38 @@ def test_full_protocol():
     #                                                 = rsa_verify([nA], [v=3], mB, [oA])  #
     ########################################################################################
 
-    # Alice generates her RSA parameters, and sends the public component (the modulus nA)
-    # to Bob. In this simulated protocol, we assume that Bob knows Alice's encryption
-    # and signature-verification exponents--the numbers 3 and 5--respectively; these, together
-    # with nA, comprise Alice's public key.
+    # Alice generates her RSA parameters, and sends the public component (the modulus [nA])
+    # to Bob. In this simulated protocol, we assume that Bob knows Alice's signature-
+    # verification and encryption exponents (the numbers 3 and 5, respectively); these,
+    # together with [nA], comprise Alice's public key.
     pA, qA, nA, d3A, d5A = rsa.generate_rsa_key(rsa.modulus_min_bit_len)
 
-    # Bob generates his own RSA parameters, and sends the public component (the modulus nB)
-    # to Alice. Alice, too, knows Bob's public encryption and signature-verification exponents
-    # (also 3 and 5).
+    # Bob generates his own RSA parameters, and sends the public component (the modulus
+    # [nB]) to Alice. Alice, too, knows Bob's public signature-verification and encryption
+    # exponents (again, v=3 and e=5).
     pB, qB, nB, d3B, d5B = rsa.generate_rsa_key(rsa.modulus_min_bit_len)
 
-    # Alice produces a message [mA], and signs it using her private signing key [d3A].
-    # The resulting signature is stored in oA.
+    # Alice produces a message mA, and signs it using her private signing key d3A. The
+    # resulting signature is stored in [oA]. Note that, although it is unclear from this
+    # interface, the message mA is not signed directly; rather, it is hashed first, to the
+    # full domain of the modulus nA, and then signed.
     mA = "8675309"
     oA = rsa.sign(nA, d3A, pA, qA, mA)
 
     # Alice computes and encrypts a symmetric key, using Bob's public key [nB, 5], and
-    # stores it in KA; this she must keep private. cA is the ciphertext of the symmetric
+    # stores it in KA; this she must keep private. [cA] is the ciphertext of the symmetric
     # key input material, which Alice will transmit to Bob, and which Bob will use to
-    # reconstruct the symmetric key [KA].
+    # reconstruct the symmetric key KA.
     KA, cA = rsa.encrypt_random_key(nB, 5)
 
-    # Using the symmetric key [KA], Alice encrypts the message [mA] using a symmetric
-    # scheme. For the purposes of this example, that scheme is a bitwise xor of the
-    # symmetric key [KA] with an integer representation of the message [mA].
+    # Using the symmetric key KA, Alice encrypts the message mA using a symmetric
+    # scheme. For the purposes of this example, that scheme is a simple bitwise xor of
+    # the symmetric key KA with an integer representation of the message mA. In a real-
+    # world application, the symmetric scheme should be an industry standard (e.g., AES).
     mAC = sym_encrypt(KA, mA)
 
-    # From the ciphertext [cA], Bob decrypts Alice's symmetric key [KA] using his
-    # private RSA decryption key [d5B, pB, qB]. He stores the result in KB (KB
+    # From the ciphertext [cA], Bob decrypts Alice's symmetric key KA using his
+    # private RSA decryption key (d5B, pB, qB). He stores the result in KB (KB
     # should be identical to KA).
     KB = rsa.decrypt_random_key(d5B, cA, pB, qB)
     assert KA == KB
@@ -143,13 +148,13 @@ def test_full_protocol():
     mB = sym_decrypt(KB, mAC)
     assert mA == str(mB)
 
-    # Bob verifies Alice's signature [oA] of the original message [mA] (or, more
-    # precisely, his version of it, which he has decrypted and stored in mB).
-    # This verification guarantees both the message's authenticity (it was signed
-    # with Alice's private key) and integrity (it was not altered, or otherwise
-    # corrupted, in any way after it was signed by Alice). We have thus acheived
-    # the three key characteristics required for a public-key scheme: confidentiality
-    # (via encryption), authenticity and integrity (via signature and verification).
+    # Bob verifies Alice's signature [oA] of the original message mA (or, more
+    # precisely, his version of the message mB). This verification guarantees both
+    # the message's authenticity (it was signed with Alice's private key) and
+    # integrity (it was not altered, or otherwise corrupted, in any way after it
+    # was signed by Alice). We have thus acheived the three key characteristics
+    # required for a public-key scheme: confidentiality (via encryption),
+    # authenticity and integrity (via signature and verification).
     verified = rsa.verify(nA, 3, mB, oA)
     assert verified == True
 
