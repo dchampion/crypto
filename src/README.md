@@ -23,4 +23,4 @@ Alternatively, if <code>pytest</code> is installed, you can run the all the test
 pytest
 </code>
 </p>
-Of course, Python (version 3+) must be installed on your computer to run this code.
+Of course, Python (version 3.9.7+) must be installed on your computer to run this code.
