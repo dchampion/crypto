@@ -16,12 +16,6 @@ factor_max_bit_len  = 4096
 modulus_min_bit_len = 2048
 modulus_max_bit_len = 8192
 
-# A cryptographically secure pseudo-random number generator (PRNG).
-secure_random = secrets.SystemRandom()
-
-# A PRNG for expanding k-bit numbers to n-bit numbers, where k < n.
-insecure_random = random.Random()
-
 def generate_rsa_prime(factor_bit_len):
     """
     Returns a prime number of factor_bit_len length suitable as a factor in an
@@ -33,6 +27,7 @@ def generate_rsa_prime(factor_bit_len):
     assert factor_min_bit_len <= factor_bit_len <= factor_max_bit_len,\
         f"factor_bit_len must be between {factor_min_bit_len} and {factor_max_bit_len}"
 
+    secure_random = secrets.SystemRandom()
     tries = 100 * factor_bit_len
     for r in range(tries):
         # This loop counter helps ensure the PRNG is producing different values;
@@ -99,6 +94,7 @@ def encrypt_random_key(n, e):
     k = math.floor(math.log2(n))
 
     # Select a random value [r] in the full range of n.
+    secure_random = secrets.SystemRandom()
     r = secure_random.randrange(0, 2**k-1)
 
     # Hash r; this will be the basis for the key [K] negotiated by both parties
@@ -133,7 +129,7 @@ def msg_to_rsa_number(n, m):
     Maps a message m to an integer suitable for signing.
     """
     # Seed the PRNG with a hash of the message [m] (or h(m)).
-    insecure_random.seed(hashlib.sha256(str(m).encode()).digest())
+    random.seed(hashlib.sha256(str(m).encode()).digest())
 
     # Compute the bit length of the modulus [n].
     k = math.floor(math.log2(n))
@@ -143,7 +139,7 @@ def msg_to_rsa_number(n, m):
     # rather a deterministic mapping from the 256-bit result of h(m) to an n-bit
     # number; that is, a number in the range of the modulus [n] (see RSA-FDH,
     # or full-domain hash, for more information).
-    xb = insecure_random.randbytes(math.ceil(k//8))
+    xb = random.randbytes(math.ceil(k//8))
 
     # Convert byte string to an integer "representative", whose bit length is
     # in the full range of the modulus [n].

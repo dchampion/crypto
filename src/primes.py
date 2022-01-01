@@ -16,8 +16,6 @@ small_primes =  [  3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59
                  757,761,769,773,787,797,809,811,821,823,827,829,839,853,857,859,863,877,881,
                  883,887,907,911,919,929,937,941,947,953,967,971,977,983,991,997]
 
-secure_random = secrets.SystemRandom()
-
 def is_prime(n):
     """
     Returns True if the supplied natural number (positive integer) n is prime, or
@@ -63,7 +61,7 @@ def miller_rabin(n):
     # factor n into 2^exp * mult + 1.
     mult, exp = factor_n(n)
 
-    random.seed()
+    random.seed() # TODO: Necessary? Note this PRNG need not be cryptographically secure.
     
     for _ in range(0, 128, 2):
         
@@ -106,7 +104,7 @@ def fermat(n):
     if n == 3:
         return True
 
-    random.seed()
+    random.seed() # TODO: Necessary? Note this PRNG need not be cryptographically secure.
 
     for _ in range(0, 128):
         base = random.randrange(2, n - 1)
@@ -140,6 +138,7 @@ def generate_prime(bit_len):
     function should be called again.
     """
     tries = 100 * math.floor(math.log2(2**bit_len)+1)
+    secure_random = secrets.SystemRandom()
     for _ in range(tries):
         p = secure_random.randrange(2**(bit_len-1), 2**bit_len) | 1
         if is_prime(p):

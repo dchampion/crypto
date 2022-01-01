@@ -11,9 +11,6 @@ q_bit_len = 256
 # Minimum bit length of the prime DH modulus.
 min_p_bit_len = 2048
 
-# A cryptographically secure pseudo-random number generator (PRNG).
-secure_random = secrets.SystemRandom()
-
 def generate_parameters(p_bit_len):
     """
     Returns the domain (i.e., public) parameters [p, q, g] for the shared,
@@ -53,6 +50,7 @@ def generate_p(q, p_bit_len):
     n_bit_len = p_bit_len - q.bit_length()
     l, u = 2**(n_bit_len-1), 2**n_bit_len
 
+    secure_random = secrets.SystemRandom()
     tries = 100 * math.floor(math.log2(u)+1) # TODO: Find a better estimate for tries.
     for i in range(tries):
         while True:
@@ -76,6 +74,7 @@ def generate_g(n, p):
     Returns a generator [g] that generates the entire subgroup modulo p of order
     (or size) q.
     """
+    secure_random = secrets.SystemRandom()
     while True:
         # Pick a random base in the full range of the modulus.
         a = secure_random.randrange(2, p-2)
@@ -98,6 +97,7 @@ def generate_keypair(g, q, p):
     must be kept secret.
     """
     # Select a random, private key in the range of q.
+    secure_random = secrets.SystemRandom()
     kPriv = secure_random.randrange(1, q-1)
 
     # Compute a public key based on this private key.
