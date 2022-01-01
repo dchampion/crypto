@@ -13,7 +13,7 @@ def main():
     test__gcdx()
     test_lcm()
     test_inverse()
-    print("euclid tests passed")
+    print("all euclid tests passed")
 
 def test_swap():
     a, b = euclid.swap(1,2)
