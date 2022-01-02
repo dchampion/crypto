@@ -1,6 +1,5 @@
-"""
-Various functions for generating large random numbers and testing them for primality.
-"""
+""" Various functions for generating primes and primality testing. """
+
 import random
 import secrets
 import math
@@ -18,13 +17,12 @@ small_primes =  [  3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59
 
 def is_prime(n):
     """
-    Returns True if the supplied natural number (positive integer) n is prime, or
-    False if it is composite. If n < 1000, the probability of a correct answer is
-    1 (that is, this function is deterministic). If n > 1000, the probability this
-    function will return an incorrect answer, or false positive, is .5^-128; i.e.,
-    it is infinitesimally small.
+    Returns True if the supplied positive integer n is prime, or False if it is composite.
+    If n < 1000, the probability of a correct answer is 1 (that is, this function is
+    deterministic). If n > 1000, the probability this function will return an incorrect
+    answer, or false positive, is .5^-128; i.e., it is infinitesimally small.
     """
-    assert n > 1,   "n must be greater than 1"
+    assert n > 1
 
     # Handle most trivial cases.
     if n == 2:
@@ -44,105 +42,96 @@ def is_prime(n):
 
 def miller_rabin(n):
     """
-    The Miller-Rabin primality test.
-
-    With a very high degree of probability, returns True if the supplied natural number
-    (positive integer) n is prime. The probability of a false positive (i.e., that this
-    function will return True if in fact n is composite) is .5^128; i.e., it is
-    infinitesimally small. Otherwise, if n is composite, this method will return False
-    with a probability of 1.
+    With a very high degree of probability, returns True if the supplied positive odd integer n
+    is prime. The probability of a false positive (i.e., that this function will return True if
+    in fact n is composite) is .5**128; i.e., it is infinitesimally small. Otherwise, if n is
+    composite, this method will return False with a probability of 1.
     """
-    assert n >= 3 and n % 2 != 0,   "n must be an odd integer > 2"
+    assert n >= 3 and n % 2 != 0
 
     if n == 3:
         # return True in this most trivial edge case.
         return True
 
-    # factor n into 2^exp * mult + 1.
-    mult, exp = factor_n(n)
-
-    random.seed() # TODO: Necessary? Note this PRNG need not be cryptographically secure.
-    
+    # factor n into 2**e * m + 1.
+    m, e = _factor_n(n)
     for _ in range(0, 128, 2):
-        
-        base = random.randrange(2, n - 1)
-        
-        x = util.fast_mod_exp(base, mult, n)
-        
-        # if x is 1, repeated squaring will
-        # not change the result, so don't bother continuing.
+        b = random.randrange(2, n - 1)
+        x = util.fast_mod_exp(b, m, n)
+
+        # if x is 1, repeated squaring will not change the result, so go back to the beginning
+        # and try another random b.
         if x != 1:
             i = 0
             while x != n - 1:
-                if i == exp - 1:
-                    # if we don't find an x = n - 1 by
-                    # repeated squaring, n cannot be prime.
+                if i == e - 1:
+                    # if we don't find an x = n - 1 by repeated squaring, n cannot be prime,
+                    # so return False and we're done.
                     return False
                 else:
-                    x = (x ** 2) % n
+                    x = x ** 2 % n
                     i += 1
 
-    # if we haven't found a composite after 64 rounds,
-    # then n is prime with a 1-2^-128 degree of probability.
+    # if we haven't found a composite after 64 rounds, then n is prime with a 1-(2**-128)
+    # degree of probability.
     return True
 
 def fermat(n):
     """
-    The Fermat primality test.
-
-    With a very high degree of probability, returns True if the supplied natural number
-    (positive integer) n is prime, or False if it is composite. The probability of a
-    false positive (i.e., that this function will return True if in fact n is composite)
-    is .5^128; i.e., it is infinitesimally small. However, if n happens to be a Carmichael
-    number, in particular one with very large prime factors, this function will very likely
-    return True, even though n is composite. While Carmichael numbers of this sort are rare,
-    they do exist. Because of this, the Miller-Rabin test, which controls for them, should
-    be preferred.
+    With a very high degree of probability, returns True if the supplied positive odd integer
+    n is prime, or False if it is composite. The probability of a false positive (i.e., that
+    this function will return True if in fact n is composite) .5**128; i.e., it is infinitesimally
+    small. However, if n happens to be a Carmichael number, in particular one with very large
+    prime factors, this function will very likely return True, even though n is composite. While
+    Carmichael numbers of this sort are rare, they do exist. Because of this, the Miller-Rabin
+    test, which controls for them, should be preferred.
     """
-    assert n >= 3 and n % 2 != 0,   "n must be an odd integer > 2"
+    assert n >= 3 and n % 2 != 0
 
     if n == 3:
         return True
 
-    random.seed() # TODO: Necessary? Note this PRNG need not be cryptographically secure.
-
+    # Do up to 128 rounds of the Fermat primality test on random bases (see Fermat's little
+    # theorem).
     for _ in range(0, 128):
         base = random.randrange(2, n - 1)
-        result = util.fast_mod_exp(base, n-1, n)
+        result = util.fast_mod_exp(base, n - 1, n)
         if result != 1:
             return False
 
     return True
 
-def factor_n(n):
+def _factor_n(n):
     """
-    Converts input n to the form 2^exp * mult + 1, where mult is the greatest odd
-    divisor of n - 1, and returns mult and exp.
+    Returns the pair (m, e), after conversion of the supplied positive odd integer n to the
+    form 2**e * m + 1, where m is the greatest odd divisor of n - 1.
     """
-    assert n >= 3 and n % 2 != 0,   "n must be an odd integer > 2"
+    assert n >= 3 and n % 2 != 0
 
-    mult = n - 1
-    exp = 0
+    m = n - 1
+    e = 0
 
-    while mult % 2 == 0:
-        mult //= 2
-        exp += 1
+    while m % 2 == 0:
+        m //= 2
+        e += 1
 
-    return mult, exp
+    return m, e
 
 def generate_prime(bit_len):
     """
     Returns a prime number of bit_len bits in length. The function selects random values in the
     range 2**bit_len-1 to 2**bit_len, and tests them for primality. If a prime is not found after
     a sensible number of tries, an exception is raised (this should be rare), in which case the
-    function should be called again.
+    function can be called again to generate a prime.
     """
     tries = 100 * math.floor(math.log2(2**bit_len)+1)
     secure_random = secrets.SystemRandom()
     for _ in range(tries):
-        p = secure_random.randrange(2**(bit_len-1), 2**bit_len) | 1
+        p = secure_random.randrange(2**(bit_len-1), 2**bit_len)
+
+        # Make p odd.
+        p |= 1
         if is_prime(p):
             return p
 
-    err_str = f"Failed to find a {bit_len}-bit prime in {tries} random selections"
-    raise Exception(err_str)
+    raise Exception("Failed to generate a prime")
