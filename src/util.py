@@ -1,48 +1,78 @@
-""" Crypto helper functions """
+""" Crypto helper utilities """
 import euclid
 
 def fast_mod_exp(b, e, n):
     """
-    A fast algorithm for modular exponentiation (see square-and-multiply).
+    Returns the equivalent of b ** e % n, where b is the base, e is the exponent
+    and n is the modulus; but with much better performance than that form for
+    very large values of e.
     """
-    assert b >= 1 and e >= 1 and n >= 1,   "b, e and n must all be > 0"
+    assert isinstance(b, int) and b >= 0
+    assert isinstance(e, int) and e >= 0
+    assert isinstance(n, int) and n >= 1
 
-    result = b if (e & 1) else 1
-    exp_bit_len = e.bit_length()
+    e_bit_len = e.bit_length()
 
-    for x in range(1, exp_bit_len):
-        b = (b ** 2) % n
-        if (e >> x) & 1:
-            result = (result * b) % n
+    # Don't screw around with edge cases; let the language primitives do the
+    # work (this will be no slower than the fast algorithm).
+    if e_bit_len < 8:
+        result = b ** e % n
+    else:
+        # Use square-and-multiply for speedy exponentiation of larger exponents.
+        result = b if (e & 1) else 1
+        for x in range(1, e_bit_len):
+            b = (b ** 2) % n
+            if (e >> x) & 1:
+                result = (result * b) % n
 
     return result
 
 def fast_mod_exp_crt(b, e, p, q):
     """
-    A fast algorithm for modular exponentiation, where the modulus is a large,
-    semi-prime number; i.e., the product of two very large prime factors (p and q),
-    the primary use-case for which is RSA. When exponentiating very large bases
-    to very large powers modulo a semi-prime number, this function provides a
-    factor of 3-4 time savings over fast_mod_exp.
+    Returns the equivalent of b ** e % pq, where b is the base, e is the
+    exponent and p and q are the sole prime factors of a (semi-prime) modulus.
+    When exponentiating bases to very large powers modulo such a modulus,
+    this function provides a factor of 3-4 performance improvement over
+    fast_mod_exp.
     """
-    a = fast_mod_exp(b, e % (p - 1), p)
-    b = fast_mod_exp(b, e % (q - 1), q)
+    assert isinstance(b, int)
+    assert isinstance(e, int)
+    assert isinstance(p, int)
+    assert isinstance(q, int)
 
-    return ab_to_x(a, b, p, q)
+    a = fast_mod_exp(b, _reduce(e, p), p)
+    b = fast_mod_exp(b, _reduce(e, q), q)
 
-def ab_to_x(a, b, p, q):
+    return from_crt(a, b, p, q)
+
+def _reduce(e, n):
+    r = e % (n - 1)
+    return r if r != 0 else e
+
+def from_crt(a, b, p, q):
     """
-    Given a CRT representation (x mod p, x mod q) of some integer x mod pq,
-    returns x mod pq (CRT -> Chinese Remainder Theorem).
+    Returns a unique value x from the set (1, ..., p*q - 1) given the CRT
+    representation of x, or (x mod p, x mod q). The parameter a is shorthand
+    for x mod p, and the parameter b is shorthand for x mod q.
     """
+    assert isinstance(a, int) and a >= 0
+    assert isinstance(b, int) and b >= 0
+    assert isinstance(p, int) and p >= 1
+    assert isinstance(q, int) and q >= 1
+
     inv = euclid.inverse(q, p)
 
     # Use Garner's formula to compute x mod pq
     return (((a - b) * inv) % p) * q + b
 
-def x_to_ab(x, p, q):
+def to_crt(x, p, q):
     """
-    Given some integer x mod pq, returns the CRT representation (x mod p, x mod q)
-    (CRT -> Chinese Remainder Theorem).
+    Returns the pair (a, b), where (a, b) is the CRT representation of x in the
+    set (1, ..., p*q - 1). The value a from the returned pair is shorthand for
+    x mod p, and the value b is shorthand for x mod q.
     """
+    assert isinstance(x, int) and x >= 0
+    assert isinstance(p, int) and p >= 1
+    assert isinstance(q, int) and q >= 1
+
     return x % p, x % q
