@@ -1,7 +1,6 @@
 """ An implementation of Diffie-Hellman """
 import primes
 import secrets
-import math
 import hashlib
 import util
 
@@ -55,16 +54,9 @@ def _generate_p(q, p_bit_len):
     l, u = 2**(n_bit_len-1), 2**n_bit_len
 
     secure_random = secrets.SystemRandom()
-    tries = 100 * math.floor(math.log2(u)+1) # TODO: Find a better estimate for tries.
+    tries = 100 * p_bit_len
     for i in range(tries):
-        while True:
-
-            # If n is not even, try again (because p cannot then be odd in the
-            # equation p = q * n + 1).
-            n = secure_random.randrange(l, u)
-            if n % 2 == 0:
-                break
-
+        n = secure_random.randrange(l, u)
         p = q * n + 1
         if primes.is_prime(p):
             break

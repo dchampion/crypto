@@ -2,7 +2,6 @@
 
 import random
 import secrets
-import math
 import util
 
 small_primes =  [  3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
@@ -127,13 +126,10 @@ def generate_prime(bit_len):
     a sensible number of tries, an exception is raised (this should be rare), in which case the
     function can be called again to generate a prime.
     """
-    tries = 100 * math.floor(math.log2(2**bit_len)+1)
+    tries = 100 * bit_len
     secure_random = secrets.SystemRandom()
     for _ in range(tries):
         p = secure_random.randrange(2**(bit_len-1), 2**bit_len)
-
-        # Make p odd.
-        p |= 1
         if is_prime(p):
             return p
 
