@@ -2,7 +2,7 @@
 
 def swap(a, b):
     """ Returns positive integers a and b in increasing order. """
-    validate_params(a, b)
+    _validate_params(a, b)
 
     if a > b:
         return b, a
@@ -11,7 +11,7 @@ def swap(a, b):
 def gcd(a, b):
     """ Returns the greatest common divisor (or gcd) of positive
     integers a and b. """
-    validate_params(a, b)
+    _validate_params(a, b)
 
     while b != 0:
         a, b = swap(a, b)
@@ -26,7 +26,7 @@ def _gcd(a, b):
     can cause stack overflow if its inputs a and/or b are too large.
     A safer alternative is to use gcd(a,b) instead.
     """
-    validate_params(a, b)
+    _validate_params(a, b)
 
     if b == 0:
         return a
@@ -41,7 +41,7 @@ def gcdx(a, b):
     integers a and b, and the x and y solutions for the relation
     ax = bx = gcd(a,b) (see Bezout's identity).
     """
-    validate_params(a, b)
+    _validate_params(a, b)
 
     a, b = swap(a, b)
 
@@ -71,7 +71,7 @@ def _gcdx(a, b):
     cause stack overflow if its inputs a and/or b are too large. A safer
     alternative is to use gcdx(a,b) instead.
     """
-    validate_params(a, b)
+    _validate_params(a, b)
 
     if b == 0:
         return a, 0, 1
@@ -88,7 +88,7 @@ def _gcdx(a, b):
 def lcm(a, b):
     """ Returns the least common multiple (or lcm) of positive integers
     a and b. """
-    validate_params(a, b)
+    _validate_params(a, b)
 
     return (a*b) // gcd(a, b)
 
@@ -98,7 +98,7 @@ def inverse(a, b):
     a and b are positive integers; if no such inverse exists, raises an
     exception.
     """
-    validate_params(a, b)
+    _validate_params(a, b)
 
     gcd, x, y = gcdx(a, b)
     if gcd != 1:
@@ -109,7 +109,7 @@ def inverse(a, b):
 
     return (inverse % b + b) % b
 
-def validate_params(a, b):
+def _validate_params(a, b):
     assert isinstance(a, int)
     assert isinstance(b, int)
     assert a >= 0

@@ -22,7 +22,7 @@ def is_prime(n):
     deterministic). If n > 1000, the probability this function will return an incorrect
     answer, or false positive, is .5^-128; i.e., it is infinitesimally small.
     """
-    assert n > 1
+    assert isinstance(n, int) and n > 1
 
     # Handle most trivial cases.
     if n == 2:
@@ -47,7 +47,7 @@ def miller_rabin(n):
     in fact n is composite) is .5**128; i.e., it is infinitesimally small. Otherwise, if n is
     composite, this method will return False with a probability of 1.
     """
-    assert n >= 3 and n % 2 != 0
+    _validate_param(n)
 
     if n == 3:
         # return True in this most trivial edge case.
@@ -86,7 +86,7 @@ def fermat(n):
     Carmichael numbers of this sort are rare, they do exist. Because of this, the Miller-Rabin
     test, which controls for them, should be preferred.
     """
-    assert n >= 3 and n % 2 != 0
+    _validate_param(n)
 
     if n == 3:
         return True
@@ -106,7 +106,7 @@ def _factor_n(n):
     Returns the pair (m, e), after conversion of the supplied positive odd integer n to the
     form 2**e * m + 1, where m is the greatest odd divisor of n - 1.
     """
-    assert n >= 3 and n % 2 != 0
+    _validate_param(n)
 
     m = n - 1
     e = 0
@@ -116,6 +116,9 @@ def _factor_n(n):
         e += 1
 
     return m, e
+
+def _validate_param(n):
+    assert isinstance(n, int) and n >= 3 and n % 2 != 0
 
 def generate_prime(bit_len):
     """
