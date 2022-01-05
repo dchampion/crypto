@@ -1,22 +1,8 @@
-# crypto
-This repository contains notes and research on the subject of cryptography, a high-level summary of which is presented in this ~12k-word <a href=https://raw.githubusercontent.com/dchampion/crypto/master/TheElementsOfPublicKeyCryptography.pdf>survey of <i>public-key</i> cryptography</a>; a relatively modern branch of the field that is (among other things) foundational to internet security.
-<p>
-If the mere thought of <i>12k-word survey</i> makes your eyes glaze over, read only the first page, which recounts a little-known and entertaining anecdote from the early days of academic cryptography.
-<p>
-Each artifact in this repository&mdash;excluding <i>meta</i> files like this README&mdash;is summarized below.
+# Cryptography
+Cryptography is a word given to us by the ancient Greeks. Translated literally, it means <i>secret writing</i>. For centuries, cryptography was concerned with the encryption of messages&mdash;verbal, textual, or otherwise&mdash;into coded ciphers, to keep the messages secret from the prying eyes of adversaries. This is largely still the case. But, since the advent of the digital age, somewhere around the middle of the last century, cryptography has come to involve so much more.
 
-## List of Substantive Artifacts (alphabetical)
-<p>
-1. <a href=https://github.com/dchampion/crypto/blob/master/CryptoNotes.txt><b>CryptoNotes.txt</b></a> &ndash; A collection of sundry notes&mdash;including open questions, and some answers&mdash;gathered during the course of my research.
-<p>
-2. <b>Cryptography.xlsx</b> &ndash; A collection of <i>MS-Excel</i> worksheets used to facilitate my understanding of various cryptographic techniques.
-<p>
-3. <a href=https://github.com/dchampion/crypto/blob/master/EuclideanAlgorithms.md><b>EuclideanAlgorithms.md</b></a> &ndash; A demonstration of the Euclidean algorithms, which can be used to efficiently compute encryption and decryption exponents used in RSA encryption.
-<p>
-4. <a href=https://github.com/dchampion/crypto/blob/master/LectureNotes.txt><b>LectureNotes.txt</b></a> &ndash; Lecture notes from a two-semester course on cryptography I took online in the winter and spring of 2020/2021.
-<p>
-5. <a href=https://github.com/dchampion/crypto/blob/master/NumberTheory.md><b>NumberTheory.md</b></a> &ndash; Helpful mnemonics on the number-theoretic underpinnings of Diffie-Hellman and RSA.
-<p>
-6. <a href=https://github.com/dchampion/crypto/blob/master/src><b>Source Code</b></a> &ndash; Implementations of many of the cryptographic primitives covered in these documents in the Python programming language; e.g. the Euclidean algorithms, primality testing, Diffie-Hellman, RSA, etc.
-<p>
-7. <a href=https://raw.githubusercontent.com/dchampion/crypto/master/TheElementsOfPublicKeyCryptography.pdf><b>TheElementsOfPublicKeyCryptography.pdf</b></a> &ndash; A 12k-word survey of public-key cryptography.
+Modern cryptography is a branch of <i>cryptology</i> (in Greek, the <i>study</i> of secrets), which concerns not only code-<i>making</i> (the stuff of cryptography) but also code-<i>breaking</i>. The code-breaking branch of cryptology is called <i>cryptanalysis</i>. One might be tempted to think cryptanalysis is the domain of spies and hackers, and only the <i>good guys</i> do cryptography. This is only partially true. Cryptographers (code-makers) rely on cryptanalysts (code-breakers) to vet the quality of the ciphers they design; cryptanalysts do this by trying to break the ciphers. If the cryptanalysts can break the ciphers, then the cryptographers can go back to the drawing board and fix them before deploying the ciphers in sensitive applications. This is a good thing if you are one of the good guys.
+
+Cryptography is itself subdivided into two main branches. These are <i>symmetric-key</i> cryptography and <i>public-key</i> (also known as <i>asymmetric-key</i>) cryptography. The former is what most people think of when they hear the words <i>cryptography</i>, <i>encryption</i> or <i>cipher</i>. Indeed, symmetric-key cryptography was (and still is) the standard for encryption for nearly four-thousand years, starting with heiroglyphs carved into cave walls by the ancient Egyptians. Public-key cryptography is a much more recent invention. It emerged in light of inventions like the digital computer, and later the internet; technologies that demanded encryption at a scale much larger than traditional, symmetric ciphers could provide.
+
+It is with the subject of public-key cryptography that the artifacts in this repository are concerned. The repository is divided into two sections. One section (contained in the /doc folder) contains notes and documents written by me, in plain English, about public-key cryptography. The other section (contained in the /code folder) contains source-code implementations, written by me, in the Python programming language, of public-key cryptographic functions.
