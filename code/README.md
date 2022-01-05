@@ -1,5 +1,5 @@
-# Summary (and disclaimer)
-The modules in this folder implement many of the public-key primitives one might expect to find in a cryptography library, such as key generation, encryption, decryption, digital signature and signature verification; they do not implement higher-level services (e.g. protocols, authentication) which, in addition to the primitives just mentioned, would be provided in a fully-featured cryptography library.
+# Summary
+The modules in this package implement many of the public-key primitives one might expect to find in a cryptography library, such as key generation, encryption, decryption, digital signature and signature verification; they do not implement higher-level services (e.g. protocols, authentication) which, in addition to the primitives just mentioned, would be provided in a fully-featured cryptography library.
 
 As such, while this library may be of academic interest to someone studying public-key cryptography, it should probably not be used to secure sensitive data in real applications.
 
