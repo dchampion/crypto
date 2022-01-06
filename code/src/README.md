@@ -1,5 +1,5 @@
 # Summary
-The modules in this package comprise a fully-featured public-key cryptosystem, including protocols for sysmmetric key agreement, encryption, decryption, digital signature and signature verification.
+The modules in this package comprise a fully-featured public-key cryptosystem, including protocols for symmetric key agreement, encryption, decryption, digital signature and signature verification.
 
 To see examples of their usage, consult the unit tests in the <a href=https://github.com/dchampion/crypto/tree/master/code/test>/test</a> folder of this repository.
 
