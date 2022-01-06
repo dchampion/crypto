@@ -5,12 +5,12 @@ To see examples of their usage, consult the unit tests in the <a href=https://gi
 
 # List of Modules
 <p>
-1. <code><b>dh.py</b></code> An implementation of the Diffie-Hellman key agreement protocol.
+1. <b>dh.py</b> &mdash; An implementation of the Diffie-Hellman key agreement protocol.
 <p>
-2. <code><b>euclid.py</b></code> Algorithms for computing the greatest common divisor (GCD), least common multiple (LCM) and modular multiplicative inverses of positive integers.
+2. <b>euclid.py</b> &mdash; Algorithms for computing the greatest common divisor (GCD), least common multiple (LCM) and modular multiplicative inverses of positive integers.
 <p>
-3. <code><b>primes.py</b></code> Algorithms for primality testing and random prime number generation.
+3. <b>primes.py</b> &mdash; Algorithms for primality testing and random prime number generation.
 <p>
-4. <code><b>rsa.py</b></code> Implementations of the Rivest-Shamir-Adleman encryption/decryption and digital signature/verification protocols.
+4. <b>rsa.py</b> &mdash; Implementations of the Rivest-Shamir-Adleman encryption/decryption and digital signature/verification protocols.
 <p>
-5. <code><b>util.py</b></code> Algorithms for efficient exponentiation of bases to very large exponents.
+5. <b>util.py</b> &mdash; Algorithms for efficient exponentiation of bases to very large exponents.
