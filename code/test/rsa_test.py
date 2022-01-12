@@ -51,7 +51,7 @@ def test_encrypt_decrypt():
 def test_sign_verify():
     for m in ["When", "in", "the", "course", "of", "human", "events..."]:
         p, q, n, d3, d5 = rsa.generate_rsa_key(rsa.modulus_min_bit_len)
-        o = rsa.sign(n, d3, p, q, m)
+        o = rsa.sign(d3, p, q, m)
         assert True == rsa.verify(n, 3, m, o)
 
     print(f"test_sign_verify passed multiple tests using {rsa.modulus_min_bit_len}-bit moduli")
@@ -78,7 +78,7 @@ def test_full_protocol():
     #         signed and encrypted.)                                                       #
     #                                                                                      #
     # [oA] =                                                                               #
-    #   rsa_sign([nA], d3A, pA, qA, mA)                                                    #
+    #   rsa_sign(d3A, pA, qA, mA)                                                          #
     #                                                                                      #
     # KA, [cA] =                                                                           #
     #   rsa_encrypt_key([nB], [e=5])                                                       #
@@ -120,7 +120,7 @@ def test_full_protocol():
     # interface, the message mA is not signed directly; rather, it is hashed first, to the
     # full domain of the modulus nA, and then signed.
     mA = "8675309"
-    oA = rsa.sign(nA, d3A, pA, qA, mA)
+    oA = rsa.sign(d3A, pA, qA, mA)
 
     # Alice computes and encrypts a symmetric key, using Bob's public key [nB, 5], and
     # stores it in KA; this she must keep private. [cA] is the ciphertext of the symmetric

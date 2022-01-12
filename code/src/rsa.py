@@ -155,19 +155,18 @@ def _msg_to_rsa_number(n, m):
 
     return xi
 
-def sign(n, d, p, q, m):
+def sign(d, p, q, m):
     """
-    Given a public modulus [n], a private signing key [d], and the private factors of n [p
-    and q], signs a message [m] and returns its signature. This function is the inverse of the
-    function verify.
+    Given a private signing key [d], and the private factors of a public modulus [p and q],
+    signs a message [m] and returns its signature. This function is the inverse of the function
+    verify.
     """
-    assert isinstance(n, int)
     assert isinstance(d, int)
     assert isinstance(p, int)
     assert isinstance(q, int)
 
-    # Map k-bit hash of m to an integer n bits in length.
-    s = _msg_to_rsa_number(n, m)
+    # Map k-bit hash of m to an integer p*q (aka n) bits in length.
+    s = _msg_to_rsa_number(p*q, m)
 
     # Sign the value using the CRT version of util.fast_mod_exp for a 3- to 4-fold performance
     # improvement (exponentiation to such large exponents is otherwise costly).
