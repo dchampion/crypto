@@ -16,8 +16,8 @@ modulus_min_bit_len = 2048
 modulus_max_bit_len = 8192
 
 # Global RSA signature-verification and encryption exponents.
-_GLOBAL_VERIFICATION_EXPONENT = 3
-_GLOBAL_ENCRYPTION_EXPONENT   = 5
+VERIFICATION_EXPONENT = 3
+ENCRYPTION_EXPONENT   = 5
 
 def generate_rsa_prime(factor_bit_len):
     """
@@ -41,8 +41,8 @@ def generate_rsa_prime(factor_bit_len):
         # Ensure n-1 is neither a multiple of 3 or 5, so that these values can be used as
         # signature-verification and encryption exponents, respectively. n must of course
         # be prime.
-        if n % _GLOBAL_VERIFICATION_EXPONENT != 1\
-             and n % _GLOBAL_ENCRYPTION_EXPONENT != 1 and primes.is_prime(n):
+        if n % VERIFICATION_EXPONENT != 1\
+             and n % ENCRYPTION_EXPONENT != 1 and primes.is_prime(n):
             break
 
     if r == tries - 1:
@@ -75,8 +75,8 @@ def generate_rsa_key(modulus_bit_len):
     t = euclid.lcm(p-1, q-1)
 
     # Compute the signature and decryption exponents, d3 and d5, respectively.
-    d3 = euclid.inverse(_GLOBAL_VERIFICATION_EXPONENT, t)
-    d5 = euclid.inverse(_GLOBAL_ENCRYPTION_EXPONENT, t)
+    d3 = euclid.inverse(VERIFICATION_EXPONENT, t)
+    d5 = euclid.inverse(ENCRYPTION_EXPONENT, t)
 
     # p, q, d3 and d5 must be kept secret; only n (i.e., p*q), together with the signature-
     # verification and encryption exponents (the numbers 3 and 5, respectively), are part of
