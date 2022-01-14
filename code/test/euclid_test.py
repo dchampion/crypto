@@ -4,6 +4,8 @@ sys.path.append("../src")
 import euclid
 import math
 
+#TODO: Add tests for negative integers.
+
 def main():
     print("Running euclid tests...")
     test_swap()
