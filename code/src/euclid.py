@@ -112,3 +112,5 @@ def inverse(a, b):
 def _validate_params(a, b):
     assert isinstance(a, int)
     assert isinstance(b, int)
+    assert a >= 0
+    assert b >= 0
