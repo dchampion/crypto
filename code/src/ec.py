@@ -10,8 +10,6 @@ G = [Gx, Gy]
 n = 115792089237316195423570985008687907852837564279074904382605163141518161494337
 h = 1
 
-T = (p, a, b, G, n, h)
-
 X = 0
 Y = 1
 
@@ -22,14 +20,24 @@ def new_curve(p1, a1, b1, Gx1, Gy1, n1, h1):
 
 def add(pt):
     if pt == G:
-        slope = (((3 * pt[X]**2) + a) * euclid.inverse(2 * Gy, p)) % p
-        x = (slope**2 - (2 * Gx)) % p
-        y = ((slope * Gx) - (slope * x) - Gy) % p
-    elif pt[X] == Gx:
-        x, y = 0, 0
+        [x, y] = double(pt)
+    elif pt[X] != Gx:
+        [x, y] = _add(pt)
     else:
-        slope = ((pt[Y] - Gy) * euclid.inverse(pt[X] - Gx, p)) % p
-        x = (slope**2 - (pt[X] + Gx)) % p
-        y = ((slope * pt[X]) - (slope * x) - pt[Y]) % p
+        [x, y] = [0, 0]
 
-    return x, y
+    return [x, y]
+
+def _add(pt):
+    slope = ((pt[Y] - Gy) * euclid.inverse(pt[X] - Gx, p)) % p
+    x = (slope**2 - (pt[X] + Gx)) % p
+    y = ((slope * pt[X]) - (slope * x) - pt[Y]) % p
+
+    return [x, y]
+
+def double(pt):
+    slope = (((3 * pt[X]**2) + a) * euclid.inverse(2 * pt[Y], p)) % p
+    x = (slope**2 - (2 * pt[X])) % p
+    y = ((slope * pt[X]) - (slope * x) - pt[Y]) % p
+
+    return [x, y]

@@ -3,6 +3,7 @@ import euclid_test
 import primes_test
 import rsa_test
 import util_test
+import ec_test
 
 def main():
     print("Running all tests...")
@@ -11,6 +12,7 @@ def main():
     primes_test.main()
     rsa_test.main()
     util_test.main()
+    ec_test.main()
     print("all tests passed")
 
 if __name__ == "__main__":
