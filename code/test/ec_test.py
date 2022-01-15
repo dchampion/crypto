@@ -19,13 +19,13 @@ def main():
     print("Running ec tests...")
     test_add()
     test_double()
-    print("all dh tests passed")
+    print("all ec tests passed")
 
 def test_add():
     ec.new_curve(p, a, b, Gx, Gy, n, h)
-    for i in range(0, len(pt_group)-1):
-        pt = ec.add(pt_group[i])
-        assert pt == pt_group[i+1]
+    for i in range(1, len(pt_group)):
+        pt = ec.add(pt_group[i-1])
+        assert pt == pt_group[i]
 
     print("test_ec_add passed")
 
