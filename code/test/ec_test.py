@@ -9,7 +9,7 @@ a = 2
 b = 2
 Gx = 5
 Gy = 1
-n = 1
+n = 19
 h = 1
 
 pt_group = [[5,1],[6,3],[10,6],[3,1],[9,16],[16,13],[0,6],[13,7],[7,6],
@@ -31,7 +31,10 @@ def test_add():
 
 def test_double():
     ec.new_curve(p, a, b, Gx, Gy, n, h)
-    #TODO: Implement me.
+    for i in range(1, len(pt_group)):
+        pt = ec.double(pt_group[i-1])
+        assert pt == pt_group[((i*2)%n)-1]
+
     print("test_ec_double passed")
 
 if __name__ == "__main__":
