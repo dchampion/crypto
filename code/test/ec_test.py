@@ -46,32 +46,32 @@ def test_double():
 
 def test_validate_curve_params():
     ec.new_curve(p, a, b, Gx, Gy, n, h, B_iters)
-    ec.validate_curve_params(B_iters)
+    ec._validate_curve_params(B_iters)
 
     print("test_validate_curve_params passed")
 
 def test_fast_point_at():
     ec.new_curve(p, a, b, Gx, Gy, n, h, B_iters)
     for i in range(1, len(pt_group)+1):
-        assert ec.point_at(i) == ec.fast_point_at(i)
+        assert ec._point_at(i) == ec._fast_point_at(i)
 
-    assert ec.fast_point_at(n) == ec._pt_i
+    assert ec._fast_point_at(n) == ec._pt_i
 
     print("test_fast_point_at passed")
 
 def test_point_at():
     ec.new_curve(p, a, b, Gx, Gy, n, h, B_iters)
     for i in range(1, len(pt_group)+1):
-        assert ec.point_at(i) == pt_group[i-1]
+        assert ec._point_at(i) == pt_group[i-1]
 
-    assert ec.point_at(n) == ec._pt_i
+    assert ec._point_at(n) == ec._pt_i
 
     print("test_point_at passed")
 
 def test_generate_key():
     importlib.reload(ec)
     d, Q = ec.generate_key()
-    pt = ec.fast_point_at(d)
+    pt = ec._fast_point_at(d)
     assert pt == Q
 
     print("test_generate_key passed")
