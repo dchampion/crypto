@@ -13,48 +13,54 @@ _G = [_Gx, _Gy]
 _n = 115792089237316195423570985008687907852837564279074904382605163141518161494337
 _h = 1
 
+# Point at infinity
+_pt_i = [0, 0]
+
 # Global curve point X and Y list indices.
 X = 0
 Y = 1
 
 def new_curve(p, a, b, Gx, Gy, n, h, B_iters=100):
     """
-    Redefines and validates the default (secp256k1) elliptic curve.
+    Redefines the default (secp256k1) elliptic curve parameters, and validates
+    the new ones.
     """
     global _p, _a, _b, _Gx, _Gy, _n, _h, _G
+
     _p, _a, _b, _Gx, _Gy, _n, _h = p, a, b, Gx, Gy, n, h
     _G = [_Gx, _Gy]
+
     validate_curve_params(B_iters)
 
 def add(pt):
     """
-    Returns the sum of the supplied point pt and the generator point _G; or,
-    if pt[X] == _Gx, pt itself.
+    Returns the sum of the supplied point pt and the generator _G. If
+    pt[X] == _Gx, or pt == [0, 0] (i.e., the point at infinity), returns
+    [0, 0].
     """
+    validate_pt(pt)
+
     if pt == _G:
-        [x, y] = double(pt)
-    elif pt[X] != _Gx:
-        [x, y] = _add(pt)
+        return double(pt)
+    elif pt[X] == _Gx or pt == _pt_i:
+        return _pt_i
     else:
-        [x, y] = pt #TODO: What here?
-
-    return [x, y]
-
-def _add(pt):
-    """
-    Returns the sum of the supplied point pt and the generator point _G.
-    TODO: What happens if we pass this the identity element?
-    """
-    slope = ((pt[Y] - _Gy) * euclid.inverse((pt[X] - _Gx) % _p, _p)) % _p
-    x = (slope**2 - (pt[X] + _Gx)) % _p
-    y = ((slope * pt[X]) - (slope * x) - pt[Y]) % _p
+        slope = ((pt[Y] - _Gy) * euclid.inverse((pt[X] - _Gx) % _p, _p)) % _p
+        x = (slope**2 - (pt[X] + _Gx)) % _p
+        y = ((slope * pt[X]) - (slope * x) - pt[Y]) % _p
 
     return [x, y]
 
 def double(pt):
     """
-    Returns the sum of the supplied point pt added to itself.
+    Returns the sum of supplied point pt with itself. If pt == [0, 0] (i.e.,
+    the point at infinity), returns [0, 0].
     """
+    validate_pt(pt)
+
+    if pt == _pt_i:
+        return pt
+
     slope = (((3 * pt[X]**2) + _a) * euclid.inverse(2 * pt[Y], _p)) % _p
     x = (slope**2 - (2 * pt[X])) % _p
     y = ((slope * pt[X]) - (slope * x) - pt[Y]) % _p
@@ -79,6 +85,9 @@ def fast_point_at(d):
     d is in the range 1 <= d < _n, and _n is the order of _G. In contrast with
     point_at, this function runs in O(log2(n)) (logarithmic) time.
     """
+    assert isinstance(d, int)
+    assert 0 < d <= _n
+
     pt = _G
     for i in range(d.bit_length()-2, -1, -1):
         pt = double(pt)
@@ -93,11 +102,18 @@ def point_at(d):
     d is in the range 1 <= d < _n, and _n is the order of _G. In contrast with
     fast_point_at, this function runs in O(n) (linear) time.
     """
+    assert isinstance(d, int)
+    assert 0 < d <= _n
+
     pt = _G
-    for i in range(0, d):
+    for _ in range(1, d):
         pt = add(pt)
 
-    return d, pt
+    return pt
+
+def validate_pt(pt):
+    assert isinstance(pt[X], int) and pt[X] >= 0
+    assert isinstance(pt[Y], int) and pt[Y] >= 0
 
 def validate_curve_params(B_iters=100):
     """
@@ -107,19 +123,21 @@ def validate_curve_params(B_iters=100):
     Parameters over Fp Validation Primitive).
     """
     assert 0 <= B_iters <= 100
-    assert 0 <= _a <= _p - 1
-    assert 0 <= _b <= _p - 1
+    assert 0 <= _a  <= _p - 1
+    assert 0 <  _b  <= _p - 1 # _b cannot be zero if we want to represent _pt_i as [0,0].
+    assert 0 <= _Gx <= _p - 1
+    assert 0 <= _Gy <= _p - 1
     assert _n != _p
     assert (4*(_a**3) + 27*(_b**2)) % _p != 0
     assert _Gy**2 % _p == (_Gx**3 + _a*_Gx + _b) % _p
     assert primes.is_prime(_p)
     assert primes.is_prime(_n)
 
-    log2_p = math.ceil(math.log2(_p))
-    assert _h <= 2**(log2_p//8)
+    t = _p.bit_length() // 2
+    assert _h <= 2**(t // 8)
 
-    sqrt_p = math.sqrt(_p)
-    assert _h == math.floor((sqrt_p+1)**2//_n)
+    assert _h == math.floor((math.sqrt(_p)+1)**2 // _n)
+    assert fast_point_at(_n) == _pt_i
 
     # Test to exclude curves with susceptibility to MOV, FR or SSSA attacks.
     # B_iters should be 100 (the default) for cryptographically strong curves.
