@@ -30,9 +30,46 @@ def main():
 
 def test_add():
     ec.new_curve(p, a, b, Gx, Gy, n, h, B_iters)
+    
+    # Repeated addition of all group elements to the generator _G.
     for i in range(1, len(pt_group)):
-        pt = ec.add(pt_group[i-1])
+        pt = ec.add(ec._G, pt_group[i-1])
         assert pt == pt_group[i]
+
+    # Add selected group elements.
+    pt = ec.add(pt_group[0], pt_group[9])
+    assert pt == pt_group[10]
+
+    pt = ec.add(pt_group[9], pt_group[0])
+    assert pt == pt_group[10]
+
+    pt = ec.add(pt_group[5], pt_group[3])
+    assert pt == pt_group[9]
+
+    # Add selected group elements to the identity element.
+    pt = ec.add(ec._G, ec._i)
+    assert pt == ec._G
+
+    pt = ec.add(pt_group[3], ec._i)
+    assert pt == pt_group[3]
+
+    pt = ec.add(ec._i, ec._G)
+    assert pt == ec._G
+
+    pt = ec.add(ec._i, pt_group[8])
+    assert pt == pt_group[8]
+
+    # Add the identity elements.
+    pt = ec.add(ec._i, ec._i)
+    assert pt == ec._i
+
+    # Add identical group elements.
+    pt = ec.add(pt_group[2], pt_group[2])
+    assert pt == pt_group[5]
+
+    # Add first and last group elements.
+    pt = ec.add(pt_group[0], pt_group[len(pt_group)-1])
+    assert pt == ec._i
 
     print("test_add passed")
 
@@ -55,7 +92,7 @@ def test_fast_point_at():
     for i in range(1, len(pt_group)+1):
         assert ec._point_at(i) == ec._fast_point_at(i)
 
-    assert ec._fast_point_at(n) == ec._pt_i
+    assert ec._fast_point_at(n) == ec._i
 
     print("test_fast_point_at passed")
 
@@ -64,15 +101,16 @@ def test_point_at():
     for i in range(1, len(pt_group)+1):
         assert ec._point_at(i) == pt_group[i-1]
 
-    assert ec._point_at(n) == ec._pt_i
+    assert ec._point_at(n) == ec._i
 
     print("test_point_at passed")
 
 def test_generate_key():
     importlib.reload(ec)
-    d, Q = ec.generate_key()
-    pt = ec._fast_point_at(d)
-    assert pt == Q
+    for _ in range(100):
+        d, Q = ec.generate_key()
+        pt = ec._fast_point_at(d)
+        assert pt == Q
 
     print("test_generate_key passed")
 
