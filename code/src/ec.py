@@ -102,6 +102,30 @@ def generate_key():
 
     return d, _fast_point_at(d)
 
+def validate_key(Q):
+    """
+    Recommended public key validation from the Standards for Efficient Cryptography
+    Group's (SECG) specification, "SEC 1: Elliptic Curve Cryptography, Version 2.0"
+    (https://www.secg.org/), section 3.2.2.1 (Elliptic Curve Public Key Validation
+    primitive).
+    """
+    _validate_pt(Q)
+
+    # Q cannot be the point at infinity.
+    assert Q != _i
+
+    # Q's coordinates must be in the interval [0, p-1]
+    assert 0 <= Q[_x] < _p - 1
+    assert 0 <= Q[_y] < _p - 1
+
+    # Q must be on the curve.
+    assert Q[_y]**2 % _p == (Q[_x]**3 + (_a*Q[_x]) + _b) % _p
+
+    # The order _n of the curve group times any Q on the curve must equal the
+    # point at infinity (redundant, and costly, if _h == 1).
+    if _h > 1:
+        assert _x_times_pt(_n, Q) == _i
+
 def _fast_point_at(d):
     """
     Returns the point on the curve at d point-additions of the generator point,
@@ -109,14 +133,23 @@ def _fast_point_at(d):
     order of the generator. In contrast with the function _point_at, this function
     runs in O(log2(n)) (logarithmic) time.
     """
-    assert isinstance(d, int)
     assert 0 < d <= _n
 
-    pt = _G
-    for i in range(d.bit_length()-2, -1, -1):
+    return _x_times_pt(d, _G)
+
+def _x_times_pt(x, pt):
+    """
+    Returns the point on the curve at x point-additions of the start point pt, or
+    the point at infinity...
+    """
+    _validate_pt(pt)
+    assert isinstance(x, int)
+
+    start_pt = pt
+    for i in range(x.bit_length()-2, -1, -1):
         pt = double(pt)
-        if (d>>i) & 1:
-            pt = add(_G, pt)
+        if (x>>i) & 1:
+            pt = add(start_pt, pt)
 
     return pt
 
@@ -148,10 +181,10 @@ def _validate_pt(pt):
 
 def _validate_curve_params(B_iters=100):
     """
-    Recommended curve parameter validation from the Standards for Efficient
-    Cryptography Group's (SECG) specification, "SEC 1: Elliptic Curve Cryptography,
-    Version 2.0" (https://www.secg.org/), section 3.1.1.2.1 (Elliptic Curve Domain
-    Parameters over Fp Validation Primitive).
+    Recommended curve parameter validation from the Standards for Efficient Cryptography
+    Group's (SECG) specification, "SEC 1: Elliptic Curve Cryptography, Version 2.0"
+    (https://www.secg.org/), section 3.1.1.2.1 (Elliptic Curve Domain Parameters over
+    Fp Validation Primitive).
     """
     assert B_iters >= 1
     assert 0 <= _a  <= _p - 1

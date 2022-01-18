@@ -25,7 +25,8 @@ def main():
     test_validate_curve_params()
     test_point_at()
     test_fast_point_at()
-    test_generate_key()
+    test_x_times_pt()
+    test_generate_and_validate_key()
     print("all ec tests passed")
 
 def test_add():
@@ -40,6 +41,7 @@ def test_add():
     pt = ec.add(pt_group[0], pt_group[9])
     assert pt == pt_group[10]
 
+    # Commute
     pt = ec.add(pt_group[9], pt_group[0])
     assert pt == pt_group[10]
 
@@ -96,6 +98,18 @@ def test_fast_point_at():
 
     print("test_fast_point_at passed")
 
+def test_x_times_pt():
+    importlib.reload(ec)
+    for _ in range(100):
+        d, Q = ec.generate_key()
+        assert ec._x_times_pt(ec._n, Q) == ec._i
+
+    ec.new_curve(p, a, b, Gx, Gy, n, h, B_iters)
+    for i in range(0, len(pt_group)):
+        assert ec._x_times_pt(n, pt_group[i]) == ec._i
+
+    print("test_x_times_pt passed")
+
 def test_point_at():
     ec.new_curve(p, a, b, Gx, Gy, n, h, B_iters)
     for i in range(1, len(pt_group)+1):
@@ -105,10 +119,11 @@ def test_point_at():
 
     print("test_point_at passed")
 
-def test_generate_key():
+def test_generate_and_validate_key():
     importlib.reload(ec)
     for _ in range(100):
         d, Q = ec.generate_key()
+        ec.validate_key(Q)
         pt = ec._fast_point_at(d)
         assert pt == Q
 
