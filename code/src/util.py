@@ -1,5 +1,6 @@
 """ Crypto helper utilities """
 import euclid
+import hashlib
 
 def fast_mod_exp(b, e, n):
     """
@@ -76,3 +77,9 @@ def to_crt(x, p, q):
     assert isinstance(q, int) and q >= 1
 
     return x % p, x % q
+
+def hash(k):
+    """
+    Returns a hashed byte array of input k.
+    """
+    return hashlib.sha256(str(k).encode("utf-8")).digest()

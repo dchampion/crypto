@@ -32,7 +32,7 @@ def main():
     test_fast_point_at(C1)
     test_fast_point_at(C2)
     test_x_times_pt()
-    test_generate_and_validate_key()
+    test_generate_keypair_and_validate_pub_key()
     print("all ec tests passed")
 
 def test_add(C):
@@ -120,30 +120,30 @@ def test_fast_point_at(C):
 def test_x_times_pt():
     importlib.reload(ec)
     for _ in range(100):
-        d, Q = ec.generate_key()
-        assert ec._x_times_pt(ec._n, Q) == ec._i
+        d, Q = ec.generate_keypair()
+        assert ec.x_times_pt(ec._n, Q) == ec._i
 
     ec.new_curve(C1[0], C1[1], C1[2], C1[3], C1[4], C1[5], C1[6], B_iters)
     pt_group = C1[7]
     for i in range(0, len(pt_group)):
-        assert ec._x_times_pt(C1[5], pt_group[i]) == ec._i
+        assert ec.x_times_pt(C1[5], pt_group[i]) == ec._i
 
     ec.new_curve(C2[0], C2[1], C2[2], C2[3], C2[4], C2[5], C2[6], B_iters)
     pt_group = C2[7]
     for i in range(0, len(pt_group)):
-        assert ec._x_times_pt(C2[5], pt_group[i]) == ec._i
+        assert ec.x_times_pt(C2[5], pt_group[i]) == ec._i
 
     print("test_x_times_pt passed")
 
-def test_generate_and_validate_key():
+def test_generate_keypair_and_validate_pub_key():
     importlib.reload(ec)
     for _ in range(100):
-        d, Q = ec.generate_key()
-        ec.validate_key(Q)
+        d, Q = ec.generate_keypair()
+        ec.validate_pub_key(Q)
         pt = ec._fast_point_at(d)
         assert pt == Q
 
-    print("test_generate_key passed")
+    print("test_generate_keypair passed")
 
 if __name__ == "__main__":
     main()

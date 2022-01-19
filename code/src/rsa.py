@@ -1,11 +1,11 @@
 """ An implementation of RSA """
 import primes
 import euclid
-import secrets
 import math
 import hashlib
 import util
 import random
+import prng
 
 # Allowable range, in bit length, of the 2 prime factors [p and q] of an RSA modulus [n].
 factor_min_bit_len  = 1024
@@ -31,12 +31,11 @@ def generate_rsa_prime(factor_bit_len):
     assert isinstance(factor_bit_len, int)
     assert factor_min_bit_len <= factor_bit_len <= factor_max_bit_len
 
-    secure_random = secrets.SystemRandom()
     l, u = 2**(factor_bit_len-1), 2**factor_bit_len-1
     tries = 100 * factor_bit_len
     for r in range(tries):
         # Pick a random n in the appropriate range.
-        n = secure_random.randrange(l, u)
+        n = prng.randrange(l, u)
 
         # Ensure n-1 is neither a multiple of 3 or 5, so that these values can be used as
         # signature-verification and encryption exponents, respectively. n must of course
@@ -99,12 +98,11 @@ def encrypt_random_key(n, e):
     assert isinstance(e, int)
 
     # Select a random value [r] in the full range of n.
-    secure_random = secrets.SystemRandom()
-    r = secure_random.randrange(0, n.bit_length()-1)
+    r = prng.randrange(0, n-1)
 
     # Hash r; this will be the basis for the key [K] negotiated by both parties using a
     # symmetric cipher for message encryption (see decrypt_random_key).
-    K = hashlib.sha256(str(r).encode()).digest()
+    K = util.hash(r)
 
     # Encrypt r.
     c = util.fast_mod_exp(r, e, n)

@@ -1,8 +1,7 @@
 """ An implementation of Diffie-Hellman """
 import primes
-import secrets
-import hashlib
 import util
+import prng
 
 # Bit length of a large subgroup modulo p (where p is the prime DH modulus).
 q_bit_len = 256
@@ -53,10 +52,9 @@ def _generate_p(q, p_bit_len):
     n_bit_len = p_bit_len - q.bit_length()
     l, u = 2**(n_bit_len-1), 2**n_bit_len
 
-    secure_random = secrets.SystemRandom()
     tries = 100 * p_bit_len
     for i in range(tries):
-        n = secure_random.randrange(l, u)
+        n = prng.randrange(l, u)
         p = q * n + 1
         if primes.is_prime(p):
             break
@@ -74,10 +72,9 @@ def _generate_g(n, p):
     assert isinstance(p, int) and p.bit_length() >= min_p_bit_len - 1
     assert isinstance(n, int) and (p - 1) % n == 0
 
-    secure_random = secrets.SystemRandom()
     while True:
         # Pick a random base in the full range of the modulus.
-        a = secure_random.randrange(2, p-2)
+        a = prng.randrange(2, p-2)
 
         # Any such base raised to the power of n modulo p should yield either 1,
         # or a generator of the entire subgroup of order (or size) q.
@@ -99,8 +96,7 @@ def generate_keypair(q, p, g):
     _validate_parameters(q, p, g)
 
     # Select a random, private key in the range of q.
-    secure_random = secrets.SystemRandom()
-    k_prv = secure_random.randrange(1, q-1)
+    k_prv = prng.randrange(1, q-1)
 
     # Compute a public key based on this private key.
     k_pub = util.fast_mod_exp(g, k_prv, p)
@@ -125,15 +121,7 @@ def generate_session_key(k_pub, k_prv, p):
 
     # The session key is hashed in order to obscure any mathematical structure
     # in ki that could be exploited by an adversary if it were to be leaked.
-    return _hash_key(ki)
-
-def _hash_key(k):
-    """
-    Returns a hashed byte array of the positive integer k.
-    """
-    assert isinstance(k, int)
-
-    return hashlib.sha256(str(k).encode()).digest()
+    return util.hash(ki)
 
 def validate_pub_key(k, q, p):
     """

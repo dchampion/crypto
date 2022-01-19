@@ -9,6 +9,7 @@ import euclid
 import primes
 import math
 import prng
+import util
 
 # secp256k1 elliptic curve parameters (y**2 = x**3 + ax + b % p)
 _p = 2**256 - 2**32 - 977
@@ -87,7 +88,7 @@ def double(pt):
 
     return [x, y]
 
-def generate_key():
+def generate_keypair():
     """
     Returns a private key d and its corresponding public key Q, where d is a
     randomly generated positive integer in the range 1 <= d < ord(G) (where 
@@ -97,12 +98,31 @@ def generate_key():
     may be shared freely.
     """
     d = _n
-    while d < 1 or d >= _n:
+    while not is_valid(d):
         d = prng.randbits(_n.bit_length())
 
     return d, _fast_point_at(d)
 
-def validate_key(Q):
+def generate_session_key(d_priv, Q_pub):
+    """
+    Returns a hashed byte array to be used as a session key in a symmetric cipher
+    agreed upon by both parties in the setup phase. This key must be kept secret.
+    """
+    assert is_valid(d_priv)
+    validate_pub_key(Q_pub)
+
+    # Compute a session key using the essential property of DH (i.e., multiplying
+    # the other party's public key Q_pub by this party's private key d_priv).
+    ki = x_times_pt(d_priv, Q_pub)
+
+    # The session key is hashed in order to obscure any mathematical structure
+    # in ki that could be exploited by an adversary if it were to be leaked.
+    return util.hash(ki)
+
+def is_valid(d):
+    return isinstance(d, int) and 1 <= d < _n
+
+def validate_pub_key(Q):
     """
     Recommended public key validation from the Standards for Efficient Cryptography
     Group's (SECG) specification, "SEC 1: Elliptic Curve Cryptography, Version 2.0"
@@ -124,7 +144,7 @@ def validate_key(Q):
     # The order _n of the curve group times any Q on the curve must equal the
     # point at infinity (redundant, and costly, if _h == 1).
     if _h > 1:
-        assert _x_times_pt(_n, Q) == _i
+        assert x_times_pt(_n, Q) == _i
 
 def _fast_point_at(d):
     """
@@ -133,17 +153,17 @@ def _fast_point_at(d):
     order of the generator. In contrast with the function _point_at, this function
     runs in O(log2(n)) (logarithmic) time.
     """
-    assert 0 < d <= _n
+    assert isinstance(d, int) and 0 < d <= _n
 
-    return _x_times_pt(d, _G)
+    return x_times_pt(d, _G)
 
-def _x_times_pt(x, pt):
+def x_times_pt(x, pt):
     """
     Returns the point on the curve at x point-additions of the start point pt, or
     the point at infinity...
     """
     _validate_pt(pt)
-    assert isinstance(x, int)
+    assert isinstance(x, int) and x > 0
 
     start_pt = pt
     for i in range(x.bit_length()-2, -1, -1):
@@ -160,8 +180,7 @@ def _point_at(d):
     order of the generator. In contrast with the function _fast_point_at, this function
     runs in O(n) (linear) time.
     """
-    assert isinstance(d, int)
-    assert 0 < d <= _n
+    assert isinstance(d, int) and 0 < d <= _n
 
     pt = _G
     for _ in range(1, d):
@@ -172,12 +191,8 @@ def _point_at(d):
 def _validate_pt(pt):
     assert isinstance(pt, list)
     assert len(pt) == 2
-    if isinstance(pt[_x], int):
-        assert isinstance(pt[_x], int)
-        assert isinstance(pt[_y], int)
-    else:
-        assert isinstance(pt[_x], NoneType)
-        assert isinstance(pt[_y], NoneType)
+    assert (isinstance(pt[_x], int)      and isinstance(pt[_y], int))\
+        or (isinstance(pt[_x], NoneType) and isinstance(pt[_y], NoneType))
 
 def _validate_curve_params(B_iters=100):
     """
