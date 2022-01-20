@@ -1,25 +1,33 @@
-""" A cryptographically secure pseudo-random number generator (PRNG). """
+"""
+A cryptographically secure pseudo-random number generator (PRNG).
+
+These routines are more or less a copy/paste of equivalent routines in
+the Random and SystemRandom classes, but are reimplemented here to maintain
+control of their evolution.
+"""
+
 import os
-import operator
 
 def randrange(l, u):
     """
     Returns a random integer in the range (l, u-1), where l is the lower bound
     and u is the upper bound.
     """
-    il = operator.index(l)
-    iu = operator.index(u)
-    width = iu - il
-    if width < 1:
-        raise ValueError(f"upper bound {u} must be greater than lower bound {l}")
+    assert isinstance(l, int)
+    assert isinstance(u, int)
+    assert u > l
 
-    return il + randbelow(width)
+    width = u - l
+
+    return l + randbelow(width)
 
 def randbelow(n):
     """
     Returns a random integer in the range (0, n-1), where n is the upper bound.
     """
-    if not n:
+    assert isinstance(n, int)
+
+    if n == 0:
         return 0
 
     k = n.bit_length()
@@ -28,14 +36,14 @@ def randbelow(n):
     r = randbits(k)
     while r >= n:
         r = randbits(k)
+
     return r
 
 def randbits(k):
     """
     Returns a positive integer with k random bits.
     """
-    if k < 0:
-        raise ValueError("Number of bits must be non-negative")
+    assert isinstance(k, int) and k >= 1
 
     # bits / 8 and rounded up
     numbytes = (k + 7) // 8
