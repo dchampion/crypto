@@ -66,10 +66,14 @@ def add(pt1, pt2):
     elif pt1[_x] == pt2[_x]:
         [x, y] = _i
     else:
-        slope = ((pt2[_y] - pt1[_y]) * euclid.inverse((pt2[_x] - pt1[_x]) % _p, _p)) % _p
-        x = (slope**2 - (pt2[_x] + pt1[_x])) % _p
-        y = ((slope * pt2[_x]) - (slope * x) - pt2[_y]) % _p
+        [x, y] = _add(pt1, pt2)
     
+    return [x, y]
+
+def _add(pt1, pt2):
+    slope = ((pt2[_y] - pt1[_y]) * euclid.inverse((pt2[_x] - pt1[_x]) % _p, _p)) % _p
+    x = (slope**2 - (pt2[_x] + pt1[_x])) % _p
+    y = ((slope * pt2[_x]) - (slope * x) - pt2[_y]) % _p
     return [x, y]
 
 def double(pt):
@@ -82,6 +86,9 @@ def double(pt):
     if pt == _i:
         return pt
 
+    return _double(pt)
+
+def _double(pt):
     slope = (((3 * pt[_x]**2) + _a) * euclid.inverse(2 * pt[_y], _p)) % _p
     x = (slope**2 - (2 * pt[_x])) % _p
     y = ((slope * pt[_x]) - (slope * x) - pt[_y]) % _p
@@ -98,7 +105,7 @@ def generate_keypair():
     may be shared freely.
     """
     d = _n
-    while not is_valid(d):
+    while not is_valid_d(d):
         d = prng.randbits(_n.bit_length())
 
     return d, _fast_point_at(d)
@@ -108,7 +115,7 @@ def generate_session_key(d_priv, Q_pub):
     Returns a hashed byte array to be used as a session key in a symmetric cipher
     agreed upon by both parties in the setup phase. This key must be kept secret.
     """
-    assert is_valid(d_priv)
+    assert is_valid_d(d_priv)
     validate_pub_key(Q_pub)
 
     # Compute a session key using the essential property of DH (i.e., multiplying
@@ -119,8 +126,69 @@ def generate_session_key(d_priv, Q_pub):
     # in ki that could be exploited by an adversary if it were to be leaked.
     return util.hash(ki)
 
-def is_valid(d):
+def is_valid_d(d):
     return isinstance(d, int) and 1 <= d < _n
+
+def sign(m, d):
+    """
+    Returns a signature S&mdash;a tuple of the form (r, s)&mdash;that is computed
+    by signing the message m with a private key d.
+    """
+    s = 0
+    while s == 0:
+        r = 0
+        while r == 0:
+            # k is the ephemeral (i.e., one-time use) key.
+            k, R = generate_keypair()
+            assert 0 <= R[_x] < _p
+
+            # r is the x-coordinate of R; the first element of the tuple (r, s)
+            # returned by this function.
+            r = R[_x] % _n
+
+        # Convert m to an integer representative of its hash.
+        e = hash_to_int(m)
+
+        # Compute the second element of the tuple (r, s) returned by this function.
+        s = (euclid.inverse(k, _n) * (e + d * r)) % _n
+
+    return r, s
+
+def verify(m, S, Q):
+    """
+    Returns True if the signature S&mdash;a tuple of the form (r, s)&mdash; is valid
+    for the message m and a public key Q; otherwise returns False.
+    """
+    r, s = S[0], S[1]
+
+    # Convert m to an integer representative of its hash.
+    e = hash_to_int(m)
+
+    u1 = (e * euclid.inverse(s, _n)) % _n
+    u2 = (r * euclid.inverse(s, _n)) % _n
+
+    # Recover the point computed in the signing operation.
+    R = add(x_times_pt(u1, _G), x_times_pt(u2, Q))
+    assert R != _i
+
+    v = R[_x] % _n
+
+    return v == r
+
+def hash_to_int(m):
+    """
+    Converts a message m to an integer representation of its hash.
+    """
+    h = util.hash(m)
+    hi = int.from_bytes(h, byteorder="big")
+
+    if _n.bit_length() >= hi.bit_length():
+        e = hi
+    else:
+        # Use only the leftmost _n bits if _n is smaller than m.
+        e = hi >> (hi.bit_length() - _n.bit_length())
+
+    return e
 
 def validate_pub_key(Q):
     """
