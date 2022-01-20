@@ -1,23 +1,23 @@
 """ A cryptographically secure pseudo-random number generator (PRNG). """
-from os import urandom
-from operator import index
+import os
+import operator
 
 def randrange(l, u):
     """
-    Returns a random positive integer in the range [l,u), where l is the lower bound
-    (inclusive) and u is the upper bound (exclusive).
+    Returns a random integer in the range (l, u-1), where l is the lower bound
+    and u is the upper bound.
     """
-    il = index(l)
-    iu = index(u)
+    il = operator.index(l)
+    iu = operator.index(u)
     width = iu - il
     if width < 1:
-        raise ValueError("upper bound {u} must be greater than upper bound {l}")
+        raise ValueError(f"upper bound {u} must be greater than lower bound {l}")
 
     return il + randbelow(width)
 
 def randbelow(n):
     """
-    Returns a random integer in the range [0,n).
+    Returns a random integer in the range (0, n-1), where n is the upper bound.
     """
     if not n:
         return 0
@@ -39,7 +39,7 @@ def randbits(k):
 
     # bits / 8 and rounded up
     numbytes = (k + 7) // 8
-    x = int.from_bytes(urandom(numbytes), byteorder="big")
+    x = int.from_bytes(os.urandom(numbytes), byteorder="big")
 
     # trim excess bits
     return x >> (numbytes * 8 - k)
