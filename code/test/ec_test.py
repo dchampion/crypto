@@ -29,6 +29,7 @@ def main():
     test_fast_point_at()
     test_x_times_pt()
     test_generate_keypair_and_validate_pub_key()
+    test_sign_and_verify()
     print("all ec tests passed")
 
 def test_add():
@@ -141,6 +142,37 @@ def test_generate_keypair_and_validate_pub_key():
         assert pt == Q
 
     print("test_generate_keypair passed")
+
+def test_hash_to_int():
+    importlib.reload(ec)
+    for m in ["When", "in", "the", "course", "of", "human", "events..."]:
+        e = ec.hash_to_int(m)
+        assert e.bit_length() <= ec._n.bit_length()
+
+    for curve in Curves:
+        ec.new_curve(curve[0], curve[1], curve[2], curve[3], curve[4], curve[5], curve[6], B_iters)
+        for m in ["When", "in", "the", "course", "of", "human", "events..."]:
+            e = ec.hash_to_int(m)
+            assert e.bit_length() <= ec._n.bit_length()
+
+    print("test_hash_to_int passed")
+
+def test_sign_and_verify():
+    importlib.reload(ec)
+    for m in ["When", "in", "the", "course", "of", "human", "events..."]:
+        d, Q = ec.generate_keypair()
+        S = ec.sign(m, d)
+        assert ec.verify(m, S, Q)
+
+    for curve in Curves:
+        ec.new_curve(curve[0], curve[1], curve[2], curve[3], curve[4], curve[5], curve[6], B_iters)
+        for m in ["When", "in", "the", "course", "of", "human", "events..."]:
+            ec.new_curve(curve[0], curve[1], curve[2], curve[3], curve[4], curve[5], curve[6], B_iters)
+            d, Q = ec.generate_keypair()
+            S = ec.sign(m, d)
+            assert ec.verify(m, S, Q)
+
+    print("test_sign_and_verify passed")
 
 if __name__ == "__main__":
     main()
