@@ -93,7 +93,7 @@ def test_double():
 def test_validate_curve_params():
     for curve in Curves:
         ec.new_curve(curve[0], curve[1], curve[2], curve[3], curve[4], curve[5], curve[6], B_iters)
-        ec._validate_curve_params(B_iters)
+        ec.validate_curve_params(B_iters)
 
     print("test_validate_curve_params passed")
 
@@ -146,13 +146,13 @@ def test_generate_keypair_and_validate_pub_key():
 def test_hash_to_int():
     importlib.reload(ec)
     for m in ["When", "in", "the", "course", "of", "human", "events..."]:
-        e = ec.hash_to_int(m)
+        e = ec._hash_to_int(m)
         assert e.bit_length() <= ec._n.bit_length()
 
     for curve in Curves:
         ec.new_curve(curve[0], curve[1], curve[2], curve[3], curve[4], curve[5], curve[6], B_iters)
         for m in ["When", "in", "the", "course", "of", "human", "events..."]:
-            e = ec.hash_to_int(m)
+            e = ec._hash_to_int(m)
             assert e.bit_length() <= ec._n.bit_length()
 
     print("test_hash_to_int passed")
@@ -167,7 +167,6 @@ def test_sign_and_verify():
     for curve in Curves:
         ec.new_curve(curve[0], curve[1], curve[2], curve[3], curve[4], curve[5], curve[6], B_iters)
         for m in ["When", "in", "the", "course", "of", "human", "events..."]:
-            ec.new_curve(curve[0], curve[1], curve[2], curve[3], curve[4], curve[5], curve[6], B_iters)
             d, Q = ec.generate_keypair()
             S = ec.sign(m, d)
             assert ec.verify(m, S, Q)
