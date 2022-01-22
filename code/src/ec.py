@@ -265,20 +265,28 @@ def validate_pub_key(Q):
     """
     _validate_pt(Q)
 
-    # Check that
-    # (1) Q is not the point at infinity,
-    # (2) Q's x and y coordinates are in the interval [0, p-1],
-    # (3) Q is on the curve and
-    # (4) if the cofactor _h is greater than 1, the order of the curve group _n times
-    # Q is the point at infinity (the test is redundant, and costly, if _h == 1).
-    valid = False
-    if Q != _i and\
-        0 <= Q[_x] <= _p - 1 and\
-        0 <= Q[_y] <= _p - 1 and\
-        Q[_y]**2 % _p == (Q[_x]**3 + (_a*Q[_x]) + _b) % _p:
-            valid = True
-            if _h > 1 and x_times_pt(_n, Q) != _i:
-                valid = False
+    valid = True
+
+    # Q must not be the identity element.
+    if valid and Q == _i:
+        valid = False
+
+    # Q's x coordinate must be in the interval [0, p-1].
+    if valid and Q[_x] > _p-1 or Q[_x] < 0:
+        valid = False
+
+    # Q's y coordinate must be in the interval [0, p-1].
+    if valid and Q[_y] > _p-1 or Q[_y] < 0:
+        valid = False
+
+    # Q must be on the curve
+    if valid and Q[_y]**2 % _p != (Q[_x]**3 + (_a*Q[_x]) + _b) % _p:
+        valid = False
+
+    # If the cofactor _h is greater than 1, then the order of the group _n times Q must
+    # equal the identity element.
+    if valid and _h > 1 and x_times_pt(_n, Q) != _i:
+        valid = False
 
     if not valid:
         raise ValueError("Invalid public key")
@@ -302,21 +310,63 @@ def validate_curve_params(B_iters=100):
     # (7) the cofactor _h is correct and
     # (8) the curve is not susceptible to the MOV, FR or SSSA attacks (B_iters should be 100
     # (the default) for cryptographically strong curves).
-    valid = False
-    if 0 <= _a  <= _p - 1 and 0 <= _b  <= _p - 1 and 0 <= _Gx <= _p - 1 and 0 <= _Gy <= _p - 1 and\
-       _n != _p and\
-       (4*(_a**3) + 27*(_b**2)) % _p != 0 and\
-       _Gy**2 % _p == (_Gx**3 + _a*_Gx + _b) % _p and\
-       primes.is_prime(_p) and primes.is_prime(_n) and\
-       _fast_point_at(_n) == _i and\
-       _h == math.floor((math.sqrt(_p)+1)**2 // _n):
-            t = _p.bit_length() // 2
-            if _h <= 2**(t // 8):
-                if B_iters >= 1:
-                    valid = True
-                    for B in range(1, B_iters):
-                        if _p**B % _n == 1:
-                            valid = False
+    valid = True
+
+    # _a must be in the interval [0, _p-1].
+    if valid and _a > _p - 1 or _a < 0:
+        valid = False
+
+    # _b must be in the interval [0, _p-1].
+    if valid and _b > _p - 1 or _b < 0:
+        valid = False
+
+    # _Gx must be in the interval [0, _p-1].
+    if valid and _Gx > _p - 1 or _Gx < 0:
+        valid = False
+
+    # _Gy must be in the interval [0, _p-1].
+    if valid and _Gy > _p - 1 or _Gy < 0:
+        valid = False
+
+    # _n must not equal _p.
+    if valid and _n == _p:
+        valid = False
+
+    # The curve must be smooth
+    if valid and (4*(_a**3) + 27*(_b**2)) % _p == 0:
+        valid = False
+
+    # The base point [_Gx, _Gy] must be on the curve.
+    if valid and _Gy**2 % _p != (_Gx**3 + _a*_Gx + _b) % _p:
+        valid = False
+
+    # _p must be prime
+    if valid and not primes.is_prime(_p):
+        valid = False
+
+    # _n must be prime
+    if valid and not primes.is_prime(_n):
+        valid = False
+
+    # _n additions of the base point _G must yield the identity element.
+    if valid and _fast_point_at(_n) != _i:
+        valid = False
+
+    # The following two tests are for the cofactor _h.
+    if valid and _h != math.floor((math.sqrt(_p)+1)**2 // _n):
+        valid = False
+
+    if valid and _h > 2**((_p.bit_length() // 2) // 8):
+        valid = False
+
+    # Check that the curve is not susceptible to the MOV, FR or SSSA attacks
+    # (B_iters should be 100 (the default) for cryptographically strong curves).
+    if valid and B_iters < 1:
+        valid = False
+    else:
+        for B in range(1, B_iters):
+            if _p**B % _n == 1:
+                valid = False
 
     if not valid:
         raise ValueError("Invalid curve")
