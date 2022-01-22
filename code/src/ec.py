@@ -4,7 +4,6 @@ signature algorithms (ECDSA), based on the Standards for Efficient Cryptography 
 secp256k1 elliptic curve.
 """
 
-from types import NoneType
 import euclid
 import primes
 import math
@@ -253,8 +252,8 @@ def _point_at(d):
 def _validate_pt(pt):
     assert isinstance(pt, list)
     assert len(pt) == 2
-    assert (isinstance(pt[_x], int)      and isinstance(pt[_y], int))\
-        or (isinstance(pt[_x], NoneType) and isinstance(pt[_y], NoneType))
+    assert (isinstance(pt[_x], int) and isinstance(pt[_y], int)) or\
+        pt[_x] == None and pt[_y] == None
 
 def validate_pub_key(Q):
     """
@@ -299,17 +298,6 @@ def validate_curve_params(B_iters=100):
     Fp Validation Primitive).
     """
 
-    # Check that
-    # (1) _a, _b, _Gx and _Gy are all in the interval [0,_p-1],
-    # (2) _n != _p,
-    # (3) the curve is smooth,
-    # (4) The base point _G, formed by [_Gx,_Gy], is on the curve,
-    # (5) _p and _n are both prime,
-    # (6) the point at the order of the curve _n, times the base point _G, equals the
-    # identity element (aka the point at infinity),
-    # (7) the cofactor _h is correct and
-    # (8) the curve is not susceptible to the MOV, FR or SSSA attacks (B_iters should be 100
-    # (the default) for cryptographically strong curves).
     valid = True
 
     # _a must be in the interval [0, _p-1].
