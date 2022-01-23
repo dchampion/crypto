@@ -134,16 +134,18 @@ def validate_pub_key(k, q, p):
     assert isinstance(q, int)
     assert isinstance(p, int)
 
-    # Check that
-    # (1) k is in range, and
-    # (2) k is in the subgroup of order (or size) q.
-    valid = False
-    if 1 < k < p and\
-       util.fast_mod_exp(k, q, p) == 1:
-        valid = True
+    valid = True
+
+    # k must be in the interval [2, p-1].
+    if valid and k <= 1 or k >= p:
+        valid = False
+
+    # k must be in the subgroup of order (or size) q.
+    if valid and util.fast_mod_exp(k, q, p) != 1:
+        valid = False
 
     if not valid:
-        raise Exception("Invalid key")
+        raise ValueError("Invalid key")
 
 def _validate_parameters(q, p, g):
     """
@@ -166,15 +168,36 @@ def _validate_parameters(q, p, g):
     # (6) the generator [g] is not 1, and
     # (7) (g**q) % p is 1
 
-    valid = False
-    if p.bit_length() >= min_p_bit_len-1 and\
-       q.bit_length() == q_bit_len and\
-       primes.is_prime(p) and\
-       primes.is_prime(q) and\
-       (p - 1) % q == 0 and\
-       g != 1 and\
-       util.fast_mod_exp(g, q, p) == 1:
-        valid = True
+    valid = True
+
+    # The bit length of modulus p must be greater than min_p_bit_len - 1
+    # (multiplication of 2 x-bit integers can produce a (2x-1)-bit result).
+    if valid and p.bit_length() < min_p_bit_len - 1:
+        valid = False
+
+    # The bit length of q must be equal to q_bit_len.
+    if valid and q.bit_length() != q_bit_len:
+        valid = False
+
+    # p must be prime.
+    if valid and not primes.is_prime(p):
+        valid = False
+
+    # q must be prime.
+    if valid and not primes.is_prime(q):
+        valid = False
+
+    # q must divide p - 1.
+    if valid and (p - 1) % q != 0:
+        valid = False
+
+    # g cannot be 1.
+    if valid and g == 1:
+        valid = False
+
+    # The order of g must must be q.
+    if valid and util.fast_mod_exp(g, q, p) != 1:
+        valid = False
 
     if not valid:
-        raise Exception("Invalid parameters")
+        raise ValueError("Invalid parameters")
