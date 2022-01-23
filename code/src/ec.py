@@ -128,14 +128,15 @@ def generate_session_key(d_priv, Q_pub):
     assert _is_valid_d(d_priv)
     validate_pub_key(Q_pub)
 
-    # Compute a session key using the essential property of Diffie-Hellman which, in
-    # the case of elliptic curves, means multiplication of the other party's public key
-    # Q_pub by the caller's private key d_priv).
-    ki = x_times_pt(d_priv, Q_pub)
+    # Compute a shared point on the curve using the essential property of Diffie-
+    # Hellman. In the case of elliptic curves, this is done by multiplying the
+    # other party's public key Q_pub by the caller's private key d_priv.
+    k_pt = x_times_pt(d_priv, Q_pub)
 
-    # Hash ki to obscure any mathematical structure in it that could be exploited by an
-    # adversary if it were to be leaked.
-    return util.hash(ki)
+    # Use only the x-coordinate of the shared point in the shared key, and hash it
+    # to obscure any mathematical structure that could be exploited by an adversary
+    # if it were to be leaked.
+    return util.hash(k_pt[_x])
 
 def _is_valid_d(d):
     # Private keys must fall in the range 1 <= d < _n
