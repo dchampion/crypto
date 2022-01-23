@@ -158,16 +158,6 @@ def _validate_parameters(q, p, g):
     assert isinstance(p, int)
     assert isinstance(g, int)
 
-    # Check that
-    # (1) the bit length of the modulus [p] is as big as that requested,
-    # (2) the bit length of [q] (the order of the subgroup modulo p within
-    # which public keys must fall) is big enough,
-    # (3) p is prime,
-    # (4) q is prime,
-    # (5) q is a divisor of p-1,
-    # (6) the generator [g] is not 1, and
-    # (7) (g**q) % p is 1
-
     valid = True
 
     # The bit length of modulus p must be greater than min_p_bit_len - 1
