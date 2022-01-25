@@ -142,7 +142,7 @@ def _is_valid_d(d):
     # Private keys must fall in the range 1 <= d < _n
     return isinstance(d, int) and 1 <= d < _n
 
-def sign(m, d):
+def sign(d, m):
     """
     Returns a signature S&mdash;a tuple of the form (r, s)&mdash;that is computed by
     signing the message m with the caller's private key d.
@@ -170,7 +170,7 @@ def sign(m, d):
 
     return r, s
 
-def verify(m, S, Q):
+def verify(Q, m, S):
     """
     Returns True if the signature S&mdash;a tuple of the form (r, s)&mdash; is valid
     for the message m and a public key Q; otherwise returns False.

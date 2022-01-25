@@ -206,16 +206,16 @@ def test_sign_and_verify():
     for m in ["When", "in", "the", "course", "of", "human", "events..."]:
         # Test sign/verify using the secp256k1 curve.
         d, Q = ec.generate_keypair()
-        S = ec.sign(m, d)
-        assert ec.verify(m, S, Q)
+        S = ec.sign(d, m)
+        assert ec.verify(Q, m, S)
 
     for curve in Curves:
         ec.new_curve(curve[0], curve[1], curve[2], curve[3], curve[4], curve[5], curve[6], B_iters)
         for m in ["When", "in", "the", "course", "of", "human", "events..."]:
         # Test sign/verify using the small test curves.
             d, Q = ec.generate_keypair()
-            S = ec.sign(m, d)
-            assert ec.verify(m, S, Q)
+            S = ec.sign(d, m)
+            assert ec.verify(Q, m, S)
 
     print("test_sign_and_verify passed")
 
@@ -242,7 +242,7 @@ def test_full_protocol():
     # mA = "8675309" (Message to be                                                        #
     #         signed and encrypted.)                                                       #
     #                                                                                      #
-    # [sA] = sign(mA, dA)                                                                  #
+    # [sA] = sign(dA, mA)                                                                  #
     #                                                                                      #
     # [mAC] = sym_encrypt(kSessionA, mA)                                                   #
     #                                                                                      #
@@ -252,7 +252,7 @@ def test_full_protocol():
     #                                                                                      #
     #                                               mB = sym_decrypt(kSessionB, [mAC])     #
     #                                                                                      #
-    #                                               result = verify(mB, [sA], [QB])        #
+    #                                               result = verify([QB], mB, [sA])        #
     #                                                                                      #
     # If, in the very last step, the result of the verify() operation performed by Bob     #
     # returns True, Bob can be sure the message mB he decrypts and verifies was signed by  #
@@ -280,7 +280,7 @@ def test_full_protocol():
     # Alice produces a message mA, and signs it with her private key dA, thus producing the
     # ECDSA signature [sA].
     mA = "8675309"
-    sA = ec.sign(mA, dA)
+    sA = ec.sign(dA, mA)
 
     # Alice encrypts her message mA using her ECDH session key kSessionA. Alice transmits the
     # message ciphertext [mAC] and the message signature [sA] to Bob.
@@ -293,7 +293,7 @@ def test_full_protocol():
     # mB (confidentiality), no one has tampered with mB (integrity), and that it was indeed
     # Alice who sent him mB (authenticity).
     mB = sym.decrypt(kSessionB, mAC)
-    assert ec.verify(mB, sA, QA)
+    assert ec.verify(QA, mB, sA)
 
     print("test_full_protocol passed")
 
