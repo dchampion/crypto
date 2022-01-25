@@ -10,12 +10,14 @@ Each artifact in this folder&mdash;excluding *meta* files like this README&mdash
 
 3. **Cryptography.xlsx** &ndash; A collection of *MS-Excel* worksheets used to facilitate my understanding of various cryptographic techniques.
 
-4. [**EuclideanAlgorithms.md**](https://github.com/dchampion/crypto/blob/master/doc/EuclideanAlgorithms.md) &ndash; A demonstration of the Euclidean algorithms, which can be used to efficiently compute encryption and decryption exponents used in RSA encryption.
+4. [**ec.ipynb**](https://github.com/dchampion/crypto/blob/master/doc/ec.ipynb) &ndash; An interactive [*Jupyter*](https://jupyter.org/) notebook demonstrating the features of this repository's [ec module](https://github.com/dchampion/crypto/blob/master/code/src/ec.py).
 
-5. [**LectureNotes.txt**](https://github.com/dchampion/crypto/blob/master/doc/LectureNotes.txt) &ndash; Lecture notes from a two-semester course on cryptography I took online in the winter and spring of 2020/2021.
+5. [**EuclideanAlgorithms.md**](https://github.com/dchampion/crypto/blob/master/doc/EuclideanAlgorithms.md) &ndash; A demonstration of the Euclidean algorithms, which can be used to efficiently compute encryption and decryption exponents used in RSA encryption.
 
-6. [**NumberTheory.md**](https://github.com/dchampion/crypto/blob/master/doc/NumberTheory.md) &ndash; Helpful mnemonics on the number-theoretic underpinnings of Diffie-Hellman and RSA.
+6. [**LectureNotes.txt**](https://github.com/dchampion/crypto/blob/master/doc/LectureNotes.txt) &ndash; Lecture notes from a two-semester course on cryptography I took online in the winter and spring of 2020/2021.
 
-7. [**TheElementsOfPublicKeyCryptography.pdf**](https://raw.githubusercontent.com/dchampion/crypto/master/doc/TheElementsOfPublicKeyCryptography.pdf) &ndash; A 12k-word survey of public-key cryptography; a relatively modern branch of the field that is (among other things) foundational to internet security.
+7. [**NumberTheory.md**](https://github.com/dchampion/crypto/blob/master/doc/NumberTheory.md) &ndash; Helpful mnemonics on the number-theoretic underpinnings of Diffie-Hellman and RSA.
 
-8. [**rsa.ipynb**](https://github.com/dchampion/crypto/blob/master/doc/rsa.ipynb) &ndash; An interactive [*Jupyter*](https://jupyter.org/) notebook demonstrating the features of this repository's [rsa module](https://github.com/dchampion/crypto/blob/master/code/src/rsa.py).
+8. [**TheElementsOfPublicKeyCryptography.pdf**](https://raw.githubusercontent.com/dchampion/crypto/master/doc/TheElementsOfPublicKeyCryptography.pdf) &ndash; A 12k-word survey of public-key cryptography; a relatively modern branch of the field that is (among other things) foundational to internet security.
+
+9. [**rsa.ipynb**](https://github.com/dchampion/crypto/blob/master/doc/rsa.ipynb) &ndash; An interactive [*Jupyter*](https://jupyter.org/) notebook demonstrating the features of this repository's [rsa module](https://github.com/dchampion/crypto/blob/master/code/src/rsa.py).
