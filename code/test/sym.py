@@ -9,11 +9,7 @@ def encrypt(k, m):
     where k is key passed to this function, and c is the ciphertext returned by this
     function, to recover m.
     """
-    m_bytes = str(m).encode("utf-8")
-    m_int = int.from_bytes(m_bytes, byteorder="big")
-    k_bytes = k if isinstance(k, bytes) else str(k).encode("utf-8")
-    k_int = int.from_bytes(k_bytes, byteorder="big")
-    return k_int ^ m_int
+    return _to_int(k) ^ _to_int(m)
 
 def decrypt(k, c):
     """
@@ -21,9 +17,12 @@ def decrypt(k, c):
     where k is the key passed to this function, and m is the plaintext returned by this
     function, to encrypt m.
     """
-    k_bytes = k if isinstance(k, bytes) else str(k).encode("utf-8")
-    k_int = int.from_bytes(k_bytes, byteorder="big")
-    d = k_int ^ c
-    d_bytes = d.to_bytes((c.bit_length()+7) // 8, byteorder="big")
-    d_str = d_bytes.decode("utf-8").lstrip("\x00")
-    return d_str
+    return _to_str(_to_int(k) ^ c)
+
+def _to_int(s):
+    s_bytes = s if isinstance(s, bytes) else str(s).encode("utf-8")
+    return int.from_bytes(s_bytes, byteorder="big")
+
+def _to_str(i):
+    i_bytes = i.to_bytes((i.bit_length()+7) // 8, byteorder="big")
+    return i_bytes.decode("utf-8").lstrip("\x00")
