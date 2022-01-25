@@ -2,6 +2,7 @@ import sys
 sys.path.append("../src")
 
 import dh
+import sym
 
 def main():
     print("Running dh tests...")
@@ -106,21 +107,14 @@ def test_full_protocol():
     # Alice produces a message [mA], encrypts it using her session key kSessionA, and
     # transmits the ciphertext [mAC] to Bob.
     mA = "8675309"
-    mAC = sym_encrypt(kSessionA, mA)
+    mAC = sym.encrypt(kSessionA, mA)
 
     # Bob receives the ciphertext [mAC], and decrypts it using his session key kSessionB.
     # The message Bob decrypts mB must equal the message Alice encrypted mA.
-    mB = sym_decrypt(kSessionB, mAC)
-    assert mA == str(mB)
+    mB = sym.decrypt(kSessionB, mAC)
+    assert mA == mB
 
     print("test_full_protocol passed")
-
-def sym_encrypt(key, msg):
-    # Poor man's symmetric cipher.
-    return int.from_bytes(key, byteorder="little") ^ int(msg)
-
-def sym_decrypt(key, msg):
-    return sym_encrypt(key, msg)
 
 if __name__ == "__main__":
     main()

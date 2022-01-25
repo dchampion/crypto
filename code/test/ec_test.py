@@ -4,6 +4,7 @@ import importlib
 
 import ec
 import prng
+import sym
 
 # Test curve 1 parameters
 p, a, b, Gx, Gy, n, h = 17, 2, 2, 5, 1, 19, 1
@@ -283,7 +284,7 @@ def test_full_protocol():
 
     # Alice encrypts her message mA using her ECDH session key kSessionA. Alice transmits the
     # message ciphertext [mAC] and the message signature [sA] to Bob.
-    mAC = sym_encrypt(kSessionA, mA)
+    mAC = sym.encrypt(kSessionA, mA)
 
     # Bob decrypts the ciphertext [mAC] of Alice's message mA with his ECDH session key
     # kSessionB, and stores the result in mB. Then he verifies the decrypted message mB with
@@ -291,17 +292,10 @@ def test_full_protocol():
     # returns True, Bob can be satisfied that nobody but he and Alice knows the contents of
     # mB (confidentiality), no one has tampered with mB (integrity), and that it was indeed
     # Alice who sent him mB (authenticity).
-    mB = sym_decrypt(kSessionB, mAC)
+    mB = sym.decrypt(kSessionB, mAC)
     assert ec.verify(mB, sA, QA)
 
     print("test_full_protocol passed")
-
-def sym_encrypt(key, msg):
-    # Poor man's symmetric cipher.
-    return int.from_bytes(key, byteorder="little") ^ int(msg)
-
-def sym_decrypt(key, msg):
-    return sym_encrypt(key, msg)
 
 if __name__ == "__main__":
     main()

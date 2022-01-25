@@ -4,6 +4,7 @@ sys.path.append("../src")
 import rsa
 import primes
 import euclid
+import sym
 
 def main():
     print("Running rsa tests...")
@@ -132,7 +133,7 @@ def test_full_protocol():
     # scheme. For the purposes of this example, that scheme is a simple bitwise xor of
     # the symmetric key KA with an integer representation of the message mA. In a real-
     # world application, the symmetric scheme should be an industry standard (e.g., AES).
-    mAC = sym_encrypt(KA, mA)
+    mAC = sym.encrypt(KA, mA)
 
     # From the ciphertext [cA], Bob decrypts Alice's symmetric key KA using his
     # private RSA decryption key (d5B, pB, qB). He stores the result in KB (KB
@@ -145,8 +146,8 @@ def test_full_protocol():
     # result in mB (mB should be identical to mA). Bob can be confident the message
     # Alice sent to him can only be read by him, and not by an eavesdropper who may
     # have intercepted it.
-    mB = sym_decrypt(KB, mAC)
-    assert mA == str(mB)
+    mB = sym.decrypt(KB, mAC)
+    assert mA == mB
 
     # Bob verifies Alice's signature [oA] of the original message mA (or, more
     # precisely, his version of the message mB). This verification guarantees both
@@ -159,13 +160,6 @@ def test_full_protocol():
     assert verified == True
 
     print("full protocol test passed")
-
-def sym_encrypt(key, msg):
-    # Poor man's symmetric cipher.
-    return int.from_bytes(key, byteorder="little") ^ int(msg)
-
-def sym_decrypt(key, msg):
-    return sym_encrypt(key, msg)
 
 if __name__ == "__main__":
     main()
