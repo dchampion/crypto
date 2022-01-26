@@ -44,24 +44,23 @@ def test_full_protocol():
     #      generate_keypair(q, p, g)                                                       #
     #                                                                                      #
     # [p, q, g, KA]                     --->      [q, p, g, KA]                            #
-    #                                                  validate_parameters(q, p, g)        #
-    #                                                  validate_pub_key(KA)                #
+    #                                             validate_parameters(q, p, g)             #
+    #                                             validate_pub_key([KA])                   #
     #                                                                                      #
     #                                             kB, [KB] =                               #
     #                                                  generate_keypair(q, p, g)           #
     #                                                                                      #
     # [KB]                              <---      [KB]                                     #
+    # validate_pub_key([KB])                                                               #
     #                                                                                      #
     # kSessionA =                                 kSessionB =                              #
     #      generate_session_key([KB], kA, [p])         generate_session_key([KA], kB, [p]) #
     #                                                                                      #
-    # [mAC] =                                                                              #
-    #      sym_encrypt(kSessionA, mA)                                                      #
+    # [mAC] = sym_encrypt(kSessionA, mA)                                                   #
     #                                                                                      #
     # [mAC]                             --->      [mAC]                                    #
     #                                                                                      #
-    #                                             mB =                                     #
-    #                                                  sym_decrypt(kSessionB, [mAC])       #
+    #                                             mB = sym.decrypt(kSessionB, [mAC])       #
     #                                                                                      #
     # The message mB Bob decrypts must equal the message mA that Alice encrypted.          #
     ########################################################################################
@@ -93,8 +92,11 @@ def test_full_protocol():
     # his public key [KB] (but NOT his private key kB) to Alice.
     kB, KB = dh.generate_keypair(q, p, g)
 
-    # Alice, having received Bob's public key [KB], uses it, along with her private key
-    # kA to generate a session key kSessionA, which must be kept secret.
+    # Alice, having received Bob's public key [KB], validates it.
+    dh.validate_pub_key(KB, q, p)
+
+    # Then, Alice uses Bob's public key [KB], along with her private key
+    # kA, to generate a session key kSessionA, which must be kept secret.
     kSessionA = dh.generate_session_key(KB, kA, p)
 
     # Bob, having received Alice's public key [KA], uses it, along with his private key
@@ -106,7 +108,7 @@ def test_full_protocol():
 
     # Alice produces a message [mA], encrypts it using her session key kSessionA, and
     # transmits the ciphertext [mAC] to Bob.
-    mA = "8675309"
+    mA = "Encrypt me!"
     mAC = sym.encrypt(kSessionA, mA)
 
     # Bob receives the ciphertext [mAC], and decrypts it using his session key kSessionB.
