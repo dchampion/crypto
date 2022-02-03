@@ -9,8 +9,16 @@ _b = 2
 _Gx = -1.4029
 _Gy = 1.4052
 
+def plot_curve():
+    _setup_reals_plot()
+    plt.grid()
+    plt.show()
+
 def plot_reals_by_doubling():
     _setup_reals_plot()
+
+    plt.scatter(_Gx, _Gy, color="black")
+    plt.annotate("P", [_Gx-.2, _Gy+.2])
 
     xs, ys = [_Gx], [_Gy]
     x, y = _Gx, _Gy
@@ -33,6 +41,9 @@ def plot_reals_by_doubling():
 
 def plot_reals_by_adding():
     _setup_reals_plot()
+
+    plt.scatter(_Gx, _Gy, color="black")
+    plt.annotate("P", [_Gx-.2, _Gy+.2])
 
     xs, ys = [_Gx], [_Gy]
     x, y = _Gx, _Gy
@@ -57,11 +68,12 @@ def plot_reals_by_adding():
     plt.show()
 
 def _setup_reals_plot():
+    #plt.figure(figsize=(16,10), dpi=80)
+    #plt.rcParams['figure.figsize'] = [16, 10]
+    #plt.rcParams['figure.dpi'] = 80
+
     y, x = np.ogrid[-12:12:100j, -12:12:100j]
     plt.contour(x.ravel(), y.ravel(), pow(y, 2) - pow(x, 3) - _a*x - _b, [0])
-
-    plt.scatter(_Gx, _Gy, color="black")
-    plt.annotate("P", [_Gx-.2, _Gy+.2])
 
 def _double(x, y, a):
     slope = ((3 * pow(x, 2)) + a) / (2 * y)
