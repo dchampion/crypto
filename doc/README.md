@@ -14,12 +14,14 @@ Each artifact in this folder&mdash;excluding *meta* files like this README&mdash
 
 5. [**ec.ipynb**](https://nbviewer.org/github/dchampion/crypto/blob/master/doc/ec.ipynb) &ndash; A [*Jupyter*](https://jupyter.org/) notebook demonstrating the features of this repository's [ec module](https://github.com/dchampion/crypto/blob/master/code/src/ec.py), which contains an Elliptic&ndash;Curve implementation of the Diffie&ndash;Hellman key exchange protocol (ECDH), and the Elliptic Curve digital signature algorithm (ECDSA).
 
-6. [**EuclideanAlgorithms.md**](https://github.com/dchampion/crypto/blob/master/doc/EuclideanAlgorithms.md) &ndash; A demonstration of the Euclidean algorithms, which are used extensively in public&ndash;key implementations to perform efficient division in finite multiplicative groups.
+6. [**EllipticCurves.ipynb**](https://nbviewer.org/github/dchampion/crypto/blob/master/doc/EllipticCurves.ipynb) &ndash; A [*Jupyter*](https://jupyter.org/) notebook demonstrating the properties of elliptic curves over the real numbers, which facilitates understanding their cryptographic bretheren over finite fields.
 
-7. [**LectureNotes.txt**](https://github.com/dchampion/crypto/blob/master/doc/LectureNotes.txt) &ndash; Lecture notes from a two&ndash;semester course on cryptography I took online in the winter and spring of 2020/2021.
+7. [**EuclideanAlgorithms.md**](https://github.com/dchampion/crypto/blob/master/doc/EuclideanAlgorithms.md) &ndash; A demonstration of the Euclidean algorithms, which are used extensively in public&ndash;key implementations to perform efficient division in finite multiplicative groups.
 
-8. [**NumberTheory.md**](https://github.com/dchampion/crypto/blob/master/doc/NumberTheory.md) &ndash; Helpful mnemonics on the number&ndash;theoretic underpinnings of public&ndash;key cryptography.
+8. [**LectureNotes.txt**](https://github.com/dchampion/crypto/blob/master/doc/LectureNotes.txt) &ndash; Lecture notes from a two&ndash;semester course on cryptography I took online in the winter and spring of 2020/2021.
 
-9. [**TheElementsOfPublicKeyCryptography.pdf**](https://raw.githubusercontent.com/dchampion/crypto/master/doc/TheElementsOfPublicKeyCryptography.pdf) &ndash; A survey of public&ndash;key cryptography; a relatively modern branch of the field that is (among other things) foundational to internet security.
+9. [**NumberTheory.md**](https://github.com/dchampion/crypto/blob/master/doc/NumberTheory.md) &ndash; Helpful mnemonics on the number&ndash;theoretic underpinnings of public&ndash;key cryptography.
 
-10. [**rsa.ipynb**](https://nbviewer.org/github/dchampion/crypto/blob/master/doc/rsa.ipynb) &ndash; A [*Jupyter*](https://jupyter.org/) notebook demonstrating the features of this repository's [rsa module](https://github.com/dchampion/crypto/blob/master/code/src/rsa.py), which implements RSA primitives for secure key exchange, encryption and digital signature/verification.
+10. [**TheElementsOfPublicKeyCryptography.pdf**](https://raw.githubusercontent.com/dchampion/crypto/master/doc/TheElementsOfPublicKeyCryptography.pdf) &ndash; A survey of public&ndash;key cryptography; a relatively modern branch of the field that is (among other things) foundational to internet security.
+
+11. [**rsa.ipynb**](https://nbviewer.org/github/dchampion/crypto/blob/master/doc/rsa.ipynb) &ndash; A [*Jupyter*](https://jupyter.org/) notebook demonstrating the features of this repository's [rsa module](https://github.com/dchampion/crypto/blob/master/code/src/rsa.py), which implements RSA primitives for secure key exchange, encryption and digital signature/verification.
