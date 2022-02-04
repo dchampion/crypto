@@ -1,8 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
-sys.path.append("../src")
+sys.path.append("../code/src")
 import ec
+
+plt.figure(figsize=(16,10), dpi=80)
+#plt.rcParams['figure.figsize'] = [16, 10]
+#plt.rcParams['figure.dpi'] = 80
 
 _a = -2
 _b = 2
@@ -68,10 +72,6 @@ def plot_reals_by_adding():
     plt.show()
 
 def _setup_reals_plot():
-    #plt.figure(figsize=(16,10), dpi=80)
-    #plt.rcParams['figure.figsize'] = [16, 10]
-    #plt.rcParams['figure.dpi'] = 80
-
     y, x = np.ogrid[-12:12:100j, -12:12:100j]
     plt.contour(x.ravel(), y.ravel(), pow(y, 2) - pow(x, 3) - _a*x - _b, [0])
 
