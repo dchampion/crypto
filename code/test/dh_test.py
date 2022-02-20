@@ -12,7 +12,7 @@ def main():
     
 def test_dh_setup():
     q, p, g = dh.generate_parameters(2048)
-    dh._validate_parameters(q, p, g)
+    dh.validate_parameters(q, p, g)
     
     k_prv_1, k_pub_1 = dh.generate_keypair(q, p, g)
     dh.validate_pub_key(k_pub_1, q, p)
@@ -74,7 +74,7 @@ def test_full_protocol():
     # Alice may optionally validate these parameters before transmitting them to Bob.
     # Bob, however, must validate them using the same funciton when he receives them
     # from Alice.
-    dh._validate_parameters(q, p, g)
+    dh.validate_parameters(q, p, g)
 
     # Alice generates her private and public keys kA and [KA], respectively, using
     # [g, q, p] as inputs. Alice transmits [q, p, g, KA] (but NOT her private key kA)
@@ -82,7 +82,7 @@ def test_full_protocol():
     kA, KA = dh.generate_keypair(q, p, g)
 
     # Bob MUST validate the public parameters [p, q, g] he receives from Alice.
-    dh._validate_parameters(q, p, g)
+    dh.validate_parameters(q, p, g)
 
     # Bob MUST ALSO validate Alice's public key [KA].
     dh.validate_pub_key(KA, q, p)

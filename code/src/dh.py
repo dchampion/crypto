@@ -93,7 +93,7 @@ def generate_keypair(q, p, g):
     modulo p of order (or size) q. The private key k_prv returned by this function
     must be kept secret.
     """
-    _validate_parameters(q, p, g)
+    validate_parameters(q, p, g)
 
     # Select a random, private key in the range of q.
     k_prv = prng.randrange(1, q-1)
@@ -147,7 +147,7 @@ def validate_pub_key(k, q, p):
     if not valid:
         raise ValueError("Invalid key")
 
-def _validate_parameters(q, p, g):
+def validate_parameters(q, p, g):
     """
     Validates the public parameters [q, p, g]. Must be called, without raising
     an exception, by a receiving party before proceeding with a session. If this
