@@ -10,20 +10,28 @@ import math
 import prng
 import util
 
-# secp256k1 elliptic curve parameters (y**2 = x**3 + ax + b % p)
+# secp256k1 elliptic curve parameters:
+# field parameter (p) -> prime modulus for the curve equation y**2 = x**3 + ax + b (mod p)
 _p = 2**256 - 2**32 - 977
+# coefficient (a) in curve equation
 _a = 0
+# coefficient (b) in curve equation
 _b = 7
+# Base/generator point (G) x-coordinate
 _Gx = 55066263022277343669578718895168534326250603453777594175500187360389116729240
+# Base/generator point (G) y-coordinate
 _Gy = 32670510020758816978083085130507043184471273380659243275938904335757337482424
+# Base/generator point (G)
 _G = [_Gx, _Gy]
+# order (n) of base/generator point (G) -> such that nG = i, where i is the identity element
 _n = 115792089237316195423570985008687907852837564279074904382605163141518161494337
+# cofactor (h) -> where h is the order of the curve (written as #E(Fp)) divided by n
 _h = 1
 
-# Point at infinity
+# Identity element, aka the point at infinity
 _i = [None, None]
 
-# Global curve point [_x, _y] list indices.
+# Global curve point [x, y] list indices.
 _x = 0
 _y = 1
 
@@ -301,19 +309,19 @@ def validate_curve_params(B_iters=100):
 
     valid = True
 
-    # _a must be in the interval [0, _p-1].
+    # _a must be a group element; i.e., within the interval [0, _p-1].
     if valid and _a > _p - 1 or _a < 0:
         valid = False
 
-    # _b must be in the interval [0, _p-1].
+    # _b must be a group element; i.e., within the interval [0, _p-1].
     if valid and _b > _p - 1 or _b < 0:
         valid = False
 
-    # _Gx must be in the interval [0, _p-1].
+    # _Gx must be a group element; i.e., within the interval [0, _p-1].
     if valid and _Gx > _p - 1 or _Gx < 0:
         valid = False
 
-    # _Gy must be in the interval [0, _p-1].
+    # _Gy must be a group element; i.e., within the interval [0, _p-1].
     if valid and _Gy > _p - 1 or _Gy < 0:
         valid = False
 
@@ -321,7 +329,7 @@ def validate_curve_params(B_iters=100):
     if valid and _n == _p:
         valid = False
 
-    # The curve must be smooth
+    # The curve must be smooth.
     if valid and (4*(_a**3) + 27*(_b**2)) % _p == 0:
         valid = False
 
@@ -329,11 +337,11 @@ def validate_curve_params(B_iters=100):
     if valid and _Gy**2 % _p != (_Gx**3 + _a*_Gx + _b) % _p:
         valid = False
 
-    # _p must be prime
+    # _p must be prime.
     if valid and not primes.is_prime(_p):
         valid = False
 
-    # _n must be prime
+    # _n must be prime.
     if valid and not primes.is_prime(_n):
         valid = False
 
