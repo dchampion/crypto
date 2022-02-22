@@ -118,6 +118,10 @@ def test_double():
     print("test_double passed")
 
 def test_validate_curve_params():
+    # Test with default curve
+    importlib.reload(ec)
+    ec.validate_curve_params()
+
     for curve in Curves:
         # Test with valid curve parameters.
         ec.new_curve(curve[0], curve[1], curve[2], curve[3], curve[4], curve[5], curve[6], B_iters)
