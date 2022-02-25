@@ -103,6 +103,13 @@ def test_add():
         pt = ec.add(pt_group[0], pt_group[len(pt_group)-2])
         assert pt == ec._i
 
+    # Try to add bogus points.
+    try:
+        ec.add([6,12],[19,2])
+        assert False
+    except:
+        pass
+
     print("test_add passed")
 
 def test_double():
@@ -114,6 +121,13 @@ def test_double():
         for i in range(1, len(pt_group)):
             pt = ec.double(pt_group[i-1])
             assert pt == pt_group[((i*2)%curve[5])-1]
+
+    # Try to double a bogus point.
+    try:
+        ec.double([19,2])
+        assert False
+    except:
+        pass
 
     print("test_double passed")
 
