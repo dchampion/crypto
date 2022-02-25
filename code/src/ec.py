@@ -128,7 +128,7 @@ def generate_keypair():
     the caller of this function. Q, the public key, may be shared freely.
     """
     d = _n
-    while not _is_valid_d(d):
+    while not _validate_priv_key(d):
         d = prng.randbits(_n.bit_length())
 
     return d, _fast_point_at(d)
@@ -139,7 +139,7 @@ def generate_session_key(d, Q):
     upon in advance by communicating parties (e.g., AES, 3DES). This key must be
     kept secret by the caller of this function.
     """
-    assert _is_valid_d(d)
+    assert _validate_priv_key(d)
     validate_pub_key(Q)
 
     # Compute a shared point on the curve using the essential property of Diffie-
@@ -152,16 +152,12 @@ def generate_session_key(d, Q):
     # if it were to be leaked.
     return util.hash(k_pt[X])
 
-def _is_valid_d(d):
-    # Private keys must fall in the range 1 <= d < _n
-    return isinstance(d, int) and 1 <= d < _n
-
 def sign(d, m):
     """
     Returns a signature S&mdash;a tuple of the form (r, s)&mdash;that is computed
     by signing the message m with the caller's private key d.
     """
-    assert _is_valid_d(d)
+    assert _validate_priv_key(d)
 
     s = 0
     while s == 0:
@@ -274,10 +270,20 @@ def _validate_pt(pt):
 
     if isinstance(pt[X], int):
         # If pt is purported to be a point on the curve, prove that it is.
-        assert pt[Y]**2 % _p == (pt[X]**3 + (_a*pt[X]) + _b) % _p
+        assert on_curve(pt)
     else:
         # If pt's elements are not of type int, then they must be of type None.
         assert pt[X] == None and pt[Y] == None
+
+def on_curve(pt):
+    """
+    Returns True if the point pt is on the curve; otherwise returns False.
+    """
+    return pt[Y]**2 % _p == (pt[X]**3 + (_a*pt[X]) + _b) % _p
+
+def _validate_priv_key(d):
+    # Private keys must fall in the range 1 <= d < _n
+    return isinstance(d, int) and 1 <= d < _n
 
 def validate_pub_key(Q):
     """
@@ -348,8 +354,8 @@ def validate_curve_params(B_iters=100):
     if valid and (4*(_a**3) + 27*(_b**2)) % _p == 0:
         valid = False
 
-    # The base point [_Gx, _Gy] must be on the curve.
-    if valid and _Gy**2 % _p != (_Gx**3 + _a*_Gx + _b) % _p:
+    # The base point _G must be on the curve.
+    if valid and not on_curve(_G):
         valid = False
 
     # _p must be prime.
