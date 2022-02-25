@@ -133,19 +133,19 @@ def generate_keypair():
 
     return d, _fast_point_at(d)
 
-def generate_session_key(d_priv, Q_pub):
+def generate_session_key(d, Q):
     """
     Returns a byte array to be used as a session key in a symmetric cipher agreed
     upon in advance by communicating parties (e.g., AES, 3DES). This key must be
     kept secret by the caller of this function.
     """
-    assert _is_valid_d(d_priv)
-    validate_pub_key(Q_pub)
+    assert _is_valid_d(d)
+    validate_pub_key(Q)
 
     # Compute a shared point on the curve using the essential property of Diffie-
     # Hellman. In the case of elliptic curves, this is done by multiplying the
-    # other party's public key Q_pub by the caller's private key d_priv.
-    k_pt = x_times_pt(d_priv, Q_pub)
+    # other party's public key Q by the caller's private key d.
+    k_pt = x_times_pt(d, Q)
 
     # Use only the x-coordinate of the shared point in the shared key, and hash it
     # to obscure any mathematical structure that could be exploited by an adversary
@@ -173,7 +173,6 @@ def sign(d, m):
 
             # r is the x-coordinate of R; the first element of the tuple (r, s)
             # returned by this function (try again if r is 0).
-            # TODO: Check % _n here (and below...)
             r = R[X] % _n
 
         # Convert m to an integer representative of its hash.
@@ -193,6 +192,8 @@ def verify(Q, m, S):
     validate_pub_key(Q)
 
     r, s = S[0], S[1]
+    assert 1 <= r < _n
+    assert 1 <= s < _n
 
     # Convert m to an integer representative of its hash.
     e = _hash_to_int(m)
