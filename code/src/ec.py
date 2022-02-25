@@ -80,16 +80,6 @@ def add(pt1, pt2):
     
     return [x, y]
 
-def _add(pt1, pt2):
-    # This equation gives us the vertical reflection of the 3rd point of intersection
-    # of a straight line through two points (i.e., pt1 and pt2) on an elliptic curve.
-    # The vertical reflection of a point (x,y) is (x,-y), and vice versa.
-    slope = ((pt2[_y] - pt1[_y]) * euclid.inverse((pt2[_x] - pt1[_x]) % _p, _p)) % _p
-    x = (slope**2 - (pt2[_x] + pt1[_x])) % _p
-    y = ((slope * pt2[_x]) - (slope * x) - pt2[_y]) % _p
-
-    return [x, y]
-
 def double(pt):
     """
     Returns the sum of point pt and itself on the curve. If pt is the point at
@@ -102,14 +92,29 @@ def double(pt):
 
     return _double(pt)
 
+def _add(pt1, pt2):
+    return _add_inv(_sec_int(pt1, pt2))
+
 def _double(pt):
-    # This equation gives us the vertical reflection of the point of intersection of
-    # a straight line that is tangent to the curve at a single point (i.e., pt) on
-    # an elliptic curve. The vertical reflection of a point (x,y) is (x,-y), and vice
-    # versa.
+    return _add_inv(_tan_int(pt))
+
+def _add_inv(pt):
+    return [pt[0], -pt[1] % _p]
+
+def _tan_int(pt):
     slope = (((3 * pt[_x]**2) + _a) * euclid.inverse(2 * pt[_y], _p)) % _p
     x = (slope**2 - (2 * pt[_x])) % _p
-    y = ((slope * pt[_x]) - (slope * x) - pt[_y]) % _p
+    y = (slope * (x - pt[_x])) + pt[_y] % _p
+
+    return [x, y]
+
+def _sec_int(pt1, pt2):
+    if pt1 == pt2:
+        return _tan_int(pt1)
+
+    slope = ((pt2[_y] - pt1[_y]) * euclid.inverse((pt2[_x] - pt1[_x]) % _p, _p)) % _p
+    x = (slope**2 - pt1[_x] - pt2[_x]) % _p
+    y = (slope * (x - pt1[_x]) + pt1[_y]) % _p
 
     return [x, y]
 
