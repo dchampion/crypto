@@ -102,8 +102,8 @@ def inverse(a, b):
 
     gcd, x, y = gcdx(a, b)
     if gcd != 1:
-        err_str = "a has no inverse modulo b"
-        raise Exception(err_str)
+        err_str = f"{a} has no inverse modulo {b}"
+        raise ValueError(err_str)
     
     inverse = x if a < b else y
 

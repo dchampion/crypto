@@ -1,10 +1,8 @@
-import sys
-sys.path.append("../src")
-
+import path_resolver
 import primes
 
 odd_composites = [9,15,27,35,49,133,339,589,711,999,2**521+1,2**607+1]
-even_composites = list(map(lambda x: x + 1, odd_composites))
+even_composites = [n + 1 for n in odd_composites]
 
 # Large (Mersenne) primes
 large_primes =  [2**521-1,2**607-1,2**1279-1,2**2203-1,2**2281-1]
@@ -116,9 +114,9 @@ primes <= {primes.small_primes[len(primes.small_primes)-1]}")
     print(f"is_prime passed for {len(large_primes)} large primes")
 
 def test_generate_prime():
-    for x in range(3, 12):
-        p = primes.generate_prime(2**x)
-        assert p.bit_length() == 2**x, f"expected bit length {2**x}, got {p.bit_length()}"
+    for n in range(3, 12):
+        p = primes.generate_prime(2**n)
+        assert p.bit_length() == 2**n, f"expected bit length {2**n}, got {p.bit_length()}"
         assert primes.is_prime(p), f"generate_prime() returned {p}, which is not prime"
 
     print("generate_large_prime passed for primes up to 2048 bits in length")

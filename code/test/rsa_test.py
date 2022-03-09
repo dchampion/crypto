@@ -1,6 +1,4 @@
-import sys
-sys.path.append("../src")
-
+import path_resolver
 import rsa
 import primes
 import euclid

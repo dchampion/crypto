@@ -1,6 +1,4 @@
-import sys
-sys.path.append("../src")
-
+import path_resolver
 import euclid
 import math
 
@@ -204,9 +202,9 @@ def test_inverse():
 
     try:
         euclid.inverse(60,8)
-        raise Exception("Expected inverse(60,8) to raise an exeption, but didn't")
+        assert False, "Expected inverse(60,8) to raise an exeption, but didn't"
     except Exception as e:
-        print(e)
+        assert isinstance(e, ValueError)
 
     print("inverse tests passed")
 

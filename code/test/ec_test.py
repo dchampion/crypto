@@ -1,7 +1,5 @@
-import sys
-sys.path.append("../src")
+import path_resolver
 import importlib
-
 import ec
 import prng
 import sym
@@ -56,7 +54,7 @@ def test_add():
             pt = ec.add(pt_group[rand_index], pt_group[i-1])
             pt_set2.add(tuple(pt))
 
-        pt_set1 = set(map(lambda pt: tuple(pt), pt_group))
+        pt_set1 = {tuple(pt) for pt in pt_group}
         assert len(pt_set2.difference(pt_set1)) == 0
 
         # Add selected group elements.
@@ -138,8 +136,11 @@ def test_validate_curve_params():
 
     for curve in Curves:
         # Test with valid curve parameters.
-        ec.new_curve(curve[0], curve[1], curve[2], curve[3], curve[4], curve[5], curve[6], B_iters)
-        ec.validate_curve_params(B_iters)
+        try:
+            ec.new_curve(curve[0], curve[1], curve[2], curve[3], curve[4], curve[5], curve[6], B_iters)
+            ec.validate_curve_params(B_iters)
+        except Exception as e:
+            assert False
 
     try:
         # Test with invalid curve parameter.

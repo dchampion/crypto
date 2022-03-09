@@ -1,6 +1,4 @@
-import sys
-sys.path.append("../src")
-
+import path_resolver
 import util
 import primes
 import random
