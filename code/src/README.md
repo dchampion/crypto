@@ -15,7 +15,7 @@ To see examples of their usage, consult the unit tests in the [/test](https://gi
 
 4. [primes.py](https://github.com/dchampion/crypto/blob/master/code/src/primes.py) &mdash; Efficient algorithms for primality testing, and random prime number generation.
 
-5. [prng.py](https://github.com/dchampion/crypto/blob/master/code/src/dh.py) &mdash; A cryptographically secure pseudo-random number generator.
+5. [prng.py](https://github.com/dchampion/crypto/blob/master/code/src/prng.py) &mdash; A cryptographically secure pseudo-random number generator.
 
 6. [rsa.py](https://github.com/dchampion/crypto/blob/master/code/src/rsa.py) &mdash; Implementations of the Rivest-Shamir-Adleman (RSA) cryptosystem, including encryption, decryption, digital signature and verification procedures.
 
