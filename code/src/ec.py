@@ -104,20 +104,62 @@ def _additive_inverse(pt):
 def _tangent_intersection(pt):
     # Returns the point of intersection on the curve of a straight line drawn tangent
     # to the point pt on the curve.
-    m = (((3 * pt[X]**2) + _a) * euclid.inverse(2 * pt[Y], _p)) % _p
-    x = (m**2 - (2 * pt[X])) % _p
-    y = (m * (x - pt[X])) + pt[Y] % _p
 
-    return [x, y]
+    # The slope (m) of a line tangent to pt is given by the equation 3x**2 + a / 2y.
+    # Because we are working in a finite group, we can't do division, however, so we
+    # multiply the numerator by the inverse of the denominator (all modulo _p of course).
+    # We obtain this equation by differentiating both sides of the curve equation
+    # y**2 = x**3 + ax + b, which yields m * 2y = 3x**2 + a, or m = 3x**2 + a / 2y.
+    m = (((3 * pt[X]**2) + _a) * euclid.inverse(2 * pt[Y], _p)) % _p
+
+    # The sum of the three roots of a cubic polynomial, in which the coefficient of the
+    # highest power of x is 1 (aka a monic polynomial), is equal to the negative of the
+    # coefficient of the second-highest power of x. In this case two of the three roots
+    # are the same (pt), and the third root is the intersection at pt2. In the equation
+    # y**2 = x**3 + ax + b, the value of that coefficient is m**2. If we consider that
+    # the equation for a line that runs tangent to pt is y = mx + B, we can rewrite the
+    # curve equation as (mx + B)**2 = x**3 + ax + b, or x**3 - (mx + B)**2 + ax + b = 0.
+    # This gives us -m**2, which is the coefficient of -x**2, the negative of which is
+    # m**2. Since pt[X] + pt[X] + pt2[X] = m**2, then pt2[X] = m**2 - pt[X] - pt[X],
+    # or pt2[X] = m**2 - 2 * pt[X].
+    pt2 = []
+    pt2.append((m**2 - (2 * pt[X])) % _p)
+
+    # Since pt2 must lie on the curve where the line tangent to pt intersects it, and
+    # since y = mx + B, we can write pt2[Y] = m*pt2[X] + B, or pt2[Y] = m*pt2[X] + (pt[Y]
+    # - m*pt[X]), or pt2[Y] = m(pt2[X] - pt[X]) + pt[Y].
+    pt2.append((m * (pt2[X] - pt[X])) + pt[Y] % _p)
+
+    return pt2
 
 def _secant_intersection(pt1, pt2):
     # Returns the point of intersection on the curve of a straight line drawn between
     # points pt1 and pt2 (i.e., the secant line) on the curve.
-    m = ((pt2[Y] - pt1[Y]) * euclid.inverse((pt2[X] - pt1[X]) % _p, _p)) % _p
-    x = (m**2 - pt1[X] - pt2[X]) % _p
-    y = (m * (x - pt1[X]) + pt1[Y]) % _p
 
-    return [x, y]
+    # The slope (m) of the line through pt1 and pt2 is given by the equation
+    # pt2[Y] - pt1[Y] / pt2[X] - pt1[X]. Because we are working in a finite group, we
+    # can't do division, however, so we multiply the numerator by the inverse of the
+    # denominator (all modulo _p of course).
+    m = ((pt2[Y] - pt1[Y]) * euclid.inverse((pt2[X] - pt1[X]) % _p, _p)) % _p
+
+    # The sum of the three roots of a cubic polynomial, in which the coefficient of the
+    # highest power of x is 1 (aka a monic polynomial), is equal to the negative of the
+    # coefficient of the second-highest power of x. In the equation y**2 = x**3 + ax + b,
+    # that value is m**2. If we consider that the equation for a line that runs through
+    # pt1 and pt2 is y = mx + B, we can rewrite the curve equation as (mx + B)**2 =
+    # x**3 + ax + b, or x**3 - (mx + B)**2 + ax + b = 0. This gives us -m**2, which is
+    # the coefficient of -x**2, the negative of which is m**2. Since pt1[X] + pt2[X]
+    # + pt3[X] = m**2, then pt3[X] = m**2 - pt1[X] - pt2[X].
+    pt3 = []
+    pt3.append((m**2 - pt1[X] - pt2[X]) % _p)
+
+    # Since pt3 must be on the line between pt1 and pt2, and y = mx + B, we can write
+    # pt3[Y] = mx + B, or pt3[Y] = m*pt3[X] + (pt1[Y] - m*pt1[X]), or pt3[Y] =
+    # m(pt3[X] - pt1[X]) + pt1[Y] (note that pt1 could be substituted for pt2 in this
+    # equation with the same effect).
+    pt3.append((m * (pt3[X] - pt1[X]) + pt1[Y]) % _p)
+
+    return pt3
 
 def generate_keypair():
     """
