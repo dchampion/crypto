@@ -115,9 +115,9 @@ def _tangent_intersection(pt):
     # The sum of the three roots of a cubic polynomial, in which the coefficient of the
     # highest power of x is 1 (aka a monic polynomial), is equal to the negative of the
     # coefficient of the second-highest power of x. In this case two of the three roots
-    # are the same (pt), and the third root is the intersection at pt2. In the equation
-    # y**2 = x**3 + ax + b, the value of that coefficient is m**2. If we consider that
-    # the equation for a line that runs tangent to pt is y = mx + B, we can rewrite the
+    # are the same (pt[X]), and the third root is the intersection at pt2[X]. In the
+    # equation y**2 = x**3 + ax + b, the value of that coefficient is m**2. If we consider
+    # that the equation for a line that runs tangent to pt is y = mx + B, we can rewrite the
     # curve equation as (mx + B)**2 = x**3 + ax + b, or x**3 - (mx + B)**2 + ax + b = 0.
     # This gives us -m**2, which is the coefficient of -x**2, the negative of which is
     # m**2. Since pt[X] + pt[X] + pt2[X] = m**2, then pt2[X] = m**2 - pt[X] - pt[X],
