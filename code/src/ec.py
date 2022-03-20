@@ -236,8 +236,9 @@ def verify(Q, m, S):
     # Convert m to an integer representative of its hash.
     e = _hash_to_int(m)
 
-    u1 = (e * euclid.inverse(s, _n)) % _n
-    u2 = (r * euclid.inverse(s, _n)) % _n
+    s_inv = euclid.inverse(s, _n)
+    u1 = (e * s_inv) % _n
+    u2 = (r * s_inv) % _n
 
     # Recover the point computed in the signing operation.
     R = add(x_times_pt(u1, _G), x_times_pt(u2, Q))
@@ -252,13 +253,13 @@ def _hash_to_int(m):
     Converts a message m to an integer representation of its hash.
     """
     h = util.hash(m)
-    hi = int.from_bytes(h, byteorder="big")
+    i = int.from_bytes(h, byteorder="big")
 
-    if _n.bit_length() >= hi.bit_length():
-        e = hi
+    if _n.bit_length() >= i.bit_length():
+        e = i
     else:
         # Use only the leftmost _n bits if _n is smaller than m.
-        e = hi >> (hi.bit_length() - _n.bit_length())
+        e = i >> (i.bit_length() - _n.bit_length())
 
     return e
 
@@ -334,6 +335,7 @@ def validate_pub_key(Q):
     (https://www.secg.org/), section 3.2.2.1 (Elliptic Curve Public Key Validation
     primitive).
     """
+    # _validate_pt includes the on-curve test, so no need to repeat here.
     _validate_pt(Q)
 
     valid = True
@@ -348,10 +350,6 @@ def validate_pub_key(Q):
 
     # Q's y coordinate must be in the interval [0, p-1].
     if valid and Q[Y] > _p-1 or Q[Y] < 0:
-        valid = False
-
-    # Q must be on the curve
-    if valid and Q[Y]**2 % _p != (Q[X]**3 + (_a*Q[X]) + _b) % _p:
         valid = False
 
     # If the cofactor _h is greater than 1, then the order of the group _n times Q must
