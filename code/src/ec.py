@@ -335,7 +335,6 @@ def validate_pub_key(Q):
     (https://www.secg.org/), section 3.2.2.1 (Elliptic Curve Public Key Validation
     primitive).
     """
-    # _validate_pt includes the on-curve test, so no need to repeat here.
     _validate_pt(Q)
 
     valid = True
@@ -350,6 +349,10 @@ def validate_pub_key(Q):
 
     # Q's y coordinate must be in the interval [0, p-1].
     if valid and Q[Y] > _p-1 or Q[Y] < 0:
+        valid = False
+
+    # Q must be on the curve
+    if valid and not on_curve(Q):
         valid = False
 
     # If the cofactor _h is greater than 1, then the order of the group _n times Q must
