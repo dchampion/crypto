@@ -246,6 +246,18 @@ def verify(Q, m, S):
 
     v = R[X] % _n
 
+    # Proof of correctness:
+    #      v = u1 x _G + u2 x Q
+    #        = u1 x _G + u2 x d x _G             (substitute d x _G for Q)
+    #        = s^-1 x e x _G + d x _G            (substitute s^-1 x e for u1)
+    #        = s^-1 x e x _G + s^-1 x r x d x _G (substitute s^-1 x r for u2)
+    #        = s^-1(e + r x d) x _G              (distribute s^-1 over addition)
+    # k x _G = s^-1(e + r x d) x _G              (substitute k x _G for v)
+    #      k = s^-1(e + r x d)                   (divide both sides by _G)
+    #  k x s = (e + r x d)                       (multiply both sides by s)
+    #      s = k^-1(e + r x d)                   (divide both sides by k,
+    #                                             and we have 's' from sign function)
+
     return v == r
 
 def _hash_to_int(m):
