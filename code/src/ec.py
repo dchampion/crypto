@@ -196,7 +196,7 @@ def generate_session_key(d, Q):
 
 def sign(d, m):
     """
-    Returns a signature S&mdash;a tuple of the form (r, s)&mdash;that is computed
+    Returns a signature S--a tuple of the form (r, s)--that is computed
     by signing the message m with the caller's private key d.
     """
     assert _validate_priv_key(d)
@@ -224,12 +224,14 @@ def sign(d, m):
 
 def verify(Q, m, S):
     """
-    Returns True if the signature S&mdash;a tuple of the form (r, s)&mdash; is
+    Returns True if the signature S--a tuple of the form (r, s)-- is
     valid for the message m and a public key Q; otherwise returns False.
     """
     validate_pub_key(Q)
 
     r, s = S[0], S[1]
+
+    # TODO: These should raise exceptions, not assert (see Java psychic-signature vulnerability).
     assert 1 <= r < _n
     assert 1 <= s < _n
 
