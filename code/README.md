@@ -1,11 +1,11 @@
-# What This *Is*
+# Summary
 The source code in this repository comprises two fully&ndash;featured public&ndash;key cryptosystems, and implements many public&ndash;key primitives one might expect to find in a cryptography library, such as key generation, encryption, decryption, digital signature and signature verification. Implementations include the [*Diffie-Hellman*](https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange) (DH) key agreement protocol, the [*Rivest-Shamir-Adleman*](https://en.wikipedia.org/wiki/RSA_(cryptosystem)) (RSA) cryptosystem, and an elliptic curve cryptosystem based on the Standards for Efficient Cryptography (SEC) Group's [*secp256k1*](https://www.secg.org/sec2-v2.pdf#subsubsection.2.4.1) specification.
 
 With very few exceptions, the code is free of dependencies on external, third&ndash;party modules and libraries (modules such as `math` and `os` could not be avoided, but the services they provide are so essential that they could not  be feasibly omitted).
 I did this for two reasons: **(1)** As a learning excercise (it is more effective to learn by writing functions than it is by calling them) and **(2)** as a security measure (one can never be too sure about code in external libraries&mdash;see [SolarWinds](https://www.wired.com/story/solarwinds-hack-supply-chain-threats-improvements/) and [Log4j](https://www.pcmag.com/how-to/what-is-the-log4j-exploit-and-what-can-you-do-to-stay-safe) for elaboration).
 
-# What This *Is Not*
-The code in this repository is not intended to be an API, and was therefore not architected with that goal in mind. For example, it exposes low&ndash;level primitives (i.e., functions) that would otherwise be hidden to clients of a cryptography API.
+# What This Repository *Is Not*
+The source code in this repository is not intended to be an API, and was therefore not architected with that goal in mind. For example, it exposes low&ndash;level primitives (i.e., functions) that would otherwise be hidden to clients of a cryptography API.
 
 This code should instead be regarded as a tool for learning, both for the programmer and the reader. As such, while it may be of academic interest to someone studying public&ndash;key cryptography, it should not be used to secure sensitive data in real applications.
 
