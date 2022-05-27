@@ -1,5 +1,4 @@
-# Description of Modules
-
+# What's in This Folder?
 [dh.py](https://github.com/dchampion/crypto/blob/master/code/src/dh.py) &mdash; An implementation of the Diffie-Hellman (DH) key agreement protocol.
 
 [ec.py](https://github.com/dchampion/crypto/blob/master/code/src/ec.py) &mdash; Implementations of the elliptic curve Diffie-Hellman (ECDH) and elliptic curve digital signture algorithms (ECDSA).

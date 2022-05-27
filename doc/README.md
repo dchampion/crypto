@@ -1,9 +1,5 @@
-## List of Substantive Artifacts (alphabetical)
+## What's in This Folder?
 [**BitcoinThoughts.md**](https://github.com/dchampion/crypto/blob/master/doc/BitcoinThoughts.md) &ndash; Thoughts on the crypto craze, and a defense of Bitcoin.
-
-[**CryptoNotes.txt**](https://github.com/dchampion/crypto/blob/master/doc/CryptoNotes.txt) &ndash; A collection of sundry notes gathered during the course of my research.
-
-**Cryptography.xlsx** &ndash; A collection of *MS&ndash;Excel* worksheets used to facilitate my understanding of various cryptographic techniques.
 
 [**DH.ipynb**](https://nbviewer.org/github/dchampion/crypto/blob/master/doc/DH.ipynb) &ndash; A [*Jupyter*](https://jupyter.org/) notebook demonstrating the features of this repository's [dh module](https://github.com/dchampion/crypto/blob/master/code/src/dh.py), which implements the classic Diffie&ndash;Hellman key exchange protocol.
 
@@ -12,8 +8,6 @@
 [**EllipticCurves.ipynb**](https://nbviewer.org/github/dchampion/crypto/blob/master/doc/EllipticCurves.ipynb) &ndash; A [*Jupyter*](https://jupyter.org/) notebook demonstrating the properties of elliptic curves over the real numbers, which facilitates understanding their cryptographic brethren over finite fields.
 
 [**EuclideanAlgorithms.md**](https://github.com/dchampion/crypto/blob/master/doc/EuclideanAlgorithms.md) &ndash; A demonstration of the Euclidean algorithms, which are used extensively in public&ndash;key implementations to perform efficient division in finite multiplicative groups.
-
-[**LectureNotes.txt**](https://github.com/dchampion/crypto/blob/master/doc/LectureNotes.txt) &ndash; Lecture notes from a two&ndash;semester course on cryptography I took online in the winter and spring of 2020/2021.
 
 [**NumberTheory.md**](https://github.com/dchampion/crypto/blob/master/doc/NumberTheory.md) &ndash; Helpful mnemonics on the number&ndash;theoretic underpinnings of public&ndash;key cryptography.
 
