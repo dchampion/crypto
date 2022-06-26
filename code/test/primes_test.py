@@ -22,6 +22,7 @@ def main():
     test_fermat()
     test_is_prime()
     test_generate_prime()
+    test_fermat_factor()
     print("all primes tests passed")
     
 def test_factor_n():
@@ -119,7 +120,30 @@ def test_generate_prime():
         assert p.bit_length() == 2**n, f"expected bit length {2**n}, got {p.bit_length()}"
         assert primes.is_prime(p), f"generate_prime() returned {p}, which is not prime"
 
-    print("generate_large_prime passed for primes up to 2048 bits in length")
+    print("generate_prime passed for primes up to 2048 bits in length")
+
+def test_fermat_factor():
+    i = len(primes.small_primes) // 2
+    j = i
+    while j < len(primes.small_primes):
+        if j - i < 92:
+            assert primes.fermat_factor(primes.small_primes[i]*primes.small_primes[j])[0], \
+f"factors {primes.small_primes[i]} and {primes.small_primes[j]} should be factorable by fermat_factor()"
+        else:
+            assert not primes.fermat_factor(primes.small_primes[i]*primes.small_primes[j]), \
+f"factors {primes.small_primes[i]} and {primes.small_primes[j]} should not be factorable by fermat_factor()"
+        i -= 1
+        j += 1
+
+    print("fermat_factor passed for small primes")
+
+    for _ in range(10):
+        p = primes.generate_prime(1024)
+        q = primes.generate_prime(1024)
+        assert not primes.fermat_factor(p*q), \
+f"factors {p} and {q} should not be factorable by fermat_factor()"
+
+    print("fermat_factor passed for 10 1024-bit primes")
 
 if __name__ == "__main__":
     main()

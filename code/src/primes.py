@@ -3,6 +3,7 @@
 import random
 import prng
 import util
+import math
 
 small_primes =  [  3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
                   73, 79, 83, 83, 89, 97,101,103,107,109,113,127,131,137,139,149,151,157,163,
@@ -99,6 +100,44 @@ def fermat(n):
             return False
 
     return True
+
+def fermat_factor(n):
+    """
+    Attempts to factor a semiprime composite integer n using Fermat's factorization algorithm.
+    Returns the tuple (True, p, q) if the factorization is successful, where p and q are the prime
+    factors of n; otherwise returns False. This function can be used to test the suitability of a
+    modulus in an RSA public key. A successful factorization of n indicates its factors p and q
+    are too close together, and therefore that n is not safe for use in such a key. Possible
+    causes of this could be a poorly implemented prime number-generating algorithm, or a bad pseudo-
+    random number generating algorithm.
+    """
+    _validate_param(n)
+
+    # First test that n is not a perfect square.
+    if _is_square(n):
+        return True, math.isqrt(n), math.isqrt(n)
+
+    # Fermat's algorithm asserts that n = (a - b)(a + b), which becomes n = a^2 - b^2, which becomes
+    # b^2 = a^2 - n. Here a is some number that is close to the square root of n, and b is the
+    # distance from a to the prime factors of n.
+    a = math.isqrt(n) + 1
+    c, tries = 0, 100
+    while not _is_square(a**2 - n):
+        a += 1
+        c += 1
+        if c > tries:
+            return False
+
+    b2 = a**2 - n
+    b = math.isqrt(b2)
+
+    p = a + b
+    q = a - b
+
+    return True, p, q
+
+def _is_square(n):
+    return n == math.isqrt(n) ** 2
 
 def _factor_n(n):
     """

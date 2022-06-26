@@ -65,8 +65,8 @@ def generate_rsa_key(modulus_bit_len):
     p = generate_rsa_prime(math.floor(modulus_bit_len//2))
     q = generate_rsa_prime(math.floor(modulus_bit_len//2))
 
-    # Bad PRNG?
-    assert p != q, "p must not equal q"
+    # Test for bad PRNG
+    _validate_factors(p, q)
 
     # Compute the lcm of p-1 and q-1, as its behavior will be just as correct as for the
     # totient of pq (as specified in the original RSA paper). However, because the lcm will
@@ -83,6 +83,10 @@ def generate_rsa_key(modulus_bit_len):
     # exponents are understood by both parties to be 3 and 5 in advance, so returning them
     # here is unnecessary.
     return p, q, p*q, d3, d5
+
+def _validate_factors(p, q):
+    assert p != q, "p must not equal q"
+    assert not primes.fermat_factor(p*q), "p is too close to q"
 
 def encrypt_random_key(n, e):
     """
