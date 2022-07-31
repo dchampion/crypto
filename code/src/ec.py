@@ -250,15 +250,15 @@ def verify(Q, m, S):
 
     # Proof of correctness:
     #      v = u1 x _G + u2 x Q
-    #        = u1 x _G + u2 x d x _G             (substitute d x _G for Q)
-    #        = s^-1 x e x _G + d x _G            (substitute s^-1 x e for u1)
-    #        = s^-1 x e x _G + s^-1 x r x d x _G (substitute s^-1 x r for u2)
-    #        = s^-1(e + r x d) x _G              (distribute s^-1 over addition)
-    # k x _G = s^-1(e + r x d) x _G              (substitute k x _G for v)
+    #      v = u1 x _G + u2 x d x _G             (expand Q to d x _G)
+    #      v = s^-1 x e x _G + u2 x d x _G       (expand u1 to s^-1 x e)
+    #      v = s^-1 x e x _G + s^-1 x r x d x _G (expand u2 to s^-1 x r)
+    #      v = s^-1(e + r x d) x _G              (distribute s^-1 over addition)
+    # k x _G = s^-1(e + r x d) x _G              (expand v to k x _G)
     #      k = s^-1(e + r x d)                   (divide both sides by _G)
-    #  k x s = (e + r x d)                       (multiply both sides by s)
+    #  s x k = (e + r x d)                       (multiply both sides by s)
     #      s = k^-1(e + r x d)                   (divide both sides by k,
-    #                                             and we have 's' from sign function)
+    #                                             and we recover 's' from sign function)
 
     return v == r
 
