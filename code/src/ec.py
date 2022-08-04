@@ -1,8 +1,8 @@
 """
 Implementations of the elliptic curve Diffie-Hellman (ECDH) and the elliptic
-curve digital signature algorithms (ECDSA), based on the Standards for Efficient
-Cryptography Group's (SECG) secp256k1 elliptic curve.
+curve digital signature algorithms (ECDSA).
 """
+
 import curves
 import euclid
 import primes
@@ -10,14 +10,14 @@ import math
 import prng
 import util
 
-# Identity element, aka the point at infinity
+# Identity element, aka the "point at infinity."
 _i = [None, None]
 
 # Global curve point [_X, _Y] list indices.
 _X = 0
 _Y = 1
 
-# Default curve
+# Default curve is secp256k1.
 _curve = curves.Secp256k1()
 
 def new_curve(curve, B_iters=100):
@@ -26,18 +26,18 @@ def new_curve(curve, B_iters=100):
     or one that is user-defined), redefines this module's default elliptic curve
     (secp256k1) and validates the new curve's parameters.
     """
+
     global _curve
     _curve = curve
     _validate_curve_params(B_iters)
 
 def _add(pt1, pt2):
-    """
-    Returns the sum of points pt1 and pt2 on the curve, according to the addition
-    rules of elliptic curves; i.e., (a) the identity element if pt1 and pt2 are
-    both the the identity element, (b) pt2 if pt1 is the identity element, (c) pt1
-    if pt2 is the identity element, (d) the identity element if pt1 and pt2 share
-    the same x-coordinate, or (e) the sum of pt1 and pt2 on the curve.
-    """
+    # Returns the sum of points pt1 and pt2 on the curve, according to the addition
+    # rules of elliptic curves; i.e., (a) the identity element if pt1 and pt2 are
+    # both the the identity element, (b) pt2 if pt1 is the identity element, (c) pt1
+    # if pt2 is the identity element, (d) the identity element if pt1 and pt2 share
+    # the same x-coordinate, or (e) the sum of pt1 and pt2 on the curve.
+
     _validate_pt(pt1)
     _validate_pt(pt2)
 
@@ -57,10 +57,9 @@ def _add(pt1, pt2):
     return [x, y]
 
 def _double(pt):
-    """
-    Returns the sum of point pt with itself on the curve. If pt is the point at
-    infinity, returns the point at infinity.
-    """
+    # Returns the sum of point pt with itself on the curve. If pt is the point at
+    # infinity, returns the point at infinity.
+
     _validate_pt(pt)
 
     if pt == _i:
@@ -71,12 +70,13 @@ def _double(pt):
 def _additive_inverse(pt):
     # Returns the additive inverse of pt, where pt is of the form [x, y], and pt's
     # inverse is [x, -y].
+
     return [pt[_X], -pt[_Y] % _curve.p]
 
 def _tangent_intersection(pt):
     # Returns the point of intersection on the curve of a straight line drawn tangent
-    # to the point pt on the curve. For a thorough explanation of the arithmetic in this
-    # function, consult the Jupyter notebook at the following URL:
+    # to the point pt on the curve. For a thorough explanation of the arithmetic used in
+    # this function, consult the following URL:
     # https://nbviewer.org/github/dchampion/crypto/blob/master/doc/EllipticCurves.ipynb
 
     m = (((3 * pt[_X]**2) + _curve.a) * euclid.inverse(2 * pt[_Y], _curve.p)) % _curve.p
@@ -88,8 +88,8 @@ def _tangent_intersection(pt):
 def _secant_intersection(pt1, pt2):
     # Returns the point of intersection on the curve of a straight line drawn between
     # points pt1 and pt2 (i.e., the secant line) on the curve. For a thorough explanation
-    # of the arithmetic in this function, consult the Jupyter notebook at the following
-    # URL: https://nbviewer.org/github/dchampion/crypto/blob/master/doc/EllipticCurves.ipynb
+    # of the arithmetic used in this function, consult the following URL:
+    # https://nbviewer.org/github/dchampion/crypto/blob/master/doc/EllipticCurves.ipynb
 
     m = ((pt2[_Y] - pt1[_Y]) * euclid.inverse((pt2[_X] - pt1[_X]) % _curve.p, _curve.p)) % _curve.p
     pt3x = (m**2 - pt1[_X] - pt2[_X]) % _curve.p
@@ -106,6 +106,7 @@ def generate_keypair():
     key must be kept secret by the caller of this function; whereas the public key
     may be shared freely.
     """
+
     d = _curve.n
     while not _validate_priv_key(d):
         d = prng.randbits(_curve.n.bit_length())
@@ -114,9 +115,12 @@ def generate_keypair():
 
 def generate_session_key(d, Q):
     """
-    Returns a byte array suitable for use as a session key in a symmetric cipher
-    (e.g., AES, 3DES). This key must be kept secret by the caller of this function.
+    Given a keypair, consisting of the caller's private key d and another party's
+    public key Q, returns a byte array suitable for use as a session key in a symmetric
+    cipher (e.g., AES, 3DES) used to encrypt messages transmitted between the caller and
+    the other party. The session key returned by this function must be kept secret.
     """
+
     assert _validate_priv_key(d)
     validate_pub_key(Q)
 
@@ -133,8 +137,10 @@ def generate_session_key(d, Q):
 def sign(d, m):
     """
     Returns a tuple of the form (r, s), which comprises the signature of the message m
-    using the caller's private key d.
+    using the caller's private key d. Receivers of this signature can verify the message's
+    authenticity using this module's verify function.
     """
+
     assert _validate_priv_key(d)
 
     s = 0
@@ -160,9 +166,11 @@ def sign(d, m):
 
 def verify(Q, m, S):
     """
-    Returns True if the signature S, a tuple of the form (r, s), is
-    valid for the message m and a public key Q; otherwise returns False.
+    Returns True if the signature S, a tuple of the form (r, s) that is returned
+    by this module's sign function, is valid for the message m and a public key Q;
+    otherwise returns False.
     """
+
     validate_pub_key(Q)
 
     r, s = S[0], S[1]
@@ -199,9 +207,8 @@ def verify(Q, m, S):
     return v == r
 
 def _hash_to_int(m):
-    """
-    Converts a message m to an integer representation of its hash.
-    """
+    # Converts a message m to an integer representation of its hash.
+
     h = util.hash(m)
     i = int.from_bytes(h, byteorder="big")
 
@@ -218,12 +225,14 @@ def _fast_point_at(d):
     # d is a positive integer in the range 1 <= d < n, and n is the order of the
     # base point. In contrast with the function _point_at, this function runs in
     # logarithmic time.
+
     assert isinstance(d, int) and 0 < d <= _curve.n
 
     return _x_times_pt(d, _curve.G)
 
 def _x_times_pt(x, pt):
     # Returns the point on the curve at x point-additions of the start point pt.
+
     _validate_pt(pt)
     assert isinstance(x, int) and x > 0
 
@@ -240,6 +249,7 @@ def _point_at(d):
     # d is a positive integer in the range 1 <= d < n, and n is the order of the
     # base point. In contrast with the function _fast_point_at, this function runs
     # in linear time.
+
     assert isinstance(d, int) and 0 < d <= _curve.n
 
     pt = _curve.G
@@ -250,6 +260,7 @@ def _point_at(d):
 
 def _validate_pt(pt):
     # pt must be a 2-element list.
+
     assert isinstance(pt, list) and len(pt) == 2
 
     # pt's types must match.
@@ -264,10 +275,12 @@ def _validate_pt(pt):
 
 def _on_curve(pt):
     # Returns True if the point pt is on the curve; otherwise returns False.
+
     return pt[_Y]**2 % _curve.p == (pt[_X]**3 + (_curve.a*pt[_X]) + _curve.b) % _curve.p
 
 def _validate_priv_key(d):
-    # Private keys must fall in the range 1 <= d < _n
+    # Private keys must fall in the range 1 <= d < n
+
     return isinstance(d, int) and 1 <= d < _curve.n
 
 def validate_pub_key(Q):
@@ -297,7 +310,7 @@ def validate_pub_key(Q):
     if valid and not _on_curve(Q):
         valid = False
 
-    # If the cofactor _h is greater than 1, then the order of the group _n times Q must
+    # If the cofactor h is greater than 1, then the order of the group n times Q must
     # equal the identity element.
     if valid and _curve.h > 1 and _x_times_pt(_curve.n, Q) != _i:
         valid = False
@@ -313,23 +326,23 @@ def _validate_curve_params(B_iters=100):
 
     valid = True
 
-    # _a must be a group element; i.e., within the interval [0, _p-1].
+    # a must be a group element; i.e., within the interval [0, p-1].
     if valid and _curve.a > _curve.p - 1 or _curve.a < 0:
         valid = False
 
-    # _b must be a group element; i.e., within the interval [0, _p-1].
+    # b must be a group element; i.e., within the interval [0, p-1].
     if valid and _curve.b > _curve.p - 1 or _curve.b < 0:
         valid = False
 
-    # _Gx must be a group element; i.e., within the interval [0, _p-1].
+    # Gx must be a group element; i.e., within the interval [0, p-1].
     if valid and _curve.Gx > _curve.p - 1 or _curve.Gx < 0:
         valid = False
 
-    # _Gy must be a group element; i.e., within the interval [0, _p-1].
+    # Gy must be a group element; i.e., within the interval [0, p-1].
     if valid and _curve.Gy > _curve.p - 1 or _curve.Gy < 0:
         valid = False
 
-    # _n must not equal _p.
+    # n must not equal p.
     if valid and _curve.n == _curve.p:
         valid = False
 
@@ -337,23 +350,23 @@ def _validate_curve_params(B_iters=100):
     if valid and (4*(_curve.a**3) + 27*(_curve.b**2)) % _curve.p == 0:
         valid = False
 
-    # The base point _G must be on the curve.
+    # The base point G must be on the curve.
     if valid and not _on_curve(_curve.G):
         valid = False
 
-    # _p must be prime.
+    # p must be prime.
     if valid and not primes.is_prime(_curve.p):
         valid = False
 
-    # _n must be prime.
+    # n must be prime.
     if valid and not primes.is_prime(_curve.n):
         valid = False
 
-    # _n additions of the base point _G must yield the identity element.
+    # n additions of the base point G must yield the identity element _i.
     if valid and _fast_point_at(_curve.n) != _i:
         valid = False
 
-    # The following two tests are for the cofactor _h.
+    # The following two tests are for the cofactor h.
     if valid and _curve.h != math.floor((math.sqrt(_curve.p)+1)**2 // _curve.n):
         valid = False
 
