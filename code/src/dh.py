@@ -1,35 +1,37 @@
-""" An implementation of Diffie-Hellman """
+"""
+An implementation of the classic, Diffie-Hellman key agreement protocol
+based on multiplicative groups.
+"""
+
 import primes
 import util
 import prng
 
-# Bit length of a large subgroup modulo p (where p is the prime DH modulus).
-q_bit_len = 256
+# Bit length of a large subgroup modulo p (where p is a prime modulus).
+_q_bit_len = 256
 
-# Minimum bit length of the prime DH modulus.
-min_p_bit_len = 2048
+# Minimum bit length of a prime modulus.
+_min_p_bit_len = 2048
 
 def generate_parameters(p_bit_len):
     """
-    Returns the domain (i.e., public) parameters [q, p, g] required for two
-    parties to negotiate a shared, private key to be used to encrypt data using
-    a symmetric cipher (e.g., AES). These are the order (or size) of a large
-    subgroup modulo p [q], the modulus [p], and a generator of the subgroup
-    modulo p [g].
+    Returns the public parameters necessary for two parties to negotiate a shared,
+    private key for use in a symmetric cipher (e.g., 3DES, AES). The returned value
+    is a tuple of the form (q, p, g), where q is the order (or size) of a large
+    subgroup modulo p, p is a prime modulus, and g is a generator of the subgroup.
     """
-    assert isinstance(p_bit_len, int) and p_bit_len >= min_p_bit_len
+    assert isinstance(p_bit_len, int) and p_bit_len >= _min_p_bit_len
 
     # Generate q; a 256-bit prime, which will be the order (or size) of a
     # large subgroup modulo p within which the public keys exchanged between
     # communicating parties must fall.
-    q = primes.generate_prime(q_bit_len)
+    q = primes.generate_prime(_q_bit_len)
     
     # Find values for n and p that satisfy the equation p = q * n + 1, where
-    # p (a p_bit_len prime), will serve as the DH modulus. This ensures that
+    # p (a p_bit_len prime), will serve as the prime modulus. This ensures that
     # the public keys used in the secret key agreement will fall into the
     # subgroup of order (or size) q. The order of this subgroup must be large
-    # (256 bits, to provide 128-bit security) in order to thwart collision-
-    # style attacks.
+    # (256 bits) to thwart collision-style attacks.
     n, p = _generate_p(q, p_bit_len)
 
     # Find a generator g that generates all elements of the subgroup of order
@@ -39,14 +41,12 @@ def generate_parameters(p_bit_len):
     return q, p, g
 
 def _generate_p(q, p_bit_len):
-    """
-    Returns positive integers [n, p] that satisfy the equation p = q * n + 1, where
-    p will serve as a prime modulus of length p_bit_len. The value n returned from
-    this function will be used as input to the computation of a generator of the
-    subgroup modulo p that is of order (or size) q.
-    """
-    assert isinstance(q, int) and q.bit_length() >= q_bit_len
-    assert isinstance(p_bit_len, int) and p_bit_len >= min_p_bit_len
+    # Returns positive integers n and p which satisfy the equation p = q * n + 1,
+    # where p is a prime modulus of p_bit_len length. The value n returned from
+    # this function will be used to compute a generator of the subgroup modulo p
+    # that is of order (or size) q.
+    assert isinstance(q, int) and q.bit_length() >= _q_bit_len
+    assert isinstance(p_bit_len, int) and p_bit_len >= _min_p_bit_len
 
     # Compute bounds from which to select a random factor n.
     n_bit_len = p_bit_len - q.bit_length()
@@ -65,11 +65,9 @@ def _generate_p(q, p_bit_len):
     return n, p
 
 def _generate_g(n, p):
-    """
-    Returns a generator g that generates the entire subgroup modulo p of order
-    (or size) q.
-    """
-    assert isinstance(p, int) and p.bit_length() >= min_p_bit_len - 1
+    # Returns a generator g that generates the entire subgroup modulo p of order
+    # (or size) q.
+    assert isinstance(p, int) and p.bit_length() >= _min_p_bit_len - 1
     assert isinstance(n, int) and (p - 1) % n == 0
 
     while True:
@@ -88,14 +86,16 @@ def _generate_g(n, p):
 
 def generate_keypair(q, p, g):
     """
-    Returns a private key randomly selected from the set (1, ..., q-1), and a
-    public key of the form (g**k_prv) % p, where g is the generator of the subgroup
-    modulo p of order (or size) q. The private key k_prv returned by this function
-    must be kept secret.
+    Given the public parameters q, p and g, returns a tuple of the form (k_prv, k_pub),
+    where k_prv is a private key randomly selected from the range (1, ..., q-1),
+    and k_pub is a public key of the form g^k_prv % p. In this equation, g is a
+    generator of the subgroup modulo p that is of order (or size) q. The private key
+    k_prv returned by this function must be kept secret; whereas the public key k_pub
+    may be shared freely.
     """
     validate_parameters(q, p, g)
 
-    # Select a random, private key in the range of q.
+    # Select a random, private key in the range of 1 to q-1.
     k_prv = prng.randrange(1, q-1)
 
     # Compute a public key based on this private key.
@@ -108,27 +108,27 @@ def generate_keypair(q, p, g):
 
 def generate_session_key(k_pub, k_prv, p):
     """
-    Returns a hashed byte array to be used as a session key in a symmetric cipher
-    agreed upon by both parties in the setup phase. This key must be kept secret.
+    Returns a hashed byte array suitable for use as a session key in a symmetric
+    cipher (e.g. 3DES, AES). This key must be kept secret.
     """
     assert isinstance(k_pub, int)
     assert isinstance(k_prv, int)
-    assert isinstance(p, int) and p.bit_length() >= min_p_bit_len - 1
+    assert isinstance(p, int) and p.bit_length() >= _min_p_bit_len - 1
 
-    # Compute a session key using the essential property of DH (i.e., raising
+    # Compute a session key using the essential property of DH (i.e., by raising
     # the other party's public key to the power of this party's private key modulo p).
     ki = util.fast_mod_exp(k_pub, k_prv, p)
 
-    # The session key is hashed in order to obscure any mathematical structure
-    # in ki that could be exploited by an adversary if it were to be leaked.
+    # The session key is hashed to obscure any mathematical structure that could be
+    # exploited by an adversary if it were to be leaked.
     return util.hash(ki)
 
 def validate_pub_key(k, q, p):
     """
     Validates a public key k given the public parameters q and p. Must be called,
-    without raising an exception, by a receiving party before proceding with a session.
-    If this function raises an exception, the public key is invalid and the protocol should
-    be halted.
+    without raising an exception, by a party receiving the public key and parameters from
+    another party before proceding with a session. If this function raises an exception,
+    the public key is invalid and the protocol should be halted.
     """
     assert isinstance(k, int)
     assert isinstance(q, int)
@@ -149,10 +149,10 @@ def validate_pub_key(k, q, p):
 
 def validate_parameters(q, p, g):
     """
-    Validates the public parameters [q, p, g]. Must be called, without raising
-    an exception, by a receiving party before proceeding with a session. If this
-    function raises an exception, the parameters are invalid and the protocol should
-    be halted.
+    Validates the public parameters q, p and g returned from the function generate_parameters.
+    Must be called, without raising an exception, by a party receiving these parameters from
+    another party before proceeding with a session. If this function raises an exception,
+    the parameters are invalid and the protocol should be halted.
     """
     assert isinstance(q, int)
     assert isinstance(p, int)
@@ -160,13 +160,13 @@ def validate_parameters(q, p, g):
 
     valid = True
 
-    # The bit length of modulus p must be greater than min_p_bit_len - 1
+    # The bit length of modulus p must be greater than _min_p_bit_len - 1
     # (multiplication of 2 x-bit integers can produce a (2x-1)-bit result).
-    if valid and p.bit_length() < min_p_bit_len - 1:
+    if valid and p.bit_length() < _min_p_bit_len - 1:
         valid = False
 
     # The bit length of q must be equal to q_bit_len.
-    if valid and q.bit_length() != q_bit_len:
+    if valid and q.bit_length() != _q_bit_len:
         valid = False
 
     # p must be prime.

@@ -67,7 +67,7 @@ def test_full_protocol():
     # public modulus [p] (a prime), the size of the subgroup modulo p within which
     # exchanged public keys must fall [q] (also a prime), and the generator of the
     # subgroup [g].
-    q, p, g = dh.generate_parameters(dh.min_p_bit_len)
+    q, p, g = dh.generate_parameters(dh._min_p_bit_len)
 
     # Alice may optionally validate these parameters before transmitting them to Bob.
     # Bob, however, must validate them using the same funciton when he receives them
