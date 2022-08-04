@@ -1,11 +1,13 @@
 # What's in This Folder?
-[dh.py](https://github.com/dchampion/crypto/blob/master/code/src/dh.py) &mdash; An implementation of the Diffie-Hellman (DH) key agreement protocol.
+[curves.py](https://github.com/dchampion/crypto/blob/master/code/src/curves.py) &mdash; The collection of elliptic curves specified in the Standards for Efficient Cryptography Group's (SECG) [*Recommended Elliptic Curve Domain Parameters*](https://www.secg.org/sec2-v2.pdf).
+
+[dh.py](https://github.com/dchampion/crypto/blob/master/code/src/dh.py) &mdash; An implementation of the classic, multiplicative-group based Diffie-Hellman (DH) key agreement protocol.
 
 [ec.py](https://github.com/dchampion/crypto/blob/master/code/src/ec.py) &mdash; Implementations of the elliptic curve Diffie-Hellman (ECDH) and elliptic curve digital signture algorithms (ECDSA).
 
 [euclid.py](https://github.com/dchampion/crypto/blob/master/code/src/euclid.py) &mdash; Efficient algorithms for computing the greatest common divisors (GCD), least common multiples (LCM) and modular multiplicative inverses of positive integers.
 
-[primes.py](https://github.com/dchampion/crypto/blob/master/code/src/primes.py) &mdash; Efficient algorithms for primality testing, and random prime number generation.
+[primes.py](https://github.com/dchampion/crypto/blob/master/code/src/primes.py) &mdash; Efficient algorithms for primality testing and prime number generation.
 
 [prng.py](https://github.com/dchampion/crypto/blob/master/code/src/prng.py) &mdash; A cryptographically secure pseudo-random number generator.
 
