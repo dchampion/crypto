@@ -3,6 +3,7 @@ import curves
 import ec
 import prng
 import sym
+import copy
 
 # Test curve 1 parameters
 pt_group = [[5,1],[6,3],[10,6],[3,1],[9,16],[16,13],[0,6],[13,7],[7,6],
@@ -27,7 +28,7 @@ real_curves = [curves.Secp192k1(),
                curves.Secp384r1(),
                curves.Secp521r1()]
 
-B_iters = 5
+test_curve_B_iters = 5
 
 def main():
     print("Running ec tests...")
@@ -44,12 +45,12 @@ def main():
 
 def test_add():
     for test_curve in test_curves:
-        ec.new_curve(test_curve["curve"], B_iters)
+        ec.new_curve(test_curve["curve"], test_curve_B_iters)
         pt_group = test_curve["pts"]
 
         # Repeated addition of all group elements to the specified base point.
         for i in range(1, len(pt_group)):
-            pt = ec._add(test_curve["curve"].G, pt_group[i-1])
+            pt = ec._add(test_curve["curve"].G(), pt_group[i-1])
             assert pt == pt_group[i]
 
         # Repeated addition of all group elements to a randomly selected base point.
@@ -79,12 +80,12 @@ def test_add():
         assert pt == pt_group[9]
 
         # Add the identity element to the base point.
-        pt = ec._add(test_curve["curve"].G, ec._i)
-        assert pt == test_curve["curve"].G
+        pt = ec._add(test_curve["curve"].G(), ec._i)
+        assert pt == test_curve["curve"].G()
 
         # Commute.
-        pt = ec._add(ec._i, test_curve["curve"].G)
-        assert pt == test_curve["curve"].G
+        pt = ec._add(ec._i, test_curve["curve"].G())
+        assert pt == test_curve["curve"].G()
 
         # Add selected point to the identity element.
         pt = ec._add(pt_group[3], ec._i)
@@ -117,7 +118,7 @@ def test_add():
 
 def test_double():
     for test_curve in test_curves:
-        ec.new_curve(test_curve["curve"], B_iters)
+        ec.new_curve(test_curve["curve"], test_curve_B_iters)
         pt_group = test_curve["pts"]
 
         # Double each group element starting with the base point.
@@ -143,24 +144,51 @@ def test_validate_curve_params():
     for test_curve in test_curves:
         # Test with valid curve parameters.
         try:
-            ec.new_curve(test_curve["curve"], B_iters)
-            ec._validate_curve_params(B_iters)
+            ec.new_curve(test_curve["curve"], test_curve_B_iters)
+            ec._validate_curve_params(test_curve_B_iters)
         except Exception as e:
             assert False
 
     try:
-        # Test with invalid curve parameter.
-        ec.new_curve(curves.Curve(23, 1, 4, 2, 2, 29, 1), B_iters)
+        # Test with invalid curve parameter on test curve.
+        ec.new_curve(curves.Curve(23, 1, 4, 2, 2, 29, 1), test_curve_B_iters)
+        ec._validate_curve_params(test_curve_B_iters)
         assert False
     except Exception as e:
         assert isinstance(e, ValueError)
+
+    for real_curve in real_curves:
+        try:
+            # Test with invalid curve parameter on real curve.
+            deep_copy = copy.deepcopy(real_curve)
+            i = prng.randbelow(7)
+            match i:
+                case 0:
+                    deep_copy.p = deep_copy.p + 1
+                case 1:
+                    deep_copy.a = deep_copy.a + 1
+                case 2:
+                    deep_copy.b = deep_copy.b + 1
+                case 3:
+                    deep_copy.Gx = deep_copy.Gx + 1
+                case 4:
+                    deep_copy.Gy = deep_copy.Gy + 1
+                case 5:
+                    deep_copy.n = deep_copy.n + 1
+                case 6:
+                    deep_copy.h = deep_copy.h + 1
+            ec.new_curve(deep_copy)
+            ec._validate_curve_params()
+            assert False
+        except Exception as e:
+            assert isinstance(e, ValueError)
 
     print("test_validate_curve_params passed")
 
 def test_point_at():
     for test_curve in test_curves:
         # Test slow, add-only method of finding a point.
-        ec.new_curve(test_curve["curve"], B_iters)
+        ec.new_curve(test_curve["curve"], test_curve_B_iters)
         pt_group = test_curve["pts"]
         for i in range(1, len(pt_group)+1):
             assert ec._point_at(i) == pt_group[i-1]
@@ -172,7 +200,7 @@ def test_point_at():
 def test_fast_point_at():
     for test_curve in test_curves:
         # Test fast, double-and-add method of finding a point.
-        ec.new_curve(test_curve["curve"], B_iters)
+        ec.new_curve(test_curve["curve"], test_curve_B_iters)
         pt_group = test_curve["pts"]
         for i in range(1, len(pt_group)+1):
             assert ec._point_at(i) == ec._fast_point_at(i)
@@ -193,7 +221,7 @@ def test_x_times_pt():
     for test_curve in test_curves:
         # Test that the order of the curve group times any point on the curve yields the identity
         # element using the small test curves.
-        ec.new_curve(test_curve["curve"], B_iters)
+        ec.new_curve(test_curve["curve"], test_curve_B_iters)
         pt_group = test_curve["pts"]
         for i in range(0, len(pt_group)):
             assert ec._x_times_pt(test_curve["curve"].n, pt_group[i]) == ec._i
@@ -222,7 +250,7 @@ def test_hash_to_int():
             assert e.bit_length() <= ec._curve.n.bit_length()
 
     for test_curve in test_curves:
-        ec.new_curve(test_curve["curve"], B_iters)
+        ec.new_curve(test_curve["curve"], test_curve_B_iters)
         for m in ["When", "in", "the", "course", "of", "human", "events..."]:
             e = ec._hash_to_int(m)
             assert e.bit_length() <= ec._curve.n.bit_length()
@@ -239,7 +267,7 @@ def test_sign_and_verify():
             assert ec.verify(Q, m, S)
 
     for test_curve in test_curves:
-        ec.new_curve(test_curve["curve"], B_iters)
+        ec.new_curve(test_curve["curve"], test_curve_B_iters)
         for m in ["When", "in", "the", "course", "of", "human", "events..."]:
         # Test sign/verify using the small test curves.
             d, Q = ec.generate_keypair()
