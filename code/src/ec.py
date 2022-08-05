@@ -187,7 +187,7 @@ def verify(Q, m, S):
     u2 = (r * s_inv) % _curve.n
 
     # Recover the point computed in the signing operation.
-    R = _add(_x_times_pt(u1, _curve.G), _x_times_pt(u2, Q))
+    R = _add(_x_times_pt(u1, _curve.G()), _x_times_pt(u2, Q))
     assert R != _i
 
     v = R[_X] % _curve.n
@@ -228,7 +228,7 @@ def _fast_point_at(d):
 
     assert isinstance(d, int) and 0 < d <= _curve.n
 
-    return _x_times_pt(d, _curve.G)
+    return _x_times_pt(d, _curve.G())
 
 def _x_times_pt(x, pt):
     # Returns the point on the curve at x point-additions of the start point pt.
@@ -252,9 +252,9 @@ def _point_at(d):
 
     assert isinstance(d, int) and 0 < d <= _curve.n
 
-    pt = _curve.G
+    pt = _curve.G()
     for _ in range(1, d):
-        pt = _add(_curve.G, pt)
+        pt = _add(_curve.G(), pt)
 
     return pt
 
@@ -351,7 +351,7 @@ def _validate_curve_params(B_iters=100):
         valid = False
 
     # The base point G must be on the curve.
-    if valid and not _on_curve(_curve.G):
+    if valid and not _on_curve(_curve.G()):
         valid = False
 
     # p must be prime.

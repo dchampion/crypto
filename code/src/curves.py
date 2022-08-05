@@ -16,12 +16,24 @@ class Curve():
         self.Gx = Gx
         # Base/generator point G y-coordinate
         self.Gy = Gy
-        # Base/generator point (G)
-        self.G = [Gx, Gy]
         # Order n of base/generator point G -> such that nG = i, where i is the identity element
         self.n = n
         # cofactor h -> where h is the order of the curve (written as #E(Fp)) divided by n
         self.h = h
+
+    def G(self):
+        # Base/generator point (G)
+        return [self.Gx, self.Gy]
+
+    def __str__(self):
+        return f"{type(self).__name__} curve parameters:\n\
+ p:  {self.p}\n\
+ a:  {self.a}\n\
+ b:  {self.b}\n\
+ Gx: {self.Gx}\n\
+ Gy: {self.Gy}\n\
+ n:  {self.n}\n\
+ h:  {self.h}"
     
 class Secp192k1(Curve):
     # https://www.secg.org/sec2-v2.pdf#subsubsection.2.2.1
