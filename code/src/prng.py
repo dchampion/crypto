@@ -8,7 +8,7 @@ control of their evolution.
 
 import os
 
-def randrange(l, u):
+def randrange(l: int, u: int) -> int:
     """
     Returns a random integer in the range (l, u-1), where l is the lower bound
     and u is the upper bound.
@@ -21,7 +21,7 @@ def randrange(l, u):
 
     return l + randbelow(width)
 
-def randbelow(n):
+def randbelow(n: int) -> int:
     """
     Returns a random integer in the range (0, n-1), where n is the upper bound.
     """
@@ -39,7 +39,7 @@ def randbelow(n):
 
     return r
 
-def randbits(k):
+def randbits(k: int) -> int:
     """
     Returns a positive integer with k random bits.
     """

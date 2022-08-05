@@ -1,6 +1,6 @@
 """ Euclidean algorithms and support functions. """
 
-def swap(a, b):
+def swap(a: int, b: int) -> tuple[int, int]:
     """ Returns positive integers a and b in increasing order. """
     _validate_params(a, b)
 
@@ -8,7 +8,7 @@ def swap(a, b):
         return b, a
     return a, b
 
-def gcd(a, b):
+def gcd(a: int, b: int) -> int:
     """ Returns the greatest common divisor (or gcd) of positive
     integers a and b. """
     _validate_params(a, b)
@@ -19,7 +19,7 @@ def gcd(a, b):
 
     return a
 
-def _gcd(a, b):
+def _gcd(a: int, b: int) -> int:
     """
     Returns the greatest common divisor (or gcd) of positive
     integers a and b. Note this function uses recursion, which
@@ -35,7 +35,7 @@ def _gcd(a, b):
 
     return gcd(a, b % a)
 
-def gcdx(a, b):
+def gcdx(a: int, b: int) -> int:
     """
     Returns the greatest common divisor (or gcd) of positive
     integers a and b, and the x and y solutions for the relation
@@ -63,7 +63,7 @@ def gcdx(a, b):
 
     return a, x1, y1
 
-def _gcdx(a, b):
+def _gcdx(a: int, b: int) -> int:
     """
     Returns the greatest common divisor (or gcd) of positive integers
     a and b, and the x and y solutions for the relation ax = bx = gcd(a,b)
@@ -85,14 +85,14 @@ def _gcdx(a, b):
 
     return gcd, x, y
 
-def lcm(a, b):
+def lcm(a: int, b: int) -> int:
     """ Returns the least common multiple (or lcm) of positive integers
     a and b. """
     _validate_params(a, b)
 
     return (a*b) // gcd(a, b)
 
-def inverse(a, b):
+def inverse(a: int, b: int) -> int:
     """
     Returns the modular multiplicative inverse of a modulo b, where
     a and b are positive integers; if no such inverse exists, raises an
@@ -109,7 +109,7 @@ def inverse(a, b):
 
     return (inverse % b + b) % b
 
-def _validate_params(a, b):
+def _validate_params(a: int, b: int) -> None:
     assert isinstance(a, int)
     assert isinstance(b, int)
     assert a >= 0

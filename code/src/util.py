@@ -2,7 +2,7 @@
 import euclid
 import hashlib
 
-def fast_mod_exp(b, e, n):
+def fast_mod_exp(b: int, e: int, n: int) -> int:
     """
     Returns the equivalent of b ** e % n, where b is the base, e is the exponent
     and n is the modulus; but with much better performance than that form for
@@ -28,7 +28,7 @@ def fast_mod_exp(b, e, n):
 
     return result
 
-def fast_mod_exp_crt(b, e, p, q):
+def fast_mod_exp_crt(b: int, e: int, p: int, q: int) -> int:
     """
     Returns the equivalent of b ** e % pq, where b is the base, e is the
     exponent and p and q are the sole prime factors of a (semi-prime) modulus.
@@ -46,11 +46,11 @@ def fast_mod_exp_crt(b, e, p, q):
 
     return from_crt(a, b, p, q)
 
-def _reduce(e, n):
+def _reduce(e: int, n: int) -> int:
     r = e % (n - 1)
     return r if r != 0 else e
 
-def from_crt(a, b, p, q):
+def from_crt(a: int, b: int, p: int, q: int) -> int:
     """
     Returns a unique value x from the set (1, ..., p*q - 1) given the CRT
     representation of x, or (x mod p, x mod q). The parameter a is shorthand
@@ -66,7 +66,7 @@ def from_crt(a, b, p, q):
     # Use Garner's formula to compute x mod pq
     return (((a - b) * inv) % p) * q + b
 
-def to_crt(x, p, q):
+def to_crt(x: int, p: int, q: int) -> int:
     """
     Returns the pair (a, b), where (a, b) is the CRT representation of x in the
     set (1, ..., p*q - 1). The value a from the returned pair is shorthand for
@@ -78,7 +78,7 @@ def to_crt(x, p, q):
 
     return x % p, x % q
 
-def hash(k):
+def hash(k: any) -> None:
     """
     Returns a hashed byte array of input k.
     """

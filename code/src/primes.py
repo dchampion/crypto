@@ -15,7 +15,7 @@ small_primes =  [  3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59
                  757,761,769,773,787,797,809,811,821,823,827,829,839,853,857,859,863,877,881,
                  883,887,907,911,919,929,937,941,947,953,967,971,977,983,991,997]
 
-def is_prime(n):
+def is_prime(n: int) -> bool:
     """
     Returns True if the supplied positive integer n is prime, or False if it is composite.
     If n < 1000, the probability of a correct answer is 1 (that is, this function is
@@ -40,7 +40,7 @@ def is_prime(n):
     # n is neither a small prime (up to 1k), nor is it a multiple of thereof, so use Miller-Rabin.
     return miller_rabin(n)
 
-def miller_rabin(n):
+def miller_rabin(n: int) -> bool:
     """
     With a very high degree of probability, returns True if the supplied positive odd integer n
     is prime. The probability of a false positive (i.e., that this function will return True if
@@ -76,7 +76,7 @@ def miller_rabin(n):
     # degree of probability.
     return True
 
-def fermat(n):
+def fermat(n: int) -> bool:
     """
     With a very high degree of probability, returns True if the supplied positive odd integer
     n is prime, or False if it is composite. The probability of a false positive (i.e., that
@@ -101,7 +101,7 @@ def fermat(n):
 
     return True
 
-def fermat_factor(n):
+def fermat_factor(n: int) -> tuple[True, int, int] or False:
     """
     Attempts to factor a semiprime composite integer n using Fermat's factorization algorithm.
     Returns the tuple (True, p, q) if the factorization is successful, where p and q are the prime
@@ -136,10 +136,10 @@ def fermat_factor(n):
 
     return True, p, q
 
-def _is_square(n):
+def _is_square(n: int) -> bool:
     return n == math.isqrt(n) ** 2
 
-def _factor_n(n):
+def _factor_n(n: int) -> tuple[int, int]:
     """
     Returns the pair (m, e), after conversion of the supplied positive odd integer n to the
     form 2**e * m + 1, where m is the greatest odd divisor of n - 1.
@@ -155,10 +155,10 @@ def _factor_n(n):
 
     return m, e
 
-def _validate_param(n):
+def _validate_param(n: int) -> None:
     assert isinstance(n, int) and n >= 3 and n % 2 != 0
 
-def generate_prime(bit_len):
+def generate_prime(bit_len: int) -> int:
     """
     Returns a prime number of bit_len bits in length. The function selects random values in the
     range 2**bit_len-1 to 2**bit_len, and tests them for primality. If a prime is not found after
