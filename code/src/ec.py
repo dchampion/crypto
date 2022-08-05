@@ -20,7 +20,7 @@ _Y = 1
 # Default curve is secp256k1.
 _curve = curves.Secp256k1()
 
-def new_curve(curve, B_iters=100):
+def new_curve(curve: curves.Curve, B_iters: int=100) -> None:
     """
     Given a curve (either one selected from the "curves" module of this package,
     or one that is user-defined), redefines this module's default elliptic curve
@@ -31,7 +31,7 @@ def new_curve(curve, B_iters=100):
     _curve = curve
     _validate_curve_params(B_iters)
 
-def _add(pt1, pt2):
+def _add(pt1: list[int], pt2: list[int]) -> list[int]:
     # Returns the sum of points pt1 and pt2 on the curve, according to the addition
     # rules of elliptic curves; i.e., (a) the identity element if pt1 and pt2 are
     # both the the identity element, (b) pt2 if pt1 is the identity element, (c) pt1
@@ -56,7 +56,7 @@ def _add(pt1, pt2):
     
     return [x, y]
 
-def _double(pt):
+def _double(pt: list[int]) -> list[int]:
     # Returns the sum of point pt with itself on the curve. If pt is the point at
     # infinity, returns the point at infinity.
 
@@ -67,13 +67,13 @@ def _double(pt):
 
     return _additive_inverse(_tangent_intersection(pt))
 
-def _additive_inverse(pt):
+def _additive_inverse(pt: list[int]) -> list[int]:
     # Returns the additive inverse of pt, where pt is of the form [x, y], and pt's
     # inverse is [x, -y].
 
     return [pt[_X], -pt[_Y] % _curve.p]
 
-def _tangent_intersection(pt):
+def _tangent_intersection(pt: list[int]) -> list[int]:
     # Returns the point of intersection on the curve of a straight line drawn tangent
     # to the point pt on the curve. For a thorough explanation of the arithmetic used in
     # this function, consult the following URL:
@@ -85,7 +85,7 @@ def _tangent_intersection(pt):
 
     return [pt2x, pt2y]
 
-def _secant_intersection(pt1, pt2):
+def _secant_intersection(pt1: list[int], pt2: list[int]) -> list[int]:
     # Returns the point of intersection on the curve of a straight line drawn between
     # points pt1 and pt2 (i.e., the secant line) on the curve. For a thorough explanation
     # of the arithmetic used in this function, consult the following URL:
@@ -97,7 +97,7 @@ def _secant_intersection(pt1, pt2):
 
     return [pt3x, pt3y]
 
-def generate_keypair():
+def generate_keypair() -> tuple[int, list[int]]:
     """
     Returns a tuple of the form (d, Q), where d is a private key and Q its
     corresponding public key. d is a randomly generated positive integer in the
@@ -113,7 +113,7 @@ def generate_keypair():
 
     return d, _fast_point_at(d)
 
-def generate_session_key(d, Q):
+def generate_session_key(d: int, Q: list[int]) -> bytes:
     """
     Given a keypair, consisting of the caller's private key d and another party's
     public key Q, returns a byte array suitable for use as a session key in a symmetric
@@ -134,7 +134,7 @@ def generate_session_key(d, Q):
     # if it were to be leaked.
     return util.hash(k_pt[_X])
 
-def sign(d, m):
+def sign(d: int, m: int) -> tuple[int, int]:
     """
     Returns a tuple of the form (r, s), which comprises the signature of the message m
     using the caller's private key d. Receivers of this signature can verify the message's
@@ -164,7 +164,7 @@ def sign(d, m):
 
     return r, s
 
-def verify(Q, m, S):
+def verify(Q: list[int], m: int, S: tuple[int, int]) -> bool:
     """
     Returns True if the signature S, a tuple of the form (r, s) that is returned
     by this module's sign function, is valid for the message m and a public key Q;
@@ -206,7 +206,7 @@ def verify(Q, m, S):
 
     return v == r
 
-def _hash_to_int(m):
+def _hash_to_int(m: int) -> int:
     # Converts a message m to an integer representation of its hash.
 
     h = util.hash(m)
@@ -220,7 +220,7 @@ def _hash_to_int(m):
 
     return e
 
-def _fast_point_at(d):
+def _fast_point_at(d: int) -> list[int]:
     # Returns the point on the curve at d point-additions of the base point, where
     # d is a positive integer in the range 1 <= d < n, and n is the order of the
     # base point. In contrast with the function _point_at, this function runs in
@@ -230,7 +230,7 @@ def _fast_point_at(d):
 
     return _x_times_pt(d, _curve.G())
 
-def _x_times_pt(x, pt):
+def _x_times_pt(x: int, pt: list[int]) -> list[int]:
     # Returns the point on the curve at x point-additions of the start point pt.
 
     _validate_pt(pt)
@@ -244,7 +244,7 @@ def _x_times_pt(x, pt):
 
     return pt
 
-def _point_at(d):
+def _point_at(d: int) -> list[int]:
     # Returns the point on the curve at d point-additions of the base point, where
     # d is a positive integer in the range 1 <= d < n, and n is the order of the
     # base point. In contrast with the function _fast_point_at, this function runs
@@ -258,7 +258,7 @@ def _point_at(d):
 
     return pt
 
-def _validate_pt(pt):
+def _validate_pt(pt: list[int]) -> None:
     # pt must be a 2-element list.
 
     assert isinstance(pt, list) and len(pt) == 2
@@ -273,17 +273,17 @@ def _validate_pt(pt):
         # If pt's elements are not of type int, then they must be of type None.
         assert pt[_X] == None and pt[_Y] == None
 
-def _on_curve(pt):
+def _on_curve(pt: list[int]) -> bool:
     # Returns True if the point pt is on the curve; otherwise returns False.
 
     return pt[_Y]**2 % _curve.p == (pt[_X]**3 + (_curve.a*pt[_X]) + _curve.b) % _curve.p
 
-def _validate_priv_key(d):
+def _validate_priv_key(d: int) -> None:
     # Private keys must fall in the range 1 <= d < n
 
     return isinstance(d, int) and 1 <= d < _curve.n
 
-def validate_pub_key(Q):
+def validate_pub_key(Q: list[int]) -> None:
     """
     Recommended public key validation from the Standards for Efficient Cryptography
     Group's (SECG) specification, "SEC 1: Elliptic Curve Cryptography, Version 2.0"
@@ -318,7 +318,7 @@ def validate_pub_key(Q):
     if not valid:
         raise ValueError("Invalid public key")
 
-def _validate_curve_params(B_iters=100):
+def _validate_curve_params(B_iters: int=100) -> None:
     # Recommended curve parameter validation from the Standards for Efficient Cryptography
     # Group's (SECG) specification, "SEC 1: Elliptic Curve Cryptography, Version 2.0"
     # (https://www.secg.org/), section 3.1.1.2.1 (Elliptic Curve Domain Parameters over

@@ -5,7 +5,7 @@ details).
 """
 
 class Curve():
-    def __init__(self, p, a, b, Gx, Gy, n, h):
+    def __init__(self, p: int, a: int, b: int, Gx: int, Gy: int, n: int, h: int) -> None:
         # field parameter p -> prime modulus in the curve equation y^2 = x^3 + ax + b (mod p)
         self.p = p
         # coefficient a in curve equation
@@ -21,11 +21,11 @@ class Curve():
         # cofactor h -> where h is the order of the curve (written as #E(Fp)) divided by n
         self.h = h
 
-    def G(self):
+    def G(self) -> list[int, int]:
         # Base/generator point (G)
         return [self.Gx, self.Gy]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{type(self).__name__} curve parameters:\n\
  p:  {self.p}\n\
  a:  {self.a}\n\
@@ -37,7 +37,7 @@ class Curve():
     
 class Secp192k1(Curve):
     # https://www.secg.org/sec2-v2.pdf#subsubsection.2.2.1
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             2**192 - 2**32 - 2**12 - 2**8 - 2**7 - 2**6 - 2**3 - 1, 0, 3,
             5377521262291226325198505011805525673063229037935769709693,
@@ -48,7 +48,7 @@ class Secp192k1(Curve):
 
 class Secp192r1(Curve):
     # https://www.secg.org/sec2-v2.pdf#subsubsection.2.2.2
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             2**192 - 2**64 - 1,
             6277101735386680763835789423207666416083908700390324961276,
@@ -61,7 +61,7 @@ class Secp192r1(Curve):
 
 class Secp224k1(Curve):
     # https://www.secg.org/sec2-v2.pdf#subsubsection.2.3.1
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             2**224 - 2**32 - 2**12 - 2**11 - 2**9 - 2**7 - 2**4 - 2 - 1, 0, 5,
             16983810465656793445178183341822322175883642221536626637512293983324,
@@ -72,7 +72,7 @@ class Secp224k1(Curve):
 
 class Secp224r1(Curve):
     # https://www.secg.org/sec2-v2.pdf#subsubsection.2.3.2
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             2**224 - 2**96 + 1,
             26959946667150639794667015087019630673557916260026308143510066298878,
@@ -85,7 +85,7 @@ class Secp224r1(Curve):
 
 class Secp256k1(Curve):
     # https://www.secg.org/sec2-v2.pdf#subsubsection.2.4.1
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             2**256 - 2**32 - 977, 0, 7,
             55066263022277343669578718895168534326250603453777594175500187360389116729240,
@@ -96,7 +96,7 @@ class Secp256k1(Curve):
 
 class Secp256r1(Curve):
     # https://www.secg.org/sec2-v2.pdf#subsubsection.2.4.2
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             2**224 * (2**32 - 1) + 2**192 + 2**96 - 1,
             115792089210356248762697446949407573530086143415290314195533631308867097853948,
@@ -109,7 +109,7 @@ class Secp256r1(Curve):
 
 class Secp384r1(Curve):
     # https://www.secg.org/sec2-v2.pdf#subsubsection.2.5.1
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             2**384 - 2**128 - 2**96 + 2**32 - 1,
             39402006196394479212279040100143613805079739270465446667948293404245721771496870329047266088258938001861606973112316,
@@ -122,7 +122,7 @@ class Secp384r1(Curve):
 
 class Secp521r1(Curve):
     # https://www.secg.org/sec2-v2.pdf#subsubsection.2.6.1
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             2**521 - 1,
             6864797660130609714981900799081393217269435300143305409394463459185543183397656052122559640661454554977296311391480858037121987999716643812574028291115057148,

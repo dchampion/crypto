@@ -13,7 +13,7 @@ _q_bit_len = 256
 # Minimum bit length of a prime modulus.
 _min_p_bit_len = 2048
 
-def generate_parameters(p_bit_len):
+def generate_parameters(p_bit_len: int) -> tuple[int, int, int]:
     """
     Returns the public parameters necessary for two parties to negotiate a shared,
     private key for use in a symmetric cipher (e.g., 3DES, AES). The returned value
@@ -40,7 +40,7 @@ def generate_parameters(p_bit_len):
 
     return q, p, g
 
-def _generate_p(q, p_bit_len):
+def _generate_p(q: int, p_bit_len: int) -> tuple[int, int]:
     # Returns positive integers n and p which satisfy the equation p = q * n + 1,
     # where p is a prime modulus of p_bit_len length. The value n returned from
     # this function will be used to compute a generator of the subgroup modulo p
@@ -64,7 +64,7 @@ def _generate_p(q, p_bit_len):
 
     return n, p
 
-def _generate_g(n, p):
+def _generate_g(n: int, p: int) -> int:
     # Returns a generator g that generates the entire subgroup modulo p of order
     # (or size) q.
     assert isinstance(p, int) and p.bit_length() >= _min_p_bit_len - 1
@@ -84,7 +84,7 @@ def _generate_g(n, p):
 
     return g
 
-def generate_keypair(q, p, g):
+def generate_keypair(q: int, p: int, g: int) -> tuple[int, int]:
     """
     Given the public parameters q, p and g, returns a tuple of the form (k_prv, k_pub),
     where k_prv is a private key randomly selected from the range (1, ..., q-1),
@@ -106,7 +106,7 @@ def generate_keypair(q, p, g):
 
     return k_prv, k_pub
 
-def generate_session_key(k_pub, k_prv, p):
+def generate_session_key(k_pub: int, k_prv: int, p: int) -> bytes:
     """
     Returns a hashed byte array suitable for use as a session key in a symmetric
     cipher (e.g. 3DES, AES). This key must be kept secret.
@@ -123,7 +123,7 @@ def generate_session_key(k_pub, k_prv, p):
     # exploited by an adversary if it were to be leaked.
     return util.hash(ki)
 
-def validate_pub_key(k, q, p):
+def validate_pub_key(k: int, q: int, p: int) -> None:
     """
     Validates a public key k given the public parameters q and p. Must be called,
     without raising an exception, by a party receiving the public key and parameters from
@@ -147,7 +147,7 @@ def validate_pub_key(k, q, p):
     if not valid:
         raise ValueError("Invalid key")
 
-def validate_parameters(q, p, g):
+def validate_parameters(q: int, p: int, g: int) -> None:
     """
     Validates the public parameters q, p and g returned from the function generate_parameters.
     Must be called, without raising an exception, by a party receiving these parameters from
