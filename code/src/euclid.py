@@ -39,7 +39,7 @@ def gcdx(a: int, b: int) -> int:
     """
     Returns the greatest common divisor (or gcd) of positive
     integers a and b, and the x and y solutions for the relation
-    ax = bx = gcd(a,b) (see Bezout's identity).
+    ax + by = gcd(a,b) (see Bezout's identity).
     """
     _validate_params(a, b)
 
@@ -66,7 +66,7 @@ def gcdx(a: int, b: int) -> int:
 def _gcdx(a: int, b: int) -> int:
     """
     Returns the greatest common divisor (or gcd) of positive integers
-    a and b, and the x and y solutions for the relation ax = bx = gcd(a,b)
+    a and b, and the x and y solutions for the relation ax + by = gcd(a,b)
     (see Bezout's identity). Note this function uses recursion, which can
     cause stack overflow if its inputs a and/or b are too large. A safer
     alternative is to use gcdx(a,b) instead.
@@ -95,8 +95,8 @@ def lcm(a: int, b: int) -> int:
 def inverse(a: int, b: int) -> int:
     """
     Returns the modular multiplicative inverse of a modulo b, where
-    a and b are positive integers; if no such inverse exists, raises an
-    exception.
+    a and b are positive integers; if no such inverse exists, raises a
+    ValueError.
     """
     _validate_params(a, b)
 

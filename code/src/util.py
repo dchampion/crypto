@@ -1,12 +1,12 @@
-""" Crypto helper utilities """
+""" Cryptographic helper functions for finite-field operations. """
+
 import euclid
 import hashlib
 
 def fast_mod_exp(b: int, e: int, n: int) -> int:
     """
-    Returns the equivalent of b ** e % n, where b is the base, e is the exponent
-    and n is the modulus; but with much better performance than that form for
-    very large values of e.
+    Returns the equivalent of b^e % n, but with much better performance than
+    that form for very large numbers.
     """
     assert isinstance(b, int) and b >= 0
     assert isinstance(e, int) and e >= 0
@@ -17,24 +17,24 @@ def fast_mod_exp(b: int, e: int, n: int) -> int:
     # Don't screw around with edge cases; let the language primitives do the
     # work (this will be no slower than the fast algorithm).
     if e_bit_len < 8:
-        result = b ** e % n
+        result = b**e % n
     else:
         # Use square-and-multiply for speedy exponentiation of larger exponents.
-        result = b if (e & 1) else 1
+        result = b if (e&1) else 1
         for x in range(1, e_bit_len):
-            b = (b ** 2) % n
-            if (e >> x) & 1:
+            b = (b**2) % n
+            if (e>>x) & 1:
                 result = (result * b) % n
 
     return result
 
 def fast_mod_exp_crt(b: int, e: int, p: int, q: int) -> int:
     """
-    Returns the equivalent of b ** e % pq, where b is the base, e is the
-    exponent and p and q are the sole prime factors of a (semi-prime) modulus.
-    When exponentiating bases to very large powers modulo such a modulus,
-    this function provides a factor of 3-4 performance improvement over
-    fast_mod_exp.
+    Returns the equivalent of b^e % pq, but with much better performance than
+    that form for very large numbers. When exponentiating bases to very large
+    powers modulo a semiprime modulus whose factors are known (i.e., p and q),
+    this function provides a factor of 3-4 performance improvement over the
+    function fast_mod_exp.
     """
     assert isinstance(b, int)
     assert isinstance(e, int)
@@ -68,8 +68,8 @@ def from_crt(a: int, b: int, p: int, q: int) -> int:
 
 def to_crt(x: int, p: int, q: int) -> int:
     """
-    Returns the pair (a, b), where (a, b) is the CRT representation of x in the
-    set (1, ..., p*q - 1). The value a from the returned pair is shorthand for
+    Returns the tuple (a, b), where (a, b) is the CRT representation of x in the
+    set (1, ..., p*q - 1). The value a from the returned tuple is shorthand for
     x mod p, and the value b is shorthand for x mod q.
     """
     assert isinstance(x, int) and x >= 0

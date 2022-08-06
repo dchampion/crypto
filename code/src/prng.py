@@ -1,9 +1,10 @@
 """
-A cryptographically secure pseudo-random number generator (PRNG).
+A cryptographically secure pseudo-random number generator (CSPRNG).
 
 These routines are more or less a copy/paste of equivalent routines in
-the Random and SystemRandom classes, but are reimplemented here to maintain
-control of their evolution.
+the Random and SystemRandom classes, and are used exclusively by modules
+in this package that require their services. They are reimplemented here
+to provide maximum transparency into their implementation.
 """
 
 import os

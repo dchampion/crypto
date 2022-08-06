@@ -31,20 +31,20 @@ def is_prime(n: int) -> bool:
         return False
 
     # Before doing any heavy lifting, return True for an n that matches any of the first 168
-    # primes (up to 1k). Any multiples thereof are composites, and should therefore also fall
+    # primes (less than 1k). Any multiples thereof are composites, and should therefore also fall
     # out, but in that case we return False.
     for prime in small_primes:
         if n % prime == 0:
             return prime == n
 
-    # n is neither a small prime (up to 1k), nor is it a multiple of thereof, so use Miller-Rabin.
+    # n is neither a small prime (less than 1k), nor is it a multiple of thereof, so use Miller-Rabin.
     return miller_rabin(n)
 
 def miller_rabin(n: int) -> bool:
     """
     With a very high degree of probability, returns True if the supplied positive odd integer n
     is prime. The probability of a false positive (i.e., that this function will return True if
-    in fact n is composite) is .5**128; i.e., it is infinitesimally small. Otherwise, if n is
+    in fact n is composite) is .5^128; i.e., it is infinitesimally small. Otherwise, if n is
     composite, this method will return False with a probability of 1.
     """
     _validate_param(n)
@@ -53,26 +53,26 @@ def miller_rabin(n: int) -> bool:
         # return True in this most trivial edge case.
         return True
 
-    # factor n into 2**e * m + 1.
+    # factor n into 2^e * m+1.
     m, e = _factor_n(n)
     for _ in range(0, 128, 2):
-        b = random.randrange(2, n - 1)
+        b = random.randrange(2, n-1)
         x = util.fast_mod_exp(b, m, n)
 
         # if x is 1, repeated squaring will not change the result, so go back to the beginning
         # and try another random b.
         if x != 1:
             i = 0
-            while x != n - 1:
-                if i == e - 1:
-                    # if we don't find an x = n - 1 by repeated squaring, n cannot be prime,
+            while x != n-1:
+                if i == e-1:
+                    # if we don't find an x = n-1 by repeated squaring, n cannot be prime,
                     # so return False and we're done.
                     return False
                 else:
-                    x = x ** 2 % n
-                    i += 1
+                    x = x**2 % n
+                    i = i+1
 
-    # if we haven't found a composite after 64 rounds, then n is prime with a 1-(2**-128)
+    # if we haven't found a composite after 64 rounds, then n is prime with a 1-(2^-128)
     # degree of probability.
     return True
 
@@ -80,7 +80,7 @@ def fermat(n: int) -> bool:
     """
     With a very high degree of probability, returns True if the supplied positive odd integer
     n is prime, or False if it is composite. The probability of a false positive (i.e., that
-    this function will return True if in fact n is composite) .5**128; i.e., it is infinitesimally
+    this function will return True if in fact n is composite) .5^128; i.e., it is infinitesimally
     small. However, if n happens to be a Carmichael number, in particular one with very large
     prime factors, this function will very likely return True, even though n is composite. While
     Carmichael numbers of this sort are rare, they do exist. Because of this, the Miller-Rabin
@@ -94,8 +94,8 @@ def fermat(n: int) -> bool:
     # Do up to 128 rounds of the Fermat primality test on random bases (see Fermat's little
     # theorem).
     for _ in range(0, 128):
-        base = random.randrange(2, n - 1)
-        result = util.fast_mod_exp(base, n - 1, n)
+        base = random.randrange(2, n-1)
+        result = util.fast_mod_exp(base, n-1, n)
         if result != 1:
             return False
 
@@ -117,8 +117,8 @@ def fermat_factor(n: int) -> tuple[True, int, int] or False:
     if _is_square(n):
         return True, math.isqrt(n), math.isqrt(n)
 
-    # Fermat's algorithm asserts that n = (a - b)(a + b), which becomes n = a^2 - b^2, which becomes
-    # b^2 = a^2 - n. Here a is some number that is close to the square root of n, and b is the
+    # Fermat's algorithm asserts that n = (a-b)(a+b), which becomes n = a^2 - b^2, which becomes
+    # b^2 = a^2-n. Here a is some number that is close to the square root of n, and b is the
     # distance from a to the prime factors of n.
     a = math.isqrt(n) + 1
     c, tries = 0, 100
@@ -131,8 +131,8 @@ def fermat_factor(n: int) -> tuple[True, int, int] or False:
     b2 = a**2 - n
     b = math.isqrt(b2)
 
-    p = a + b
-    q = a - b
+    p = a+b
+    q = a-b
 
     return True, p, q
 
@@ -141,17 +141,17 @@ def _is_square(n: int) -> bool:
 
 def _factor_n(n: int) -> tuple[int, int]:
     """
-    Returns the pair (m, e), after conversion of the supplied positive odd integer n to the
-    form 2**e * m + 1, where m is the greatest odd divisor of n - 1.
+    Returns the tuple (m, e), after conversion of the supplied positive odd integer n to the
+    form 2^e * m+1, where m is the greatest odd divisor of n-1.
     """
     _validate_param(n)
 
-    m = n - 1
+    m = n-1
     e = 0
 
     while m % 2 == 0:
         m //= 2
-        e += 1
+        e = e+1
 
     return m, e
 
@@ -161,7 +161,7 @@ def _validate_param(n: int) -> None:
 def generate_prime(bit_len: int) -> int:
     """
     Returns a prime number of bit_len bits in length. The function selects random values in the
-    range 2**bit_len-1 to 2**bit_len, and tests them for primality. If a prime is not found after
+    range 2^bit_len-1 to 2^bit_len, and tests them for primality. If a prime is not found after
     a sensible number of tries, an exception is raised (this should be rare), in which case the
     function can be called again to generate a prime.
     """
