@@ -134,7 +134,7 @@ def generate_session_key(d: int, Q: list[int]) -> bytes:
     # if it were to be leaked.
     return util.hash(k_pt[_X])
 
-def sign(d: int, m: int) -> tuple[int, int]:
+def sign(d: int, m: any) -> tuple[int, int]:
     """
     Returns a tuple of the form (r, s), which comprises the signature of the message m
     using the caller's private key d. Receivers of this signature can verify the message's
@@ -164,7 +164,7 @@ def sign(d: int, m: int) -> tuple[int, int]:
 
     return r, s
 
-def verify(Q: list[int], m: int, S: tuple[int, int]) -> bool:
+def verify(Q: list[int], m: any, S: tuple[int, int]) -> bool:
     """
     Returns True if the signature S, a tuple of the form (r, s) that is returned
     by this module's sign function, is valid for the message m and a public key Q;
@@ -206,7 +206,7 @@ def verify(Q: list[int], m: int, S: tuple[int, int]) -> bool:
 
     return v == r
 
-def _hash_to_int(m: int) -> int:
+def _hash_to_int(m: any) -> int:
     # Converts a message m to an integer representation of its hash.
 
     h = util.hash(m)
