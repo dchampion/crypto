@@ -1,5 +1,5 @@
 # What's in This Repo?
-This repository is divided into two sections. One of these, in the [doc](https://github.com/dchampion/crypto/tree/master/doc) folder, contains simple, comprehensible treatments of important topics in modern cryptography. The other, in the [code](https://github.com/dchampion/crypto/tree/master/code) folder, contains programmatic expressions of these concepts in the Python programming language.
+This repository is divided into two sections. One of these, in the [doc](https://github.com/dchampion/crypto/tree/master/doc) folder, contains simple, comprehensible treatments of important topics in modern cryptography. The other, in the [src](https://github.com/dchampion/crypto/tree/master/src) folder, contains programmatic expressions of these concepts in the Python programming language.
 
 Readers are encouraged to consult the READMEs in these folders, which present roadmaps to their contents.
 
