@@ -18,50 +18,52 @@ def test_dh_setup():
     k_prv_2, k_pub_2 = dh.generate_keypair(q, p, g)
     dh.validate_pub_key(k_pub_2, q, p)
 
-    k_sess_1 = dh.generate_session_key(k_pub_2, k_prv_1, p)
-    k_sess_2 = dh.generate_session_key(k_pub_1, k_prv_2, p)
+    k_sess_1 = dh.generate_session_key(k_pub_2, k_prv_1, q, p)
+    k_sess_2 = dh.generate_session_key(k_pub_1, k_prv_2, q, p)
     assert k_sess_1 == k_sess_2, "Secrets don't match"
 
     print("test_dh_setup passed")
 
 def test_full_protocol():
-    ########################################################################################
-    # The following diagram illustrates the protocol simulated in this test graphically.   #
-    # Values surrounded in square brackets [] are public (i.e., they can be transmitted    #
-    # over an insecure channel with no compromise to the integrity of the system if they   #
-    # are intercepted by an adversary), and those that are not private (i.e., they must be #
-    # kept secret). The direction arrows ---> and <--- indicate an exchange of information #
-    # between Alice and Bob on an insecure channel.                                        #
-    #                                                                                      #
-    # Alice                                       Bob                                      #
-    # ----------------------------                ----------------------------             #
-    # [q, p, g] =                                                                          #
-    #      generate_parameters(modulus_bit_length)                                         #
-    #                                                                                      #
-    # kA, [KA] =                                                                           #
-    #      generate_keypair(q, p, g)                                                       #
-    #                                                                                      #
-    # [p, q, g, KA]                     --->      [q, p, g, KA]                            #
-    #                                             validate_parameters(q, p, g)             #
-    #                                             validate_pub_key([KA])                   #
-    #                                                                                      #
-    #                                             kB, [KB] =                               #
-    #                                                  generate_keypair(q, p, g)           #
-    #                                                                                      #
-    # [KB]                              <---      [KB]                                     #
-    # validate_pub_key([KB])                                                               #
-    #                                                                                      #
-    # kSessionA =                                 kSessionB =                              #
-    #      generate_session_key([KB], kA, [p])         generate_session_key([KA], kB, [p]) #
-    #                                                                                      #
-    # [mAC] = sym_encrypt(kSessionA, mA)                                                   #
-    #                                                                                      #
-    # [mAC]                             --->      [mAC]                                    #
-    #                                                                                      #
-    #                                             mB = sym.decrypt(kSessionB, [mAC])       #
-    #                                                                                      #
-    # The message mB Bob decrypts must equal the message mA that Alice encrypted.          #
-    ########################################################################################
+    ##########################################################################################
+    # The following diagram illustrates the protocol simulated in this test graphically.     #
+    # Values surrounded in square brackets [] are public (i.e., they can be transmitted      #
+    # over an insecure channel with no compromise to the integrity of the system if they     #
+    # are intercepted by an adversary), and those that are not, private (i.e., they must     #
+    # be kept secret). The direction arrows ---> and <--- indicate an exchange of            #
+    # information between Alice and Bob on an insecure channel.                              #
+    #                                                                                        #
+    # Alice                                       Bob                                        #
+    # ----------------------------                ----------------------------               #
+    # [q, p, g] =                                                                            #
+    #      generate_parameters(modulus_bit_length)                                           #
+    #                                                                                        #
+    # validate_parameters(q, p, g)                                                           #
+    #                                                                                        #
+    # kA, [KA] =                                                                             #
+    #      generate_keypair(q, p, g)                                                         #
+    #                                                                                        #
+    # [p, q, g, KA]                     --->      [q, p, g, KA]                              #
+    #                                             validate_parameters(q, p, g)               #
+    #                                             validate_pub_key([KA], q, p)               #
+    #                                                                                        #
+    #                                             kB, [KB] =                                 #
+    #                                                  generate_keypair(q, p, g)             #
+    #                                                                                        #
+    # [KB]                              <---      [KB]                                       #
+    # validate_pub_key([KB], q, p)                                                           #
+    #                                                                                        #
+    # kSessionA =                                 kSessionB =                                #
+    #      generate_session_key([KB], kA, q, p)         generate_session_key([KA], kB, q, p) #
+    #                                                                                        #
+    # [mAC] = sym_encrypt(kSessionA, mA)                                                     #
+    #                                                                                        #
+    # [mAC]                             --->      [mAC]                                      #
+    #                                                                                        #
+    #                                             mB = sym.decrypt(kSessionB, [mAC])         #
+    #                                                                                        #
+    # The message mB Bob decrypts must equal the message mA that Alice encrypted.            #
+    ##########################################################################################
 
     # Alice generates the public parameters for a DH session with Bob; these are the
     # public modulus [p] (a prime), the size of the subgroup modulo p within which
@@ -95,13 +97,13 @@ def test_full_protocol():
 
     # Then, Alice uses Bob's public key [KB], along with her private key
     # kA, to generate a session key kSessionA, which must be kept secret.
-    kSessionA = dh.generate_session_key(KB, kA, p)
+    kSessionA = dh.generate_session_key(KB, kA, q, p)
 
     # Bob, having received Alice's public key [KA], uses it, along with his private key
     # kB to generate a session key kSessionB, which must must be kept secret. Due to 
     # the essential property of DH, the session keys kSessionA and kSessionB, that
     # Alice and Bob have computed independently, should be identical.
-    kSessionB = dh.generate_session_key(KA, kB, p)
+    kSessionB = dh.generate_session_key(KA, kB, q, p)
     assert kSessionA == kSessionB
 
     # Alice produces a message [mA], encrypts it using her session key kSessionA, and
