@@ -66,7 +66,7 @@ def from_crt(a: int, b: int, p: int, q: int) -> int:
     # Use Garner's formula to compute x mod pq
     return (((a - b) * inv) % p) * q + b
 
-def to_crt(x: int, p: int, q: int) -> int:
+def to_crt(x: int, p: int, q: int) -> tuple[int, int]:
     """
     Returns the tuple (a, b), where (a, b) is the CRT representation of x in the
     set (1, ..., p*q - 1). The value a from the returned tuple is shorthand for
@@ -78,7 +78,7 @@ def to_crt(x: int, p: int, q: int) -> int:
 
     return x % p, x % q
 
-def hash(k: any) -> None:
+def hash(k: any) -> bytes:
     """
     Returns a hashed byte array of input k.
     """
