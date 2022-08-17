@@ -1,6 +1,6 @@
 """
 Implementations of the Rivest-Shamir-Adleman (RSA) algorithms for digital signature
-and encryption (via symmetric key exchange using a key-encapsulation mechanism).
+and encryption.
 """
 
 import primes
@@ -30,7 +30,7 @@ def generate_rsa_key(modulus_bit_len: int) -> tuple[int, int, int, int, int]:
     the least common multiple of p-1 and q-1 (algebraically, this is "lcm(p-1, q-1)"), and d5 is
     the modular multiplicative inverse of 5 modulo t. d3 and d5 are the exponents to be used for
     message signature and decryption, respectively. The signature-verification and encryption
-    exponents (the numbers 3 and 5, respectively), together with the RSA modulus n, comprise
+    exponents (the constants 3 and 5, respectively), together with the RSA modulus n, comprise
     the RSA public key and may be shared freely. The prime factors p and q, and the signature
     and decryption exponents d3 and d5, however, must be kept secret by callers of this function.
     """
@@ -73,8 +73,8 @@ def _generate_rsa_prime(factor_bit_len: int) -> int:
     assert _factor_min_bit_len <= factor_bit_len <= _factor_max_bit_len
 
     l, u = 2**(factor_bit_len-1), 2**factor_bit_len-1
-    tries = 100 * factor_bit_len
-    for r in range(tries):
+    max_tries = 100 * factor_bit_len
+    for tries in range(max_tries):
         # Pick a random n in the appropriate range.
         n = prng.randrange(l, u)
 
@@ -85,7 +85,7 @@ def _generate_rsa_prime(factor_bit_len: int) -> int:
              and n % ENCRYPTION_EXPONENT != 1 and primes.is_prime(n):
             break
 
-    if r == tries - 1:
+    if tries == max_tries - 1:
         raise Exception("Unable to find a suitable prime")
 
     return n
@@ -98,7 +98,7 @@ def encrypt_random_key(n: int, e: int) -> tuple[bytes, int]:
     """
     Given a public RSA key, consisting of a modulus n and an encryption exponent e, returns
     a symmetric key K that is a hash of a random integer r in the range 0 to n-1, and the
-    ciphertext thereof c. The function decrypt_random_key can be used by a receiving party
+    ciphertext c thereof. The function decrypt_random_key can be used by a receiving party
     to recover r from c, which can be re-hashed using the same hash function to recover K.
     It is assumed that both parties know this hash function in advance, and that knowledge
     of this function by an adversary in no way helps the adversary. K must be kept secret
@@ -125,9 +125,7 @@ def decrypt_random_key(d: int, c: int, p: int, q: int) -> bytes:
     """
     Given a private RSA key d, a ciphertext c, and the prime factors p and q of a public RSA
     modulus n, returns a symmetric key K that is identical to that returned by the function
-    encrypt_random_key. K must be kept secret by callers of this function. Supplying the factors
-    of the modulus n to this function (i.e., p and q), instead of n, results in a 3- to 4-fold
-    increase in computational performance.
+    encrypt_random_key. K must be kept secret by callers of this function.
     """
 
     assert isinstance(d, int)
@@ -136,7 +134,7 @@ def decrypt_random_key(d: int, c: int, p: int, q: int) -> bytes:
     assert isinstance(q, int)
     assert 0 <= c <= p*q
 
-    # Recover r from its ciphertext c.
+    # Recover r from its ciphertext c (using CRT for fast exponentiation).
     r = util.fast_mod_exp_crt(c, d, p, q)
 
     # Hash r to arrive at the same key K as that computed by the encrypting party (see function
@@ -148,7 +146,7 @@ def decrypt_random_key(d: int, c: int, p: int, q: int) -> bytes:
 
 def sign(d: int, p: int, q: int, m: any) -> int:
     """
-    Given a private signing key d, and the factors of a public RSA modulus n (i.e., p and q),
+    Given a private signing key d, and the factors p and q of a public RSA modulus n,
     signs a message m and returns its signature. This function is the inverse of the function
     verify.
     """
