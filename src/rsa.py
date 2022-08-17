@@ -64,7 +64,7 @@ def generate_rsa_key(modulus_bit_len: int) -> tuple[int, int, int, int, int]:
 def _generate_rsa_prime(factor_bit_len: int) -> int:
     # Returns a prime number p, of factor_bit_len length, suitable for use as a factor in a
     # public RSA modulus. A suitable factor p is one where p is prime, and p-1 is neither a
-    # multiple 3 or 5. The latter restriction allows these small, computationally efficient
+    # multiple of 3 or 5. The latter restriction allows these small, computationally efficient
     # values to be used as exponents for signature-verification and encryption, respectively.
     # Any value returned by this function must be kept secret if it is to be used as a factor
     # in a public RSA modulus.
