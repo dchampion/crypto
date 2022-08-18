@@ -9,18 +9,28 @@ def main():
     print("all dh tests passed")
     
 def test_dh_setup():
-    q, p, g = dh.generate_parameters(2048)
-    dh.validate_parameters(q, p, g)
-    
-    k_prv_1, k_pub_1 = dh.generate_keypair(q, p, g)
-    dh.validate_pub_key(k_pub_1, q, p)
+    for _ in range(10):
+        try:
+            q, p, g = dh.generate_parameters(2048)
+            dh.validate_parameters(q, p, g)
 
-    k_prv_2, k_pub_2 = dh.generate_keypair(q, p, g)
-    dh.validate_pub_key(k_pub_2, q, p)
+            k_prv_1, k_pub_1 = dh.generate_keypair(q, p, g)
+            dh.validate_pub_key(k_pub_1, q, p)
+            assert 1 <= k_prv_1 < q, "k_prv_1 is out of range"
 
-    k_sess_1 = dh.generate_session_key(k_pub_2, k_prv_1, q, p)
-    k_sess_2 = dh.generate_session_key(k_pub_1, k_prv_2, q, p)
-    assert k_sess_1 == k_sess_2, "Secrets don't match"
+            k_prv_2, k_pub_2 = dh.generate_keypair(q, p, g)
+            dh.validate_pub_key(k_pub_2, q, p)
+            assert 1 <= k_prv_2 < q, "k_prv_2 is out of range"
+            assert k_prv_1 != k_prv_2, "k_prv_1 is equal to k_prv_2; bad PRNG?"
+
+            k_sess_1 = dh.generate_session_key(k_pub_2, k_prv_1, q, p)
+            k_sess_2 = dh.generate_session_key(k_pub_1, k_prv_2, q, p)
+            assert k_sess_1 == k_sess_2, "Secrets don't match"
+
+        except ValueError as ve:
+            assert False, f"ValueError: {ve}"
+        except Exception as e:
+            assert False, f"Exception: {e}"
 
     print("test_dh_setup passed")
 
