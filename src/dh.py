@@ -3,9 +3,9 @@ An implementation of the Diffie-Hellman key agreement protocol based on
 mulitplicative-group arithmetic.
 """
 
-import primes
-import util
-import prng
+from . import primes
+from . import prng
+from . import util
 
 # Bit length of a prime number q that is the order (or size) of large subgroup
 # modulo p, where p is a (much larger) prime number that is the order of the full

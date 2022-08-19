@@ -1,6 +1,6 @@
-import path_resolver
-import util
-import primes
+from src import primes
+from src import util
+
 import random
 
 def main():

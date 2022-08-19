@@ -3,12 +3,13 @@ Implementations of the Rivest-Shamir-Adleman (RSA) algorithms for digital signat
 and encryption.
 """
 
-import primes
-import euclid
+from . import euclid
+from . import primes
+from . import prng
+from . import util
+
 import math
-import util
 import random
-import prng
 
 # Allowable range, in bit lengths, of the 2 prime factors (p and q) of an RSA modulus n.
 _factor_min_bit_len  = 1024

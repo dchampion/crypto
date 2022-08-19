@@ -3,12 +3,13 @@ Implementations of the elliptic curve Diffie-Hellman (ECDH) and the elliptic
 curve digital signature algorithms (ECDSA).
 """
 
-import curves
-import euclid
-import primes
+from . import curves
+from . import euclid
+from . import primes
+from . import prng
+from . import util
+
 import math
-import prng
-import util
 
 # Identity element, aka the "point at infinity."
 _i = [None, None]

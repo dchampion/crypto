@@ -1,6 +1,6 @@
-import path_resolver
-import dh
-import sym
+from . import sym
+
+from src import dh
 
 def main():
     print("Running dh tests...")

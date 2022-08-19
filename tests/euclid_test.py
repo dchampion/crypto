@@ -1,5 +1,5 @@
-import path_resolver
-import euclid
+from src import euclid
+
 import math
 
 def main():

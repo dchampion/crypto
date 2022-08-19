@@ -1,9 +1,9 @@
-import dh_test
-import euclid_test
-import primes_test
-import rsa_test
-import util_test
-import ec_test
+from . import dh_test
+from . import euclid_test
+from . import ec_test
+from . import primes_test
+from . import rsa_test
+from . import util_test
 
 def main():
     print("Running all tests...")

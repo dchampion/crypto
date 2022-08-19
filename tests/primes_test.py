@@ -1,5 +1,4 @@
-import path_resolver
-import primes
+from src import primes
 
 odd_composites = [9,15,27,35,49,133,339,589,711,999,2**521+1,2**607+1]
 even_composites = [n + 1 for n in odd_composites]

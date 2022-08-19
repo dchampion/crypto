@@ -1,8 +1,9 @@
-import path_resolver
-import curves
-import ec
-import prng
-import sym
+from . import sym
+
+from src import curves
+from src import ec
+from src import prng
+
 import copy
 
 # Test curve 1 parameters

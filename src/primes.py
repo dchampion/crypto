@@ -1,9 +1,10 @@
 """ Various functions for generating primes and primality testing. """
 
-import random
-import prng
-import util
+from . import prng
+from . import util
+
 import math
+import random
 
 small_primes =  [  3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
                   73, 79, 83, 83, 89, 97,101,103,107,109,113,127,131,137,139,149,151,157,163,

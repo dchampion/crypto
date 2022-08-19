@@ -18,25 +18,39 @@ There are three principal ways to exercise the source code in this repository, w
 For any of these to work, Python (version 3.9.7 or greater) must be installed on your computer.
 
 ## 1. Unit Tests
-For every source code module (e.g., *rsa.py*) in the [src](https://github.com/dchampion/crypto/tree/master/src) folder, there is a corresponding unit test (e.g., *rsa_test.py*) in the [test](https://github.com/dchampion/crypto/tree/master/test) folder.
+For every source code module (e.g., *rsa.py*) in the [src](https://github.com/dchampion/crypto/tree/master/src) folder, there is a corresponding unit test (e.g., *rsa_test.py*) in the [tests](https://github.com/dchampion/crypto/tree/master/tests) folder.
 
-To run a test on a single module (e.g., *rsa.py*), navigate to the root folder of the repository in your favorite operating system shell (e.g. *CMD* on Windows, *bash* on Linux or *zsh* on Mac) and type:
-
-`python test/rsa_test.py`
-
-Alternatively, to run all the tests in the [test](https://github.com/dchampion/crypto/tree/master/test) folder, type:
-
-`python test/run_all_tests.py`
-
-If *pytest* is installed, you can achieve the same result by typing `pytest` in the root folder of the repository (to install *pytest*, type `pip install pytest`).
-
-## 2. Python REPL
-For a better experience, navigate the to [src](https://github.com/dchampion/crypto/tree/master/src) folder, and type `python` to start a REPL. Once in the REPL, you can interact directly with the code.
-
-For example, in the following session the elliptic curve cryptosystem is used to generate a keypair, sign a message with the private key, and then verify the message with the public key:
+To run a test on a single module (e.g., *rsa.py*), start a Python REPL in the root folder of this repository and type:
 
 <pre>
->>> import ec
+>>> from tests import rsa_test
+>>> rsa_test.main()
+Running rsa tests...
+...
+all rsa tests passed
+>>>
+</pre>
+
+Alternatively, to run all the tests in the [tests](https://github.com/dchampion/crypto/tree/master/tests) folder, type:
+
+<pre>
+>>> from tests import all_tests
+>>> all_tests.main()
+Running all tests...
+...
+all tests passed
+>>>
+</pre>
+
+Or, if *pytest* is installed, you can achieve the same result by typing `pytest` from a command&ndash;line shell in the root folder of the repository (to install *pytest*, type `pip install pytest`).
+
+## 2. Python REPL
+For a better experience, start a Python REPL in the root folder of this repository to run the source code directly.
+
+For example, in the following example, the elliptic curve cryptosystem is used to generate a keypair, sign a message with the private key, and then verify the message with the public key:
+
+<pre>
+>>> from src import ec
 >>> private_key, public_key = ec.generate_keypair()
 >>> signature = ec.sign(private_key, "When in the course of human events...")
 >>> ec.verify(public_key, "When in the course of human events...", signature)
@@ -51,7 +65,7 @@ For the best experience, you can load and run Jupyter notebooks (files with *.ip
 # Documentation
 The code is thoroughly documented, both in the form of *docstrings* at the module and function level, which describe at a high level the behavior of the module or function; and inline comments embedded in the function implementations, which are intended to clarify the effect of a particular statement or group of statements immediately following the comment.
 
-The unit tests also contain documentation, the most descriptive of which is embedded in the full&ndash;protocol tests inside [*dh_test.py*](https://github.com/dchampion/crypto/blob/master/test/dh_test.py), [*rsa_test.py*](https://github.com/dchampion/crypto/blob/master/test/rsa_test.py) and [*ec_test.py*](https://github.com/dchampion/crypto/blob/master/test/ec_test.py), which exercise the highest&ndash;level primitives in this library. These tests simulate sessions from start to finish; from parameter&ndash;setup and key&ndash;negotiation to secure, authenticated message&ndash;exchange between parties over insecure channels.
+The unit tests also contain documentation, the most descriptive of which is embedded in the full&ndash;protocol tests inside [*dh_test.py*](https://github.com/dchampion/crypto/blob/master/tests/dh_test.py), [*rsa_test.py*](https://github.com/dchampion/crypto/blob/master/tests/rsa_test.py) and [*ec_test.py*](https://github.com/dchampion/crypto/blob/master/tests/ec_test.py), which exercise the highest&ndash;level primitives in this library. These tests simulate sessions from start to finish; from parameter&ndash;setup and key&ndash;negotiation to secure, authenticated message&ndash;exchange between parties over insecure channels.
 
 # Why Python?
 Python has a built&ndash;in multiprecision library featuring large-integer support; a prerequisite for industrial&ndash;strength computational cryptography. Using a language such as C, C++ or Java, would have required the services of a third&ndash;party, external library, which I tried to avoid for the reason stated above.

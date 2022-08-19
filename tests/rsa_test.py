@@ -1,8 +1,8 @@
-import path_resolver
-import rsa
-import primes
-import euclid
-import sym
+from . import sym
+
+from src import euclid
+from src import primes
+from src import rsa
 
 def main():
     print("Running rsa tests...")

@@ -1,6 +1,7 @@
 """ Cryptographic helper functions for finite-field operations. """
 
-import euclid
+from . import euclid
+
 import hashlib
 
 def fast_mod_exp(b: int, e: int, n: int) -> int:
