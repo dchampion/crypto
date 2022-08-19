@@ -4,7 +4,6 @@ from . import prng
 from . import util
 
 import math
-import random
 
 small_primes =  [  3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
                   73, 79, 83, 83, 89, 97,101,103,107,109,113,127,131,137,139,149,151,157,163,
@@ -20,8 +19,7 @@ def is_prime(n: int) -> bool:
     """
     Returns True if the supplied positive integer n is prime, or False if it is composite.
     If n < 1000, the probability of a correct answer is 1 (that is, this function is
-    deterministic). If n > 1000, the probability this function will return an incorrect
-    answer, or false positive, is .5^-128; i.e., it is infinitesimally small.
+    deterministic). If n > 1000, the probability of a correct answer is 1 - .5^128.
     """
     assert isinstance(n, int) and n > 1
 
@@ -43,10 +41,8 @@ def is_prime(n: int) -> bool:
 
 def miller_rabin(n: int) -> bool:
     """
-    With a very high degree of probability, returns True if the supplied positive odd integer n
-    is prime. The probability of a false positive (i.e., that this function will return True if
-    in fact n is composite) is .5^128; i.e., it is infinitesimally small. Otherwise, if n is
-    composite, this method will return False with a probability of 1.
+    Returns True if the supplied positive odd integer n is prime with a probability
+    of 1 - .5^128. Returns False if n is composite.
     """
     _validate_param(n)
 
@@ -57,7 +53,7 @@ def miller_rabin(n: int) -> bool:
     # factor n into 2^e * m+1.
     m, e = _factor_n(n)
     for _ in range(0, 128, 2):
-        b = random.randrange(2, n-1)
+        b = prng.randrange(2, n-1)
         x = util.fast_mod_exp(b, m, n)
 
         # if x is 1, repeated squaring will not change the result, so go back to the beginning
@@ -79,13 +75,11 @@ def miller_rabin(n: int) -> bool:
 
 def fermat(n: int) -> bool:
     """
-    With a very high degree of probability, returns True if the supplied positive odd integer
-    n is prime, or False if it is composite. The probability of a false positive (i.e., that
-    this function will return True if in fact n is composite) .5^128; i.e., it is infinitesimally
-    small. However, if n happens to be a Carmichael number, in particular one with very large
-    prime factors, this function will very likely return True, even though n is composite. While
-    Carmichael numbers of this sort are rare, they do exist. Because of this, the Miller-Rabin
-    test, which controls for them, should be preferred.
+    Returns True if the supplied positive odd integer n is prime with a probability of 1 - .5^128.
+    Returns False if n is composite. However, if n happens to be a Carmichael number, in particular
+    one with very large prime factors, this function will very likely return True even though n is
+    composite. While Carmichael numbers of this sort are rare, they do exist. Because of this, the
+    miller_rabin function, which accounts for them, should be preferred.
     """
     _validate_param(n)
 
@@ -95,7 +89,7 @@ def fermat(n: int) -> bool:
     # Do up to 128 rounds of the Fermat primality test on random bases (see Fermat's little
     # theorem).
     for _ in range(0, 128):
-        base = random.randrange(2, n-1)
+        base = prng.randrange(2, n-1)
         result = util.fast_mod_exp(base, n-1, n)
         if result != 1:
             return False
@@ -161,10 +155,9 @@ def _validate_param(n: int) -> None:
 
 def generate_prime(bit_len: int) -> int:
     """
-    Returns a prime number of bit_len bits in length. The function selects random values in the
-    range 2^bit_len-1 to 2^bit_len, and tests them for primality. If a prime is not found after
-    a sensible number of tries, an exception is raised (this should be rare), in which case the
-    function can be called again to generate a prime.
+    Returns a prime number of bit_len bits in length, testing randomly selected values for primality.
+    If a prime is not found after a sensible number of tries, an exception is raised (this should be
+    rare), in which case the function can be called again to generate a prime.
     """
     tries = 100 * bit_len
     for _ in range(tries):
