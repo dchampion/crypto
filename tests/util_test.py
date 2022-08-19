@@ -14,7 +14,7 @@ def test_crt_conversions():
     for _ in range(10):
         p = primes.generate_prime(1024)
         q = primes.generate_prime(1024)
-        x = random.randrange(1, p.bit_length()-1)
+        x = random.randrange(1, p*q-1)
         a, b = util.to_crt(x, p, q)
         x1 = util.from_crt(a, b, p, q)
         assert x == x1, "Conversion mismatch"
