@@ -2,7 +2,7 @@
 The source code in this repository comprises two fully&ndash;featured public&ndash;key cryptosystems, and implements many public&ndash;key primitives one might expect to find in a cryptography library, such as key generation, encryption and digital signature. Implementations include the classic [*Diffie-Hellman*](https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange) (DH) key agreement protocol, the [*Rivest-Shamir-Adleman*](https://en.wikipedia.org/wiki/RSA_(cryptosystem)) (RSA) cryptosystem, and an elliptic curve cryptosystem based on the Standards for Efficient Cryptography (SEC) Group's [*Recommended Curve Domain Parameters*](https://www.secg.org/sec2-v2.pdf).
 
 With very few exceptions, this code is free of dependencies on external, third&ndash;party modules and libraries (modules such as `math` and `os` could not be avoided, but the services they provide are so essential that they could not  be feasibly omitted).
-I did this for two reasons: *(1)* As a learning excercise (it is more effective to learn by writing functions than it is by calling them) and *(2)* as a security measure (one can never be too sure about code in external libraries&mdash;see [SolarWinds](https://www.wired.com/story/solarwinds-hack-supply-chain-threats-improvements/) and [Log4j](https://www.pcmag.com/how-to/what-is-the-log4j-exploit-and-what-can-you-do-to-stay-safe) for elaboration).
+I did this for two reasons: *(1)* As a learning exercise (it is more effective to learn by writing functions than it is by calling them) and *(2)* as a security measure (one can never be too sure about code in external libraries&mdash;see [SolarWinds](https://www.wired.com/story/solarwinds-hack-supply-chain-threats-improvements/) and [Log4j](https://www.pcmag.com/how-to/what-is-the-log4j-exploit-and-what-can-you-do-to-stay-safe) for elaboration).
 
 The source code in this folder should not be regarded as an API, but rather as a tool for learning, both for the author and the reader. As such, while it may be of academic interest to someone studying public&ndash;key cryptography, it should not be used to secure sensitive data in real applications.
 
@@ -31,7 +31,7 @@ all rsa tests passed
 >>>
 </pre>
 
-Alternatively, to run all the tests in the [tests](https://github.com/dchampion/crypto/tree/master/tests) folder, type:
+Alternatively, to run *all* the tests in the [tests](https://github.com/dchampion/crypto/tree/master/tests) folder, type:
 
 <pre>
 >>> from tests import all_tests
@@ -45,9 +45,9 @@ all tests passed
 Or, if *pytest* is installed, you can achieve the same result by typing `pytest` from a command&ndash;line shell in the root folder of the repository (to install *pytest*, type `pip install pytest`).
 
 ## 2. Python REPL
-For a better experience, start a Python REPL in the root folder of this repository to run the source code directly.
+For a better experience, start a Python REPL in the root folder of this repository to interact with the source code directly.
 
-For example, in the following example, the elliptic curve cryptosystem is used to generate a keypair, sign a message with the private key, and then verify the message with the public key:
+For example, in the following example, the elliptic curve cryptosystem is used to generate a keypair, sign a message with the private key, and then verify the signature with the public key:
 
 <pre>
 >>> from src import ec
@@ -75,7 +75,7 @@ Python has a built&ndash;in multiprecision library featuring large-integer suppo
 
 [dh.py](https://github.com/dchampion/crypto/blob/master/src/dh.py) &mdash; An implementation of the classic, multiplicative-group based Diffie-Hellman (DH) key agreement protocol.
 
-[ec.py](https://github.com/dchampion/crypto/blob/master/src/ec.py) &mdash; Implementations of the elliptic curve Diffie-Hellman (ECDH) and elliptic curve digital signture algorithms (ECDSA).
+[ec.py](https://github.com/dchampion/crypto/blob/master/src/ec.py) &mdash; Implementations of the elliptic curve Diffie-Hellman (ECDH) and elliptic curve digital signature algorithms (ECDSA).
 
 [euclid.py](https://github.com/dchampion/crypto/blob/master/src/euclid.py) &mdash; Efficient algorithms for computing the greatest common divisors (GCD), least common multiples (LCM) and modular multiplicative inverses of positive integers.
 
