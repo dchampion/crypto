@@ -368,7 +368,7 @@ def _validate_curve_params(B_iters: int=100) -> None:
         valid = False
 
     # The following two tests are for the cofactor h.
-    if valid and _curve.h != math.floor((math.sqrt(_curve.p)+1)**2 // _curve.n):
+    if valid and _curve.h != (math.sqrt(_curve.p)+1)**2 // _curve.n:
         valid = False
 
     if valid and _curve.h > 2**((_curve.p.bit_length() // 2) // 8):

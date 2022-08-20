@@ -8,7 +8,6 @@ from . import primes
 from . import prng
 from . import util
 
-import math
 import random
 
 # Allowable range, in bit lengths, of the 2 prime factors (p and q) of an RSA modulus n.
@@ -40,8 +39,8 @@ def generate_rsa_key(modulus_bit_len: int) -> tuple[int, int, int, int, int]:
     assert _modulus_min_bit_len <= modulus_bit_len <= _modulus_max_bit_len
 
     # Compute prime factors p and q.
-    p = _generate_rsa_prime(math.floor(modulus_bit_len//2))
-    q = _generate_rsa_prime(math.floor(modulus_bit_len//2))
+    p = _generate_rsa_prime(modulus_bit_len//2)
+    q = _generate_rsa_prime(modulus_bit_len//2)
 
     # Test for bad PRNG
     _validate_factors(p, q)
@@ -198,7 +197,7 @@ def _msg_to_rsa_number(n: int, m: any) -> int:
     # h(m)). We are not interested in random data per se, but rather a deterministic mapping
     # from the 256-bit result of h(m) to an n-bit number; that is, a number in the range of
     # the modulus n (see RSA-FDH, or full-domain hash, for more information).
-    xb = random.randbytes(math.ceil(n.bit_length()//8))
+    xb = random.randbytes((n.bit_length() + 7) // 8)
 
     # Convert byte string to an integer "representative", whose bit length is in the full range
     # of the modulus n.
