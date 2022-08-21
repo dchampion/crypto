@@ -20,29 +20,31 @@ For any of these to work, Python (version 3.9.7 or greater) must be installed on
 ## 1. Unit Tests
 For every source code module (e.g., *rsa.py*) in the [src](https://github.com/dchampion/crypto/tree/master/src) folder, there is a corresponding unit test (e.g., *rsa_test.py*) in the [tests](https://github.com/dchampion/crypto/tree/master/tests) folder.
 
-To run a test on a single module (e.g., *rsa.py*), start a Python REPL in the root folder of this repository and type:
+To run a test on a single module (e.g., *rsa.py*), start a command&ndash;line shell (e.g., *CMD* on Windows, *bash* on Linux or *zsh* on MacOS), navigate to the root folder of this repository and type:
 
 <pre>
->>> from tests import rsa_test
->>> rsa_test.main()
+$ python -m tests.rsa_test
 Running rsa tests...
-...
+test_generate_rsa_prime passed 10 tests returning 1024-bit primes
+test_generate_rsa_key passed 10 tests using 2048-bit moduli
+test_encrypt_decrypt passed 10 tests using 2048-bit moduli
+test_sign_verify passed multiple tests using 2048-bit moduli
+full protocol test passed
 all rsa tests passed
->>>
+$
 </pre>
 
 Alternatively, to run *all* the tests in the [tests](https://github.com/dchampion/crypto/tree/master/tests) folder, type:
 
 <pre>
->>> from tests import all_tests
->>> all_tests.main()
+$ python -m tests.all_tests
 Running all tests...
 ...
 all tests passed
->>>
+$
 </pre>
 
-Or, if *pytest* is installed, you can achieve the same result by typing `pytest` from a command&ndash;line shell in the root folder of the repository (to install *pytest*, type `pip install pytest`).
+If *pytest* is installed, you can achieve the same result by typing `pytest` in the root folder of the repository (to install *pytest*, type `pip install pytest`).
 
 ## 2. Python REPL
 For a better experience, start a Python REPL in the root folder of this repository to interact with the source code directly.
@@ -50,6 +52,7 @@ For a better experience, start a Python REPL in the root folder of this reposito
 For example, in the following example, the elliptic curve cryptosystem is used to generate a keypair, sign a message with the private key, and then verify the signature with the public key:
 
 <pre>
+$ python
 >>> from src import ec
 >>> private_key, public_key = ec.generate_keypair()
 >>> signature = ec.sign(private_key, "When in the course of human events...")
