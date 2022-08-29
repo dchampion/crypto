@@ -21,6 +21,7 @@ class Curve():
         # cofactor h -> where h is the order of the curve (written as #E(Fp)) divided by n
         self.h = h
 
+    @property
     def G(self) -> list[int]:
         # Base/generator point (G)
         return [self.Gx, self.Gy]

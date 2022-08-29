@@ -51,7 +51,7 @@ def test_add():
 
         # Repeated addition of all group elements to the specified base point.
         for i in range(1, len(pt_group)):
-            pt = ec._add(test_curve["curve"].G(), pt_group[i-1])
+            pt = ec._add(test_curve["curve"].G, pt_group[i-1])
             assert pt == pt_group[i]
 
         # Repeated addition of all group elements to a randomly selected base point.
@@ -81,12 +81,12 @@ def test_add():
         assert pt == pt_group[9]
 
         # Add the identity element to the base point.
-        pt = ec._add(test_curve["curve"].G(), ec._i)
-        assert pt == test_curve["curve"].G()
+        pt = ec._add(test_curve["curve"].G, ec._i)
+        assert pt == test_curve["curve"].G
 
         # Commute.
-        pt = ec._add(ec._i, test_curve["curve"].G())
-        assert pt == test_curve["curve"].G()
+        pt = ec._add(ec._i, test_curve["curve"].G)
+        assert pt == test_curve["curve"].G
 
         # Add selected point to the identity element.
         pt = ec._add(pt_group[3], ec._i)
