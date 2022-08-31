@@ -1,3 +1,5 @@
+import random
+
 from . import sym
 
 from src import dh
@@ -9,9 +11,9 @@ def main():
     print("all dh tests passed")
     
 def test_dh_setup():
-    for _ in range(10):
+    for _ in range(5):
         try:
-            q, p, g = dh.generate_parameters(2048)
+            q, p, g = dh.generate_parameters(_get_random_modulus_bit_len())
             dh.validate_parameters(q, p, g)
 
             k_prv_1, k_pub_1 = dh.generate_keypair(q, p, g)
@@ -33,6 +35,9 @@ def test_dh_setup():
             assert False, f"Exception: {e}"
 
     print("test_dh_setup passed")
+
+def _get_random_modulus_bit_len():
+    return random.randrange(dh._p_min_bit_len, dh._p_max_bit_len//2)
 
 def test_full_protocol():
     ##########################################################################################
