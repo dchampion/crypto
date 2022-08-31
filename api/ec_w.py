@@ -11,6 +11,12 @@ supported = (curves.Secp192r1.__name__,
              curves.Secp521r1.__name__)
 
 def construct(curve: curves.Curve) -> EccKey:
+    """
+    Given a supported elliptic curve from the src.curves package (any of the SEC curves derived
+    from verifiably random seeds), returns a Crypto.PublicKey.ECC.EccKey (see
+    https://www.pycryptodome.org/src/public_key/ecc# for relevant documentation and examples).
+    """
+
     curve_name = type(curve).__name__
     if curve_name not in supported:
         raise ValueError(f"Curve {curve_name} not supported.")
