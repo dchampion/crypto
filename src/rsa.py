@@ -37,13 +37,10 @@ def generate_rsa_key(modulus_bit_len: int) -> tuple[int, int, int, int, int]:
 
     assert isinstance(modulus_bit_len, int)
     assert _modulus_min_bit_len <= modulus_bit_len <= _modulus_max_bit_len
+    assert modulus_bit_len % 32 == 0
 
-    # Compute prime factors p and q.
-    p = _generate_rsa_prime(modulus_bit_len//2)
-    q = _generate_rsa_prime(modulus_bit_len//2)
-
-    # Test for bad PRNG
-    _validate_factors(p, q)
+    # Compute the factors p and q of RSA modulus n.
+    p, q = _generate_rsa_factors(modulus_bit_len)
 
     # Compute the lcm of p-1 and q-1, as its behavior will be just as correct as for the
     # totient of p*q (as specified in the original RSA paper). However, because the lcm will
@@ -60,6 +57,29 @@ def generate_rsa_key(modulus_bit_len: int) -> tuple[int, int, int, int, int]:
     # exponents are understood by both parties to be 3 and 5 in advance, so returning them
     # here is unnecessary.
     return p, q, p*q, d3, d5
+
+def _generate_rsa_factors(modulus_bit_len: int) -> tuple[int, int]:
+    # Compute/return prime factors p and q of RSA modulus n.
+
+    assert isinstance(modulus_bit_len, int)
+    assert _modulus_min_bit_len <= modulus_bit_len <= _modulus_max_bit_len
+    assert modulus_bit_len % 32 == 0
+
+    p = _generate_rsa_prime(modulus_bit_len//2)
+    q = p
+
+    # The product of two n-bit numbers will be smaller than 2n bits if one or both of the n-bit
+    # factors is small enough. Whereas in principle a modulus of length 2n-1 bits is secure
+    # (enough), some implementations will complain if the modulus bit length is not a multiple
+    # of 8. So the trial-and-error here trades performance for compatibility/interoperability
+    # with such systems.
+    while q == p or (p*q).bit_length() < modulus_bit_len:
+        q = _generate_rsa_prime(modulus_bit_len//2)
+
+    # Test for bad PRNG
+    _validate_factors(p, q)
+
+    return p, q
 
 def _generate_rsa_prime(factor_bit_len: int) -> int:
     # Returns a prime number p, of factor_bit_len length, suitable for use as a factor in a
@@ -105,7 +125,7 @@ def encrypt_random_key(n: int, e: int) -> tuple[bytes, int]:
     by callers of this function, and only c should be transmitted on an insecure channel.
     """
 
-    assert isinstance(n, int) and n.bit_length() >= _modulus_min_bit_len - 1
+    assert isinstance(n, int) and n.bit_length() >= _modulus_min_bit_len
     assert isinstance(e, int)
 
     # Select a random value r in the full range of n.
@@ -188,7 +208,7 @@ def verify(n: int, e: int, m: any, o: int) -> bool:
 def _msg_to_rsa_number(n: int, m: any) -> int:
     # Maps a message m to an integer suitable for signing.
 
-    assert isinstance(n, int) and n.bit_length() >= _modulus_min_bit_len - 1
+    assert isinstance(n, int) and n.bit_length() >= _modulus_min_bit_len
 
     # Seed the PRNG with a hash of the message m (or h(m)).
     random.seed(util.hash(m))
