@@ -1,4 +1,5 @@
 from Crypto.PublicKey import ECC
+from Crypto.PublicKey.ECC import EccKey
 
 from src import curves
 from src import ec
@@ -9,7 +10,7 @@ supported = (curves.Secp192r1.__name__,
              curves.Secp384r1.__name__,
              curves.Secp521r1.__name__)
 
-def construct(curve: curves.Curve):
+def construct(curve: curves.Curve) -> EccKey:
     curve_name = type(curve).__name__
     if curve_name not in supported:
         raise ValueError(f"Curve {curve_name} not supported.")
