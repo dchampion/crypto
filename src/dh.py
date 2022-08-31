@@ -14,6 +14,8 @@ _q_bit_len = 256
 
 # Minimum bit length of a prime modulus p.
 _p_min_bit_len = 2048
+# Maximum bit length of a prime modulus p.
+_p_max_bit_len = 8192
 
 def generate_parameters(p_bit_len: int) -> tuple[int, int, int]:
     """
@@ -25,7 +27,7 @@ def generate_parameters(p_bit_len: int) -> tuple[int, int, int]:
     of the subgroup of order q.
     """
 
-    assert isinstance(p_bit_len, int) and p_bit_len >= _p_min_bit_len
+    assert isinstance(p_bit_len, int) and _p_min_bit_len <= p_bit_len <= _p_max_bit_len
 
     # Generate a 256-bit prime that will be the order (or size) of a large subgroup
     # modulo p. Public keys exchanged between communicating parties must fall within
@@ -52,7 +54,7 @@ def _generate_p(q: int, p_bit_len: int) -> tuple[int, int]:
     # of order (or size) q.
 
     assert isinstance(q, int) and q.bit_length() >= _q_bit_len
-    assert isinstance(p_bit_len, int) and p_bit_len >= _p_min_bit_len
+    assert isinstance(p_bit_len, int) and _p_min_bit_len <= p_bit_len <= _p_max_bit_len
 
     # Compute bounds from which to select a random factor n.
     n_bit_len = p_bit_len - q.bit_length()
@@ -76,7 +78,7 @@ def _generate_g(n: int, p: int) -> int:
     # (or size) q, where p is a prime of at least 2048 bits in length, and q is a 256-
     # bit prime.
 
-    assert isinstance(p, int) and p.bit_length() >= _p_min_bit_len - 1
+    assert isinstance(p, int) and _p_min_bit_len - 1 <= p.bit_length() <= _p_max_bit_len
     assert isinstance(n, int) and (p - 1) % n == 0
 
     while True:
@@ -128,7 +130,7 @@ def generate_session_key(k_pub: int, k_prv: int, q: int, p: int) -> bytes:
 
     assert isinstance(k_pub, int)
     assert isinstance(k_prv, int)
-    assert isinstance(p, int) and p.bit_length() >= _p_min_bit_len - 1
+    assert isinstance(p, int) and _p_min_bit_len - 1 <= p.bit_length() <= _p_max_bit_len
     assert isinstance(q, int) and q.bit_length() == _q_bit_len
 
     # Compute a session key using the essential property of DH (i.e., by raising
@@ -178,9 +180,9 @@ def validate_parameters(q: int, p: int, g: int) -> None:
 
     valid = True
 
-    # The bit length of modulus p must be greater than _p_min_bit_len - 1
-    # (multiplication of 2 x-bit integers can produce a (2x-1)-bit result).
-    if valid and p.bit_length() < _p_min_bit_len - 1:
+    # The bit length of modulus p must be between _p_min_bit_len - 1 (the product of 2 n-bit
+    # integers can be 2n-1 bits if one or both of the factors is small enough) and _p_max_bit_len.
+    if valid and _p_max_bit_len < p.bit_length() < _p_min_bit_len - 1:
         valid = False
 
     # The bit length of q must be equal to _q_bit_len.
