@@ -1,8 +1,8 @@
 from . import sym
 
-from src import curves
-from src import ec
-from src import prng
+from core import curves
+from core import ec
+from core import prng
 
 import copy
 

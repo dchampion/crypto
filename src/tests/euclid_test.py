@@ -1,4 +1,4 @@
-from src import euclid
+from core import euclid
 
 import math
 

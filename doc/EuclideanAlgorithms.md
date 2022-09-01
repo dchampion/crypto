@@ -1,7 +1,7 @@
 # Euclidean Algorithms
 ## Using the Euclidean Algorithm to Find the Greatest Common Divisor (<i>GCD</i>) of Two Natural Numbers
 
-<i>For implementations of these algorithms in the Python programming language, see <a href=https://github.com/dchampion/crypto/blob/master/src/euclid.py>here</a>.</i>
+<i>For implementations of these algorithms in the Python programming language, see <a href=https://github.com/dchampion/crypto/blob/master/src/core/euclid.py>here</a>.</i>
 
 In the procedure for RSA encryption described in <a href=https://raw.githubusercontent.com/dchampion/crypto/master/doc/TheElementsOfPublicKeyCryptography.pdf><i>The Elements of Public Key Cryptography</i></a>, step 5 requires Alice to compute an encryption exponent <i>e</i>.
 

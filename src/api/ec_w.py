@@ -1,8 +1,8 @@
 from Crypto.PublicKey import ECC
 from Crypto.PublicKey.ECC import EccKey
 
-from src import curves
-from src import ec
+from core import curves
+from core import ec
 
 supported = (curves.Secp192r1.__name__,
              curves.Secp224r1.__name__,

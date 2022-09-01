@@ -2,7 +2,7 @@ import random
 
 from . import sym
 
-from src import dh
+from core import dh
 
 def main():
     print("Running dh tests...")

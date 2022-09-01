@@ -1,5 +1,5 @@
-from src import primes
-from src import util
+from core import primes
+from core import util
 
 import random
 

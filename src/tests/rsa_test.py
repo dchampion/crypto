@@ -2,9 +2,9 @@ import random
 
 from . import sym
 
-from src import euclid
-from src import primes
-from src import rsa
+from core import euclid
+from core import primes
+from core import rsa
 
 def main():
     print("Running rsa tests...")

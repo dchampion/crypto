@@ -1,10 +1,9 @@
 from Crypto.PublicKey import RSA
 from Crypto.PublicKey.RSA import RsaKey
 
-from src import rsa
+from core import rsa
 
 def construct(bit_len: int) -> tuple[RsaKey, RsaKey]:
-
     """
     Given the size of an RSA modulus in bits (bit_len), returns a pair of Crypto.PublicKey.RSA.RsaKey(s);
     one for signing and the other for encryption. (see https://www.pycryptodome.org/src/public_key/rsa#

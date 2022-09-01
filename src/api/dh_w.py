@@ -1,7 +1,7 @@
 from Crypto.PublicKey import DSA
 from Crypto.PublicKey.DSA import DsaKey
 
-from src import dh
+from core import dh
 
 def construct(bit_len: int) -> DsaKey:
     """
