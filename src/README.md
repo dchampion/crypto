@@ -102,7 +102,7 @@ For example, in the following example, the elliptic curve cryptosystem is used t
 
 <pre>
 $ python
->>> from code import ec
+>>> from core import ec
 >>> private_key, public_key = ec.generate_keypair()
 >>> signature = ec.sign(private_key, "When in the course of human events...")
 >>> ec.verify(public_key, "When in the course of human events...", signature)
@@ -133,7 +133,7 @@ When you are finished with your session, you can deactivate your virtual environ
 
 In the following example, an elliptic curve keypair, based on the [NIST&ndash;sanctioned Secp384r1 curve parameters](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-4.pdf), is generated and exported to industry&ndash;standard file formats.
 
-From the `src` folder, start a Python REPL and execute the following commands:
+Navigate back to the `src` folder, start a Python REPL and execute the following commands:
 
 <pre>
 $ python
