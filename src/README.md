@@ -2,7 +2,7 @@
 The source code in this repository comprises two fully&ndash;featured public&ndash;key cryptosystems, and implements many public&ndash;key primitives one might expect to find in a cryptography library, such as key generation, encryption and digital signature. Implementations include the classic [*Diffie-Hellman*](https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange) (DH) key agreement protocol, the [*Rivest-Shamir-Adleman*](https://en.wikipedia.org/wiki/RSA_(cryptosystem)) (RSA) cryptosystem, and an elliptic curve cryptosystem based on the Standards for Efficient Cryptography (SEC) Group's [*Recommended Curve Domain Parameters*](https://www.secg.org/sec2-v2.pdf).
 
 # Package Structure
-Following is a diagram of the structure of this package. The `src` folder represents the root of the package, and it contains three sub&ndash;folders (or packages): `core`, `api` and `tests`. These sub&ndash;packages contain the source code modules that implement the services of this package.
+Following is a diagram of the structure of this package. The `src` folder represents the root of the package, and it contains three sub&ndash;folders (or packages): `api`, `core` and `tests`. These sub&ndash;packages contain the source code modules that implement the services of this package.
 
 <pre>
 src
@@ -16,7 +16,7 @@ src
 The code in the `core` package implements the low&ndash;level cryptographic primitives on which the code in the `api` package depends.
 
 With very few exceptions, the code in this package is free of dependencies on external, third&ndash;party modules and libraries (modules such as `math` and `os` could not be avoided, but the services they provide are so essential that they could not  be feasibly omitted).
-I did this for two reasons: 1) As a learning exercise&mdash;it is more effective to learn by writing functions than it is by calling them&mdash;and 2) as a security measure&mdash;one can never be too sure about code in external librarie (see [SolarWinds](https://www.wired.com/story/solarwinds-hack-supply-chain-threats-improvements/) and [Log4j](https://www.pcmag.com/how-to/what-is-the-log4j-exploit-and-what-can-you-do-to-stay-safe) for elaboration).
+I did this for two reasons: 1) As a learning exercise&mdash;it is more effective to learn by writing functions than it is by calling them&mdash;and 2) as a security measure&mdash;one can never be too sure about code in external libraries (see [SolarWinds](https://www.wired.com/story/solarwinds-hack-supply-chain-threats-improvements/) and [Log4j](https://www.pcmag.com/how-to/what-is-the-log4j-exploit-and-what-can-you-do-to-stay-safe) for elaboration).
 
 Following is a short description of each module in the `core` package:
 
