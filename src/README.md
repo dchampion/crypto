@@ -56,9 +56,9 @@ Interacting with the code in the `core` package is the best way to learn the imp
 For any of these strategies to work, Python (version 3.9.7 or greater) must be installed on your computer.
 
 ## 1. Unit Tests
-For every source code module (e.g., `rsa.py`) in the `core` package, there is a corresponding unit test (e.g., `rsa_test.py`) `tests` package.
+For every source code module (e.g., `rsa.py`) in the `core` package, there is a corresponding unit test (e.g., `rsa_test.py`) in the `tests` package.
 
-To run a test on a single module (e.g., `rsa.py`), start a command&ndash;line shell (e.g., *CMD* on Windows, *bash* on Linux or MacOS), navigate to the root package (i.e., the `src` folder of this repository) and type:
+To run a test on a single module (e.g., `rsa.py`), start a command&ndash;line shell (e.g., *CMD* on Windows, or *bash* on Linux or MacOS), navigate to the root package (i.e., the `src` folder of this repository) and type:
 
 <pre>
 $ python -m tests.rsa_test
@@ -120,7 +120,7 @@ To utilize higher&ndash;level services suitable for protocol&ndash;level use cas
 
 Note that to run the code in this package, the [pycryptodome](https://www.pycryptodome.org/src/introduction) package must be installed in your Python environment (type `pip list` to see a list of packages currently installed in your environment).
 
-If `pycryptodome` is not installed, it is recommended you install it in a virtual environment (so as not to interfere or otherwise pollute your global Python environment).
+If `pycryptodome` is not installed, it is recommended you install it in a virtual environment (so as not to interfere with or otherwise pollute your global Python environment).
 
 Navigate to the `api` folder in an operating system shell, and type the following commands to create and activate your virtual environment:
 
@@ -159,4 +159,4 @@ The code in these packages is thoroughly documented, both in the form of *docstr
 The unit tests also contain documentation, the most descriptive of which is embedded in the full&ndash;protocol tests inside [dh_test.py](https://github.com/dchampion/crypto/blob/master/src/tests/dh_test.py), [rsa_test.py](https://github.com/dchampion/crypto/blob/master/src/tests/rsa_test.py) and [ec_test.py](https://github.com/dchampion/crypto/blob/master/src/tests/ec_test.py), which exercise the highest&ndash;level primitives in the `core` package. These tests simulate sessions from start to finish; from parameter&ndash;setup and key&ndash;negotiation to secure, authenticated message&ndash;exchange between parties over insecure channels.
 
 # Why Python?
-Python has a built&ndash;in multiprecision library featuring large-integer support; a prerequisite for industrial&ndash;strength computational cryptography. Using a language such as C, C++ or Java, would have required the services of a third&ndash;party, external library, which I tried to avoid for reasons stated above.
+Python has a built&ndash;in multiprecision library featuring large-integer support; a prerequisite for industrial&ndash;strength computational cryptography. Using a language such as C, C++ or Java would have required the services of a third&ndash;party, external library, which I tried to avoid for reasons stated above.
