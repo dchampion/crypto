@@ -1,15 +1,17 @@
 import random
 
+from core import dh
+
 from . import sym
 
-from core import dh
 
 def main():
     print("Running dh tests...")
     test_dh_setup()
     test_full_protocol()
     print("all dh tests passed")
-    
+
+
 def test_dh_setup():
     for _ in range(5):
         try:
@@ -36,8 +38,10 @@ def test_dh_setup():
 
     print("test_dh_setup passed")
 
+
 def _get_random_modulus_bit_len():
-    return random.randrange(dh._p_min_bit_len, dh._p_max_bit_len//2)
+    return random.randrange(dh._P_MIN_BIT_LEN, dh._P_MAX_BIT_LEN // 2)
+
 
 def test_full_protocol():
     ##########################################################################################
@@ -84,7 +88,7 @@ def test_full_protocol():
     # public modulus [p] (a prime), the size of the subgroup modulo p within which
     # exchanged public keys must fall [q] (also a prime), and the generator of the
     # subgroup [g].
-    q, p, g = dh.generate_parameters(dh._p_min_bit_len)
+    q, p, g = dh.generate_parameters(dh._P_MIN_BIT_LEN)
 
     # Alice may optionally validate these parameters before transmitting them to Bob.
     # Bob, however, must validate them using the same funciton when he receives them
@@ -115,9 +119,9 @@ def test_full_protocol():
     kSessionA = dh.generate_session_key(KB, kA, q, p)
 
     # Bob, having received Alice's public key [KA], uses it, along with his private key
-    # kB to generate a session key kSessionB, which must must be kept secret. Due to 
-    # the essential property of DH, the session keys kSessionA and kSessionB, that
-    # Alice and Bob have computed independently, should be identical.
+    # kB to generate a session key kSessionB, which must be kept secret. Due to the
+    # essential property of DH, the session keys kSessionA and kSessionB, that Alice
+    # and Bob have computed independently, should be identical.
     kSessionB = dh.generate_session_key(KA, kB, q, p)
     assert kSessionA == kSessionB
 
@@ -132,6 +136,7 @@ def test_full_protocol():
     assert mA == mB
 
     print("test_full_protocol passed")
+
 
 if __name__ == "__main__":
     main()

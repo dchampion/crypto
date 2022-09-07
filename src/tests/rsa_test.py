@@ -1,10 +1,11 @@
 import random
 
-from . import sym
-
 from core import euclid
 from core import primes
 from core import rsa
+
+from . import sym
+
 
 def main():
     print("Running rsa tests...")
@@ -15,16 +16,21 @@ def main():
     test_full_protocol()
     print("all rsa tests passed")
 
+
 def test_generate_rsa_prime():
     for _ in range(5):
-        n = rsa._generate_rsa_prime(rsa._factor_min_bit_len)
+        n = rsa._generate_rsa_prime(rsa._FACTOR_MIN_BIT_LEN)
         assert primes.is_prime(n), "n is not prime"
-        assert n.bit_length() == rsa._factor_min_bit_len,\
-            f"expected bit length {rsa._factor_min_bit_len}, got {n.bit_length()}"
+        assert (
+            n.bit_length() == rsa._FACTOR_MIN_BIT_LEN
+        ), f"expected bit length {rsa._FACTOR_MIN_BIT_LEN}, got {n.bit_length()}"
         assert n % rsa.VERIFICATION_EXPONENT != 1, "n-1 must not be a multiple of 3"
         assert n % rsa.ENCRYPTION_EXPONENT != 1, "n-1 must not be a multiple of 5"
 
-    print(f"test_generate_rsa_prime passed 5 tests returning {rsa._factor_min_bit_len}-bit primes")
+    print(
+        f"test_generate_rsa_prime passed 5 tests returning {rsa._FACTOR_MIN_BIT_LEN}-bit primes"
+    )
+
 
 def test_generate_rsa_key():
     for _ in range(5):
@@ -32,36 +38,47 @@ def test_generate_rsa_key():
         p, q, n, d3, d5 = rsa.generate_rsa_key(modulus_bit_len)
         assert primes.is_prime(p), "p is not prime"
         assert primes.is_prime(q), "q is not prime"
-        assert n == p*q, "n != p*q"
-        assert n.bit_length() == modulus_bit_len,\
-            f"expected modulus bit length of {modulus_bit_len}, got {n.bit_length()}"
-        t = euclid.lcm(p-1, q-1)
-        assert euclid.inverse(d3, t) == rsa.VERIFICATION_EXPONENT,\
-            f"expected inverse of {d3} and {t} is {rsa.VERIFICATION_EXPONENT}, got {euclid.inverse(d3, t)}"
-        assert euclid.inverse(d5, t) == rsa.ENCRYPTION_EXPONENT,\
-            f"expected inverse of {d5} and {t} is {rsa.ENCRYPTION_EXPONENT}, got {euclid.inverse(d5, t)}"
+        assert n == p * q, "n != p*q"
+        assert (
+            n.bit_length() == modulus_bit_len
+        ), f"expected modulus bit length of {modulus_bit_len}, got {n.bit_length()}"
+        t = euclid.lcm(p - 1, q - 1)
+        assert (
+            euclid.inverse(d3, t) == rsa.VERIFICATION_EXPONENT
+        ), f"expected inverse of {d3} and {t} is {rsa.VERIFICATION_EXPONENT}, \
+got {euclid.inverse(d3, t)}"
+        assert (
+            euclid.inverse(d5, t) == rsa.ENCRYPTION_EXPONENT
+        ), f"expected inverse of {d5} and {t} is {rsa.ENCRYPTION_EXPONENT}, \
+got {euclid.inverse(d5, t)}"
 
-    print(f"test_generate_rsa_key passed 5 tests using random modulus bit lengths")
+    print("test_generate_rsa_key passed 5 tests using random modulus bit lengths")
+
 
 def test_encrypt_decrypt():
     for _ in range(5):
-        p, q, n, d3, d5 = rsa.generate_rsa_key(_get_random_modulus_bit_len())
+        p, q, n, _, d5 = rsa.generate_rsa_key(_get_random_modulus_bit_len())
         K1, c = rsa.encrypt_random_key(n, rsa.ENCRYPTION_EXPONENT)
         K2 = rsa.decrypt_random_key(d5, c, p, q)
         assert K1 == K2, "Keys don't match"
 
-    print(f"test_encrypt_decrypt passed 5 tests")
+    print("test_encrypt_decrypt passed 5 tests")
+
 
 def test_sign_verify():
     for m in ["When", "in", "the", "course", "of", "human", "events..."]:
-        p, q, n, d3, d5 = rsa.generate_rsa_key(_get_random_modulus_bit_len())
+        p, q, n, d3, _ = rsa.generate_rsa_key(_get_random_modulus_bit_len())
         o = rsa.sign(d3, p, q, m)
-        assert True == rsa.verify(n, rsa.VERIFICATION_EXPONENT, m, o)
+        assert rsa.verify(n, rsa.VERIFICATION_EXPONENT, m, o)
 
-    print(f"test_sign_verify passed multiple tests using random modulus bit lengths")
+    print("test_sign_verify passed multiple tests using random modulus bit lengths")
+
 
 def _get_random_modulus_bit_len():
-    return random.randrange(rsa._modulus_min_bit_len, rsa._modulus_max_bit_len//2+32, 32)
+    return random.randrange(
+        rsa._MODULUS_MIN_BIT_LEN, rsa._MODULUS_MAX_BIT_LEN // 2 + 32, 32
+    )
+
 
 def test_full_protocol():
     ########################################################################################
@@ -115,12 +132,12 @@ def test_full_protocol():
     # to Bob. In this simulated protocol, we assume that Bob knows Alice's signature-
     # verification and encryption exponents (the numbers 3 and 5, respectively); these,
     # together with [nA], comprise Alice's public key.
-    pA, qA, nA, d3A, d5A = rsa.generate_rsa_key(rsa._modulus_min_bit_len)
+    pA, qA, nA, d3A, _ = rsa.generate_rsa_key(rsa._MODULUS_MIN_BIT_LEN)
 
     # Bob generates his own RSA parameters, and sends the public component (the modulus
     # [nB]) to Alice. Alice, too, knows Bob's public signature-verification and encryption
     # exponents (again, v=3 and e=5).
-    pB, qB, nB, d3B, d5B = rsa.generate_rsa_key(rsa._modulus_min_bit_len)
+    pB, qB, nB, _, d5B = rsa.generate_rsa_key(rsa._MODULUS_MIN_BIT_LEN)
 
     # Alice produces a message mA, and signs it using her private signing key d3A. The
     # resulting signature is stored in [oA]. Note that, although it is unclear from this
@@ -163,9 +180,10 @@ def test_full_protocol():
     # required for a public-key scheme: confidentiality (via encryption),
     # authenticity and integrity (via signature and verification).
     verified = rsa.verify(nA, rsa.VERIFICATION_EXPONENT, mB, oA)
-    assert verified == True
+    assert verified
 
     print("full protocol test passed")
+
 
 if __name__ == "__main__":
     main()

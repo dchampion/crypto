@@ -9,6 +9,7 @@ to provide maximum transparency into their implementation.
 
 import os
 
+
 def randrange(l: int, u: int) -> int:
     """
     Returns a random integer in the range (l, u-1), where l is the lower bound
@@ -21,6 +22,7 @@ def randrange(l: int, u: int) -> int:
     width = u - l
 
     return l + randbelow(width)
+
 
 def randbelow(n: int) -> int:
     """
@@ -39,6 +41,7 @@ def randbelow(n: int) -> int:
         r = randbits(k)
 
     return r
+
 
 def randbits(k: int) -> int:
     """

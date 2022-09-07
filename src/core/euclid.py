@@ -1,16 +1,18 @@
 """ Euclidean algorithms and support functions. """
 
+
 def swap(a: int, b: int) -> tuple[int, int]:
-    """ Returns positive integers a and b in increasing order. """
+    """Returns positive integers a and b in increasing order."""
     _validate_params(a, b)
 
     if a > b:
         return b, a
     return a, b
 
+
 def gcd(a: int, b: int) -> int:
-    """ Returns the greatest common divisor (or gcd) of positive
-    integers a and b. """
+    """Returns the greatest common divisor (or gcd) of positive
+    integers a and b."""
     _validate_params(a, b)
 
     while b != 0:
@@ -18,6 +20,7 @@ def gcd(a: int, b: int) -> int:
         b = b % a
 
     return a
+
 
 def _gcd(a: int, b: int) -> int:
     """
@@ -30,10 +33,11 @@ def _gcd(a: int, b: int) -> int:
 
     if b == 0:
         return a
-    
+
     a, b = swap(a, b)
 
     return gcd(a, b % a)
+
 
 def gcdx(a: int, b: int) -> int:
     """
@@ -63,6 +67,7 @@ def gcdx(a: int, b: int) -> int:
 
     return a, x1, y1
 
+
 def _gcdx(a: int, b: int) -> int:
     """
     Returns the greatest common divisor (or gcd) of positive integers
@@ -75,22 +80,24 @@ def _gcdx(a: int, b: int) -> int:
 
     if b == 0:
         return a, 0, 1
-    
+
     a, b = swap(a, b)
 
-    gcd, x1, y1 = gcdx(a, b % a)
+    gcd_var, x1, y1 = gcdx(a, b % a)
 
-    x = y1 - (b//a) * x1
+    x = y1 - (b // a) * x1
     y = x1
 
-    return gcd, x, y
+    return gcd_var, x, y
+
 
 def lcm(a: int, b: int) -> int:
-    """ Returns the least common multiple (or lcm) of positive integers
-    a and b. """
+    """Returns the least common multiple (or lcm) of positive integers
+    a and b."""
     _validate_params(a, b)
 
-    return (a*b) // gcd(a, b)
+    return (a * b) // gcd(a, b)
+
 
 def inverse(a: int, b: int) -> int:
     """
@@ -100,14 +107,15 @@ def inverse(a: int, b: int) -> int:
     """
     _validate_params(a, b)
 
-    gcd, x, y = gcdx(a, b)
-    if gcd != 1:
+    gcd_var, x, y = gcdx(a, b)
+    if gcd_var != 1:
         err_str = f"{a} has no inverse modulo {b}"
         raise ValueError(err_str)
-    
-    inverse = x if a < b else y
 
-    return (inverse % b + b) % b
+    inv = x if a < b else y
+
+    return (inv % b + b) % b
+
 
 def _validate_params(a: int, b: int) -> None:
     assert isinstance(a, int)

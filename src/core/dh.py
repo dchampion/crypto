@@ -10,12 +10,13 @@ from . import util
 # Bit length of a prime number q that is the order (or size) of large subgroup
 # modulo p, where p is a (much larger) prime number that is the order of the full
 # group modulo p.
-_q_bit_len = 256
+_Q_BIT_LEN = 256
 
 # Minimum bit length of a prime modulus p.
-_p_min_bit_len = 2048
+_P_MIN_BIT_LEN = 2048
 # Maximum bit length of a prime modulus p.
-_p_max_bit_len = 8192
+_P_MAX_BIT_LEN = 8192
+
 
 def generate_parameters(p_bit_len: int) -> tuple[int, int, int]:
     """
@@ -27,13 +28,13 @@ def generate_parameters(p_bit_len: int) -> tuple[int, int, int]:
     of the subgroup of order q.
     """
 
-    assert isinstance(p_bit_len, int) and _p_min_bit_len <= p_bit_len <= _p_max_bit_len
+    assert isinstance(p_bit_len, int) and _P_MIN_BIT_LEN <= p_bit_len <= _P_MAX_BIT_LEN
 
     # Generate a 256-bit prime that will be the order (or size) of a large subgroup
     # modulo p. Public keys exchanged between communicating parties must fall within
     # this subgroup.
-    q = primes.generate_prime(_q_bit_len)
-    
+    q = primes.generate_prime(_Q_BIT_LEN)
+
     # Find values for n and p that satisfy the equation p = q * n + 1, where p is a
     # prime of p_bit_len length. This ensures that the public keys used in the secret
     # key agreement will fall into the subgroup of order (or size) q. The order of
@@ -47,23 +48,24 @@ def generate_parameters(p_bit_len: int) -> tuple[int, int, int]:
 
     return q, p, g
 
+
 def _generate_p(q: int, p_bit_len: int) -> tuple[int, int]:
     # Returns positive integers n and p which satisfy the equation p = q * n + 1,
     # where q is a 256-bit prime, and p is a p_bit_len prime. The value n returned from
     # this function will be used to find a generator of the subgroup modulo p that is
     # of order (or size) q.
 
-    assert isinstance(q, int) and q.bit_length() >= _q_bit_len
-    assert isinstance(p_bit_len, int) and _p_min_bit_len <= p_bit_len <= _p_max_bit_len
+    assert isinstance(q, int) and q.bit_length() >= _Q_BIT_LEN
+    assert isinstance(p_bit_len, int) and _P_MIN_BIT_LEN <= p_bit_len <= _P_MAX_BIT_LEN
 
     # Compute bounds from which to select a random factor n.
     n_bit_len = p_bit_len - q.bit_length()
-    l, u = 2**(n_bit_len-1), 2**n_bit_len
+    l, u = 2 ** (n_bit_len - 1), 2**n_bit_len
 
     max_tries = 100 * p_bit_len
     for tries in range(max_tries):
         n = prng.randrange(l, u)
-        if n % 2 == 0: # n must be even for p to be prime, so skip if n is odd.
+        if n % 2 == 0:  # n must be even for p to be prime, so skip if n is odd.
             p = q * n + 1
             if primes.is_prime(p):
                 break
@@ -73,17 +75,18 @@ def _generate_p(q: int, p_bit_len: int) -> tuple[int, int]:
 
     return n, p
 
+
 def _generate_g(n: int, p: int) -> int:
     # Returns a generator g that generates the entire subgroup modulo p of order
     # (or size) q, where p is a prime of at least 2048 bits in length, and q is a 256-
     # bit prime.
 
-    assert isinstance(p, int) and _p_min_bit_len - 1 <= p.bit_length() <= _p_max_bit_len
+    assert isinstance(p, int) and _P_MIN_BIT_LEN - 1 <= p.bit_length() <= _P_MAX_BIT_LEN
     assert isinstance(n, int) and (p - 1) % n == 0
 
     while True:
         # Pick a random base in the full range of the modulus.
-        b = prng.randrange(2, p-2)
+        b = prng.randrange(2, p - 2)
 
         # Any such base raised to the power of n modulo p should yield either 1,
         # or else a generator of the entire subgroup of order (or size) q.
@@ -94,6 +97,7 @@ def _generate_g(n: int, p: int) -> int:
             break
 
     return g
+
 
 def generate_keypair(q: int, p: int, g: int) -> tuple[int, int]:
     """
@@ -108,7 +112,7 @@ def generate_keypair(q: int, p: int, g: int) -> tuple[int, int]:
     validate_parameters(q, p, g)
 
     # Select a random, private key in the range of 1 to q-1.
-    k_prv = prng.randrange(1, q-1)
+    k_prv = prng.randrange(1, q - 1)
 
     # Compute a public key based on this private key.
     k_pub = util.fast_mod_exp(g, k_prv % q, p)
@@ -117,6 +121,7 @@ def generate_keypair(q: int, p: int, g: int) -> tuple[int, int]:
     validate_pub_key(k_pub, q, p)
 
     return k_prv, k_pub
+
 
 def generate_session_key(k_pub: int, k_prv: int, q: int, p: int) -> bytes:
     """
@@ -130,8 +135,8 @@ def generate_session_key(k_pub: int, k_prv: int, q: int, p: int) -> bytes:
 
     assert isinstance(k_pub, int)
     assert isinstance(k_prv, int)
-    assert isinstance(p, int) and _p_min_bit_len - 1 <= p.bit_length() <= _p_max_bit_len
-    assert isinstance(q, int) and q.bit_length() == _q_bit_len
+    assert isinstance(p, int) and _P_MIN_BIT_LEN - 1 <= p.bit_length() <= _P_MAX_BIT_LEN
+    assert isinstance(q, int) and q.bit_length() == _Q_BIT_LEN
 
     # Compute a session key using the essential property of DH (i.e., by raising
     # the other party's public key to the power of this party's private key modulo p).
@@ -139,7 +144,8 @@ def generate_session_key(k_pub: int, k_prv: int, q: int, p: int) -> bytes:
 
     # The session key is hashed to obscure any mathematical structure that could be
     # exploited by an adversary if it were to be leaked.
-    return util.hash(ki)
+    return util.digest(ki)
+
 
 def validate_pub_key(k_pub: int, q: int, p: int) -> None:
     """
@@ -167,6 +173,7 @@ def validate_pub_key(k_pub: int, q: int, p: int) -> None:
     if not valid:
         raise ValueError("Invalid key")
 
+
 def validate_parameters(q: int, p: int, g: int) -> None:
     """
     Validates the public parameters q, p and g returned from the function generate_parameters,
@@ -182,11 +189,11 @@ def validate_parameters(q: int, p: int, g: int) -> None:
 
     # The bit length of modulus p must be between _p_min_bit_len - 1 (the product of 2 n-bit
     # integers can be 2n-1 bits if one or both of the factors is small enough) and _p_max_bit_len.
-    if valid and _p_max_bit_len < p.bit_length() < _p_min_bit_len - 1:
+    if valid and _P_MAX_BIT_LEN < p.bit_length() < _P_MIN_BIT_LEN - 1:
         valid = False
 
     # The bit length of q must be equal to _q_bit_len.
-    if valid and q.bit_length() != _q_bit_len:
+    if valid and q.bit_length() != _Q_BIT_LEN:
         valid = False
 
     # p must be prime.
@@ -205,7 +212,7 @@ def validate_parameters(q: int, p: int, g: int) -> None:
     if valid and g == 1:
         valid = False
 
-    # The order of g must must be q.
+    # The order of g must be q.
     if valid and util.fast_mod_exp(g, q, p) != 1:
         valid = False
 

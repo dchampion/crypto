@@ -1,8 +1,9 @@
 """ Cryptographic helper functions for finite-field operations. """
 
+import hashlib
+
 from . import euclid
 
-import hashlib
 
 def fast_mod_exp(b: int, e: int, n: int) -> int:
     """
@@ -21,13 +22,14 @@ def fast_mod_exp(b: int, e: int, n: int) -> int:
         result = b**e % n
     else:
         # Use square-and-multiply for speedy exponentiation of larger exponents.
-        result = b if (e&1) else 1
+        result = b if (e & 1) else 1
         for x in range(1, e_bit_len):
             b = (b**2) % n
-            if (e>>x) & 1:
+            if (e >> x) & 1:
                 result = (result * b) % n
 
     return result
+
 
 def fast_mod_exp_crt(b: int, e: int, p: int, q: int) -> int:
     """
@@ -47,9 +49,11 @@ def fast_mod_exp_crt(b: int, e: int, p: int, q: int) -> int:
 
     return from_crt(a, b, p, q)
 
+
 def _reduce(e: int, n: int) -> int:
     r = e % (n - 1)
     return r if r != 0 else e
+
 
 def from_crt(a: int, b: int, p: int, q: int) -> int:
     """
@@ -67,6 +71,7 @@ def from_crt(a: int, b: int, p: int, q: int) -> int:
     # Use Garner's formula to compute x mod pq
     return (((a - b) * inv) % p) * q + b
 
+
 def to_crt(x: int, p: int, q: int) -> tuple[int, int]:
     """
     Returns the tuple (a, b), where (a, b) is the CRT representation of x in the
@@ -79,7 +84,8 @@ def to_crt(x: int, p: int, q: int) -> tuple[int, int]:
 
     return x % p, x % q
 
-def hash(k: any) -> bytes:
+
+def digest(k: any) -> bytes:
     """
     Returns a hashed byte array of input k.
     """

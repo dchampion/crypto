@@ -1,9 +1,9 @@
 """ Various functions for generating primes and primality testing. """
 
+import math
+
 from . import prng
 from . import util
-
-import math
 
 small_primes =  [  3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
                   73, 79, 83, 83, 89, 97,101,103,107,109,113,127,131,137,139,149,151,157,163,
@@ -14,6 +14,7 @@ small_primes =  [  3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59
                  631,641,643,647,653,659,661,673,677,683,691,701,709,719,727,733,739,743,751,
                  757,761,769,773,787,797,809,811,821,823,827,829,839,853,857,859,863,877,881,
                  883,887,907,911,919,929,937,941,947,953,967,971,977,983,991,997]
+
 
 def is_prime(n: int) -> bool:
     """
@@ -26,7 +27,7 @@ def is_prime(n: int) -> bool:
     # Handle most trivial cases.
     if n == 2:
         return True
-    elif n % 2 == 0:
+    if n % 2 == 0:
         return False
 
     # Before doing any heavy lifting, return True for an n that matches any of the first 168
@@ -36,8 +37,10 @@ def is_prime(n: int) -> bool:
         if n % prime == 0:
             return prime == n
 
-    # n is neither a small prime (less than 1k), nor is it a multiple of thereof, so use Miller-Rabin.
+    # n is neither a small prime (less than 1k), nor is it a multiple of thereof, so use Miller-
+    # Rabin.
     return miller_rabin(n)
+
 
 def miller_rabin(n: int) -> bool:
     """
@@ -53,25 +56,26 @@ def miller_rabin(n: int) -> bool:
     # factor n into 2^e * m+1.
     m, e = _factor_n(n)
     for _ in range(0, 128, 2):
-        b = prng.randrange(2, n-1)
+        b = prng.randrange(2, n - 1)
         x = util.fast_mod_exp(b, m, n)
 
         # if x is 1, repeated squaring will not change the result, so go back to the beginning
         # and try another random b.
         if x != 1:
             i = 0
-            while x != n-1:
-                if i == e-1:
+            while x != n - 1:
+                if i == e - 1:
                     # if we don't find an x = n-1 by repeated squaring, n cannot be prime,
                     # so return False and we're done.
                     return False
                 else:
                     x = x**2 % n
-                    i = i+1
+                    i = i + 1
 
     # if we haven't found a composite after 64 rounds, then n is prime with a 1-(2^-128)
     # degree of probability.
     return True
+
 
 def fermat(n: int) -> bool:
     """
@@ -89,12 +93,13 @@ def fermat(n: int) -> bool:
     # Do up to 128 rounds of the Fermat primality test on random bases (see Fermat's little
     # theorem).
     for _ in range(0, 128):
-        base = prng.randrange(2, n-1)
-        result = util.fast_mod_exp(base, n-1, n)
+        base = prng.randrange(2, n - 1)
+        result = util.fast_mod_exp(base, n - 1, n)
         if result != 1:
             return False
 
     return True
+
 
 def fermat_factor(n: int) -> tuple[True, int, int] or False:
     """
@@ -126,13 +131,15 @@ def fermat_factor(n: int) -> tuple[True, int, int] or False:
     b2 = a**2 - n
     b = math.isqrt(b2)
 
-    p = a+b
-    q = a-b
+    p = a + b
+    q = a - b
 
     return True, p, q
 
+
 def _is_square(n: int) -> bool:
     return n == math.isqrt(n) ** 2
+
 
 def _factor_n(n: int) -> tuple[int, int]:
     """
@@ -141,27 +148,29 @@ def _factor_n(n: int) -> tuple[int, int]:
     """
     _validate_param(n)
 
-    m = n-1
+    m = n - 1
     e = 0
 
     while m % 2 == 0:
         m //= 2
-        e = e+1
+        e = e + 1
 
     return m, e
+
 
 def _validate_param(n: int) -> None:
     assert isinstance(n, int) and n >= 3 and n % 2 != 0
 
+
 def generate_prime(bit_len: int) -> int:
     """
-    Returns a prime number of bit_len bits in length, testing randomly selected values for primality.
-    If a prime is not found after a sensible number of tries, an exception is raised (this should be
-    rare), in which case the function can be called again to generate a prime.
+    Returns a prime number of bit_len bits in length, testing randomly selected values for
+    primality. If a prime is not found after a sensible number of tries, an exception is raised
+    (this should be rare), in which case the function can be called again to generate a prime.
     """
     tries = 100 * bit_len
     for _ in range(tries):
-        p = prng.randrange(2**(bit_len-1), 2**bit_len)
+        p = prng.randrange(2 ** (bit_len - 1), 2**bit_len)
         if is_prime(p):
             return p
 

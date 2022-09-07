@@ -3,6 +3,7 @@ A symmetric cipher that should be used for only for testing the public-key primi
 this package.
 """
 
+
 def encrypt(k, m):
     """
     Given a key k and a message m, returns the ciphertext of m. Use m = decrypt(k, c),
@@ -10,6 +11,7 @@ def encrypt(k, m):
     function, to recover m.
     """
     return _to_int(k) ^ _to_int(m)
+
 
 def decrypt(k, c):
     """
@@ -19,10 +21,12 @@ def decrypt(k, c):
     """
     return _to_str(_to_int(k) ^ c)
 
+
 def _to_int(s):
     s_bytes = s if isinstance(s, bytes) else str(s).encode("utf-8")
     return int.from_bytes(s_bytes, byteorder="big")
 
+
 def _to_str(i):
-    i_bytes = i.to_bytes((i.bit_length()+7) // 8, byteorder="big")
+    i_bytes = i.to_bytes((i.bit_length() + 7) // 8, byteorder="big")
     return i_bytes.decode("utf-8").lstrip("\x00")

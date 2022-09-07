@@ -1,7 +1,12 @@
+"""
+Decorates key-generation primitives in core.dh with the high-level services of Crypto.PublicKey.DSA.
+"""
+
 from Crypto.PublicKey import DSA
 from Crypto.PublicKey.DSA import DsaKey
 
 from core import dh
+
 
 def construct(bit_len: int) -> DsaKey:
     """

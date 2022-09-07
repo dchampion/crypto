@@ -1,35 +1,83 @@
-from . import sym
+import copy
 
 from core import curves
 from core import ec
 from core import prng
 
-import copy
+from . import sym
 
 # Test curve 1 parameters
-pt_group = [[5,1],[6,3],[10,6],[3,1],[9,16],[16,13],[0,6],[13,7],[7,6],
-            [7,11],[13,10],[0,11],[16,4],[9,1],[3,16],[10,11],[6,14],
-            [5,16],[None,None]]
+pt_group = [
+    [5, 1],
+    [6, 3],
+    [10, 6],
+    [3, 1],
+    [9, 16],
+    [16, 13],
+    [0, 6],
+    [13, 7],
+    [7, 6],
+    [7, 11],
+    [13, 10],
+    [0, 11],
+    [16, 4],
+    [9, 1],
+    [3, 16],
+    [10, 11],
+    [6, 14],
+    [5, 16],
+    [None, None],
+]
 test_curve_1 = {"curve": curves.Curve(17, 2, 2, 5, 1, 19, 1), "pts": pt_group}
 
 # Test curve 2 parameters
-pt_group = [[0,2],[13,12],[11,9],[1,12],[7,20],[9,11],[15,6],[14,5],[4,7],
-            [22,5],[10,5],[17,9],[8,15],[18,9],[18,14],[8,8],[17,14],
-            [10,18],[22,18],[4,16],[14,18],[15,17],[9,12],[7,3],[1,11],
-            [11,14],[13,11],[0,21],[None,None]]
+pt_group = [
+    [0, 2],
+    [13, 12],
+    [11, 9],
+    [1, 12],
+    [7, 20],
+    [9, 11],
+    [15, 6],
+    [14, 5],
+    [4, 7],
+    [22, 5],
+    [10, 5],
+    [17, 9],
+    [8, 15],
+    [18, 9],
+    [18, 14],
+    [8, 8],
+    [17, 14],
+    [10, 18],
+    [22, 18],
+    [4, 16],
+    [14, 18],
+    [15, 17],
+    [9, 12],
+    [7, 3],
+    [1, 11],
+    [11, 14],
+    [13, 11],
+    [0, 21],
+    [None, None],
+]
 test_curve_2 = {"curve": curves.Curve(23, 1, 4, 0, 2, 29, 1), "pts": pt_group}
 test_curves = [test_curve_1, test_curve_2]
 
-real_curves = [curves.Secp192k1(),
-               curves.Secp192r1(),
-               curves.Secp224k1(),
-               curves.Secp224r1(),
-               curves.Secp256k1(),
-               curves.Secp256r1(),
-               curves.Secp384r1(),
-               curves.Secp521r1()]
+real_curves = [
+    curves.Secp192k1(),
+    curves.Secp192r1(),
+    curves.Secp224k1(),
+    curves.Secp224r1(),
+    curves.Secp256k1(),
+    curves.Secp256r1(),
+    curves.Secp384r1(),
+    curves.Secp521r1(),
+]
 
-test_curve_B_iters = 5
+_TEST_CURVE_B_ITERS = 5
+
 
 def main():
     print("Running ec tests...")
@@ -44,97 +92,100 @@ def main():
     test_full_protocol()
     print("all ec tests passed")
 
+
 def test_add():
     for test_curve in test_curves:
-        ec.new_curve(test_curve["curve"], test_curve_B_iters)
-        pt_group = test_curve["pts"]
+        ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
+        pt_group_local = test_curve["pts"]
 
         # Repeated addition of all group elements to the specified base point.
-        for i in range(1, len(pt_group)):
-            pt = ec._add(test_curve["curve"].G, pt_group[i-1])
-            assert pt == pt_group[i]
+        for i in range(1, len(pt_group_local)):
+            pt = ec._add(test_curve["curve"].G, pt_group_local[i - 1])
+            assert pt == pt_group_local[i]
 
         # Repeated addition of all group elements to a randomly selected base point.
-        rand_index = prng.randrange(0,len(pt_group))
-        pt_set2 = {tuple(pt_group[rand_index])}
-        for i in range(1, len(pt_group)):
-            pt = ec._add(pt_group[rand_index], pt_group[i-1])
+        rand_index = prng.randrange(0, len(pt_group_local))
+        pt_set2 = {tuple(pt_group_local[rand_index])}
+        for i in range(1, len(pt_group_local)):
+            pt = ec._add(pt_group_local[rand_index], pt_group_local[i - 1])
             pt_set2.add(tuple(pt))
 
-        pt_set1 = {tuple(pt) for pt in pt_group}
+        pt_set1 = {tuple(pt) for pt in pt_group_local}
         assert len(pt_set2.difference(pt_set1)) == 0
 
         # Add selected group elements.
-        pt = ec._add(pt_group[0], pt_group[9])
-        assert pt == pt_group[10]
+        pt = ec._add(pt_group_local[0], pt_group_local[9])
+        assert pt == pt_group_local[10]
 
         # Commute.
-        pt = ec._add(pt_group[9], pt_group[0])
-        assert pt == pt_group[10]
+        pt = ec._add(pt_group_local[9], pt_group_local[0])
+        assert pt == pt_group_local[10]
 
         # Add selected group elements.
-        pt = ec._add(pt_group[5], pt_group[3])
-        assert pt == pt_group[9]
+        pt = ec._add(pt_group_local[5], pt_group_local[3])
+        assert pt == pt_group_local[9]
 
         # Commute.
-        pt = ec._add(pt_group[5], pt_group[3])
-        assert pt == pt_group[9]
+        pt = ec._add(pt_group_local[5], pt_group_local[3])
+        assert pt == pt_group_local[9]
 
         # Add the identity element to the base point.
-        pt = ec._add(test_curve["curve"].G, ec._i)
+        pt = ec._add(test_curve["curve"].G, ec._I)
         assert pt == test_curve["curve"].G
 
         # Commute.
-        pt = ec._add(ec._i, test_curve["curve"].G)
+        pt = ec._add(ec._I, test_curve["curve"].G)
         assert pt == test_curve["curve"].G
 
         # Add selected point to the identity element.
-        pt = ec._add(pt_group[3], ec._i)
-        assert pt == pt_group[3]
+        pt = ec._add(pt_group_local[3], ec._I)
+        assert pt == pt_group_local[3]
 
         # Commute.
-        pt = ec._add(ec._i, pt_group[3])
-        assert pt == pt_group[3]
+        pt = ec._add(ec._I, pt_group_local[3])
+        assert pt == pt_group_local[3]
 
         # Add the identity elements.
-        pt = ec._add(ec._i, ec._i)
-        assert pt == ec._i
+        pt = ec._add(ec._I, ec._I)
+        assert pt == ec._I
 
         # Add the same two group elements.
-        pt = ec._add(pt_group[2], pt_group[2])
-        assert pt == pt_group[5]
+        pt = ec._add(pt_group_local[2], pt_group_local[2])
+        assert pt == pt_group_local[5]
 
         # Add first and last (non-identity) group elements.
-        pt = ec._add(pt_group[0], pt_group[len(pt_group)-2])
-        assert pt == ec._i
+        pt = ec._add(pt_group_local[0], pt_group_local[len(pt_group_local) - 2])
+        assert pt == ec._I
 
     # Try to add bogus points.
     try:
-        ec._add([6,12],[19,2])
+        ec._add([6, 12], [19, 2])
         assert False
-    except:
+    except Exception:
         pass
 
     print("test_add passed")
 
+
 def test_double():
     for test_curve in test_curves:
-        ec.new_curve(test_curve["curve"], test_curve_B_iters)
-        pt_group = test_curve["pts"]
+        ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
+        pt_group_local = test_curve["pts"]
 
         # Double each group element starting with the base point.
-        for i in range(1, len(pt_group)):
-            pt = ec._double(pt_group[i-1])
-            assert pt == pt_group[((i*2)%test_curve["curve"].n)-1]
+        for i in range(1, len(pt_group_local)):
+            pt = ec._double(pt_group_local[i - 1])
+            assert pt == pt_group_local[((i * 2) % test_curve["curve"].n) - 1]
 
     # Try to double a bogus point.
     try:
-        ec._double([19,2])
+        ec._double([19, 2])
         assert False
-    except:
+    except Exception:
         pass
 
     print("test_double passed")
+
 
 def test_validate_curve_params():
     # Test with default curve
@@ -145,15 +196,15 @@ def test_validate_curve_params():
     for test_curve in test_curves:
         # Test with valid curve parameters.
         try:
-            ec.new_curve(test_curve["curve"], test_curve_B_iters)
-            ec._validate_curve_params(test_curve_B_iters)
-        except Exception as e:
+            ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
+            ec._validate_curve_params(_TEST_CURVE_B_ITERS)
+        except Exception:
             assert False
 
     try:
         # Test with invalid curve parameter on test curve.
-        ec.new_curve(curves.Curve(23, 1, 4, 2, 2, 29, 1), test_curve_B_iters)
-        ec._validate_curve_params(test_curve_B_iters)
+        ec.new_curve(curves.Curve(23, 1, 4, 2, 2, 29, 1), _TEST_CURVE_B_ITERS)
+        ec._validate_curve_params(_TEST_CURVE_B_ITERS)
         assert False
     except Exception as e:
         assert isinstance(e, ValueError)
@@ -186,61 +237,66 @@ def test_validate_curve_params():
 
     print("test_validate_curve_params passed")
 
+
 def test_point_at():
     for test_curve in test_curves:
         # Test slow, add-only method of finding a point.
-        ec.new_curve(test_curve["curve"], test_curve_B_iters)
-        pt_group = test_curve["pts"]
-        for i in range(1, len(pt_group)+1):
-            assert ec._point_at(i) == pt_group[i-1]
+        ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
+        pt_group_local = test_curve["pts"]
+        for i in range(1, len(pt_group_local) + 1):
+            assert ec._point_at(i) == pt_group_local[i - 1]
 
-        assert ec._point_at(test_curve["curve"].n) == ec._i
+        assert ec._point_at(test_curve["curve"].n) == ec._I
 
     print("test_point_at passed")
+
 
 def test_fast_point_at():
     for test_curve in test_curves:
         # Test fast, double-and-add method of finding a point.
-        ec.new_curve(test_curve["curve"], test_curve_B_iters)
-        pt_group = test_curve["pts"]
-        for i in range(1, len(pt_group)+1):
+        ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
+        pt_group_local = test_curve["pts"]
+        for i in range(1, len(pt_group_local) + 1):
             assert ec._point_at(i) == ec._fast_point_at(i)
 
-        assert ec._fast_point_at(test_curve["curve"].n) == ec._i
+        assert ec._fast_point_at(test_curve["curve"].n) == ec._I
 
     print("test_fast_point_at passed")
+
 
 def test_x_times_pt():
     for real_curve in real_curves:
         ec.new_curve(real_curve)
         for _ in range(100):
-            # Test that the order of the curve group times 100 randomly selected points on the curve yields
-            # the identity element using the secp256k1 curve.
-            d, Q = ec.generate_keypair()
-            assert ec._x_times_pt(ec._curve.n, Q) == ec._i
+            # Test that the order of the curve group times 100 randomly selected points on the curve
+            # yields the identity element using the secp256k1 curve.
+            _, Q = ec.generate_keypair()
+            assert ec._x_times_pt(ec._CURVE.n, Q) == ec._I
 
     for test_curve in test_curves:
         # Test that the order of the curve group times any point on the curve yields the identity
         # element using the small test curves.
-        ec.new_curve(test_curve["curve"], test_curve_B_iters)
-        pt_group = test_curve["pts"]
-        for i in range(0, len(pt_group)):
-            assert ec._x_times_pt(test_curve["curve"].n, pt_group[i]) == ec._i
+        ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
+        pt_group_local = test_curve["pts"]
+        for i in range(0, len(pt_group_local)):
+            assert ec._x_times_pt(test_curve["curve"].n, pt_group_local[i]) == ec._I
 
     print("test_x_times_pt passed")
+
 
 def test_generate_keypair_and_validate_pub_key():
     for real_curve in real_curves:
         ec.new_curve(real_curve)
         for _ in range(100):
             # Validate 100 randomly generated public keys from the secp256k1 curve.
-            d, Q = ec.generate_keypair()
+            _, Q = ec.generate_keypair()
             try:
                 ec.validate_pub_key(Q)
-            except Exception as e:
+            except Exception:
                 assert False
 
     print("test_generate_keypair passed")
+
 
 def test_hash_to_int():
     # Test bit length of integer representative does not exceed that of the curve's order.
@@ -248,15 +304,16 @@ def test_hash_to_int():
         ec.new_curve(real_curve)
         for m in ["When", "in", "the", "course", "of", "human", "events..."]:
             e = ec._hash_to_int(m)
-            assert e.bit_length() <= ec._curve.n.bit_length()
+            assert e.bit_length() <= ec._CURVE.n.bit_length()
 
     for test_curve in test_curves:
-        ec.new_curve(test_curve["curve"], test_curve_B_iters)
+        ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
         for m in ["When", "in", "the", "course", "of", "human", "events..."]:
             e = ec._hash_to_int(m)
-            assert e.bit_length() <= ec._curve.n.bit_length()
+            assert e.bit_length() <= ec._CURVE.n.bit_length()
 
     print("test_hash_to_int passed")
+
 
 def test_sign_and_verify():
     for real_curve in real_curves:
@@ -268,14 +325,15 @@ def test_sign_and_verify():
             assert ec.verify(Q, m, S)
 
     for test_curve in test_curves:
-        ec.new_curve(test_curve["curve"], test_curve_B_iters)
+        ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
         for m in ["When", "in", "the", "course", "of", "human", "events..."]:
-        # Test sign/verify using the small test curves.
+            # Test sign/verify using the small test curves.
             d, Q = ec.generate_keypair()
             S = ec.sign(d, m)
             assert ec.verify(Q, m, S)
 
     print("test_sign_and_verify passed")
+
 
 def test_full_protocol():
     ########################################################################################
@@ -357,6 +415,7 @@ def test_full_protocol():
         assert ec.verify(QA, mB, sA)
 
     print("test_full_protocol passed")
+
 
 if __name__ == "__main__":
     main()
