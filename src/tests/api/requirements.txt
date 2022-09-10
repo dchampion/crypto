@@ -1,4 +1,4 @@
-badkeys==0.0.4
+badkeys>=0.0.5
 cffi==1.15.1
 cryptography==38.0.1
 gmpy2==2.1.2
