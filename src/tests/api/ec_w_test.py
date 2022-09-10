@@ -1,0 +1,30 @@
+import badkeys
+
+from api import ec_w
+from core import curves
+
+curves = (
+    curves.Secp192r1(),
+    curves.Secp224r1(),
+    curves.Secp256r1(),
+    curves.Secp384r1(),
+    curves.Secp521r1(),
+)
+
+
+def main():
+    print("Running ec_w tests...")
+    test_pubkeys()
+    print("All ec_w tests passed")
+
+
+def test_pubkeys():
+    for curve in curves:
+        ec_key = ec_w.construct(curve)
+
+        key_info = badkeys.detectandcheck(ec_key.public_key().export_key(format="PEM"))
+        assert not key_info.get("results"), f"{key_info.get('results')}"
+
+
+if __name__ == "__main__":
+    main()
