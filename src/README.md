@@ -164,7 +164,7 @@ $ python
 
 The code above creates two files: `ec_key.der`, a passphrase&ndash;protected [DER](https://en.wikipedia.org/wiki/X.690#DER_encoding) file containing both the private and public keys, and `ec_public_key.pem`, a [PEM](https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail) file containing only the public key.
 
-Finally, the unit tests in the `tests.api` package are designed to ensure the keys returned from the `api` package (and that are created in the `core` package) are not susceptible to any _known_ vulnerabilities. To run these unit tests, type `python -m tests.api.all_w_tests` at a shell prompt from the `src` directory (to use `pytest`, you will need to install it in the same virtual environment in which you installed `pycryptodome`; i.e., `pip install pytest`).
+Finally, the unit tests in the `tests.api` package are designed to ensure that keys provided by the `api` package (which it generates from primitives in the `core` package) are not susceptible to any _known_ vulnerabilities. To run these unit tests, from a shell prompt in the `src` directory type `python -m tests.api.all_w_tests` (to use `pytest`, you will need to install it in the same virtual environment in which you installed `pycryptodome`; i.e., with `pip install pytest`).
 
 # Documentation
 
