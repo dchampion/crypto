@@ -2,48 +2,50 @@
 
 The source code in this repository comprises two fully&ndash;featured public&ndash;key cryptosystems, and implements many public&ndash;key primitives one might expect to find in a cryptography library, such as key generation, encryption and digital signature. Implementations include the classic [_Diffie-Hellman_](https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange) (DH) key agreement protocol, the [_Rivest-Shamir-Adleman_](<https://en.wikipedia.org/wiki/RSA_(cryptosystem)>) (RSA) cryptosystem, and an elliptic curve cryptosystem based on the Standards for Efficient Cryptography (SEC) Group's [_Recommended Curve Domain Parameters_](https://www.secg.org/sec2-v2.pdf).
 
-# Package Structure
+# Structure
 
-Following is a diagram of the structure of this package. The `src` folder represents the root of the package, and it contains three sub&ndash;folders (or packages): `api`, `core` and `tests`. These sub&ndash;packages contain the source code modules that implement the services of this package.
+The source code is organized into a Python package hierarchy, as illustrated in the following diagram:
 
 <pre>
-src
+src/
  |_api
  |_core
  |_tests
-   |_api
-   |_core
+    |_api
+    |_core
  |_README.md (the file you are currently reading)
 </pre>
 
+The top&ndash;level (`src`) folder represents the root of this package, and contains the sub&ndash;packages `api` and `core`. Together, these packages implement the services of the aforementioned cryptosystems. The `tests` package, which itself is subdivided into `api` and `core` packages, contains unit tests for the modules in their corresponding `src`&ndash;level packages.
+
 ## The `core` Package
 
-The code in the `core` package implements the low&ndash;level cryptographic primitives on which the code in the `api` package depends.
+The modules in the `core` package implement the low&ndash;level cryptographic primitives on which the code in the `api` package depends.
 
-With very few exceptions, the code in this package is free of dependencies on external, third&ndash;party modules and libraries (modules such as `math` and `os` could not be avoided, but the services they provide are so essential that they could not be feasibly omitted).
-I did this for two reasons: 1) As a learning exercise&mdash;it is more effective to learn by writing functions than it is by calling them&mdash;and 2) as a security measure&mdash;one can never be too sure about code in external libraries (see [SolarWinds](https://www.wired.com/story/solarwinds-hack-supply-chain-threats-improvements/) and [Log4j](https://www.pcmag.com/how-to/what-is-the-log4j-exploit-and-what-can-you-do-to-stay-safe) for elaboration).
+With very few exceptions, the code in this package is free of dependencies on external, third&ndash;party modules or libraries (modules such as `math` and `os` could not be avoided, but the services they provide are so essential that they could not be feasibly omitted).
 
 Following is a short description of each module in the `core` package:
 
-[curves.py](https://github.com/dchampion/crypto/blob/master/src/core/curves.py) &mdash; The collection of elliptic curves specified in the Standards for Efficient Cryptography Group's (SECG) [_Recommended Elliptic Curve Domain Parameters_](https://www.secg.org/sec2-v2.pdf). These include Koblitz curves, and those derived from verifiably random seeds.
+- [curves.py](https://github.com/dchampion/crypto/blob/master/src/core/curves.py) &mdash; The collection of elliptic curves specified in the Standards for Efficient Cryptography Group's (SECG) [_Recommended Elliptic Curve Domain Parameters_](https://www.secg.org/sec2-v2.pdf). These include Koblitz curves, and those derived from verifiably random seeds.
 
-[dh.py](https://github.com/dchampion/crypto/blob/master/src/core/dh.py) &mdash; An implementation of the classic, multiplicative-group based Diffie-Hellman (DH) key agreement protocol.
+- [dh.py](https://github.com/dchampion/crypto/blob/master/src/core/dh.py) &mdash; An implementation of the classic Diffie-Hellman (DH) key agreement protocol based on multiplicative groups.
 
-[ec.py](https://github.com/dchampion/crypto/blob/master/src//core/ec.py) &mdash; Implementations of the elliptic curve Diffie-Hellman (ECDH) and elliptic curve digital signature algorithms (ECDSA).
+- [ec.py](https://github.com/dchampion/crypto/blob/master/src//core/ec.py) &mdash; Implementations of the elliptic curve Diffie-Hellman (ECDH) and elliptic curve digital signature algorithms (ECDSA).
 
-[euclid.py](https://github.com/dchampion/crypto/blob/master/src/core/euclid.py) &mdash; Efficient algorithms for computing the greatest common divisors (GCD), least common multiples (LCM) and modular multiplicative inverses of positive integers.
+- [euclid.py](https://github.com/dchampion/crypto/blob/master/src/core/euclid.py) &mdash; Efficient algorithms for computing the greatest common divisors (GCD), least common multiples (LCM) and modular multiplicative inverses of positive integers.
 
-[primes.py](https://github.com/dchampion/crypto/blob/master/src/core/primes.py) &mdash; Efficient algorithms for primality testing and prime number generation.
+- [primes.py](https://github.com/dchampion/crypto/blob/master/src/core/primes.py) &mdash; Efficient algorithms for primality testing and prime number generation.
 
-[prng.py](https://github.com/dchampion/crypto/blob/master/src/core/prng.py) &mdash; A cryptographically secure pseudo-random number generator.
+- [prng.py](https://github.com/dchampion/crypto/blob/master/src/core/prng.py) &mdash; A cryptographically secure pseudo-random number generator.
 
-[rsa.py](https://github.com/dchampion/crypto/blob/master/src/core/rsa.py) &mdash; Implementations of the Rivest-Shamir-Adleman (RSA) cryptosystem, including encryption, decryption, digital signature and verification procedures.
+- [rsa.py](https://github.com/dchampion/crypto/blob/master/src/core/rsa.py) &mdash; Implementations of the Rivest-Shamir-Adleman (RSA) cryptosystem, including encryption, decryption, digital signature and verification procedures.
 
-[util.py](https://github.com/dchampion/crypto/blob/master/src/core/util.py) &mdash; Efficient algorithms for exponentiation of bases to powers of very large exponents.
+- [util.py](https://github.com/dchampion/crypto/blob/master/src/core/util.py) &mdash; Efficient algorithms for exponentiation of bases to powers of very large exponents.
 
 ## The `api` Package
 
-The code in the `api` package is effectively identical to that of the [Crypto.PublicKey](https://www.pycryptodome.org/src/public_key/public_key#) sub&ndash;package of the open&ndash;source [PyCryptodome](https://www.pycryptodome.org/src/introduction) project; a widely&ndash;used, industrial&ndash;strength cryptography library for Python. There is one major difference, however: The modules in the `api` package re&ndash;implement those of `Crypto.PublicKey` by using the primitives of _this_ project's `core` package instead of its own.
+The modules in the `api` package are effectively a very thin wrapper around the [_Crypto.PublicKey_](https://www.pycryptodome.org/src/public_key/public_key#) sub&ndash;package of the [PyCryptodome](https://www.pycryptodome.org/src/introduction) project; a widely&ndash;used, open&ndash;source cryptography library for Python.
+The only difference is that the objects provided by the `api` package (i.e., [_Crypto.PublicKey.DSA.DsaKey_](https://www.pycryptodome.org/src/public_key/dsa), [_Crypto.PublicKey.RSA.RsaKey_](https://www.pycryptodome.org/src/public_key/rsa) and [_Crypto.PublicKey.ECC.EccKey_](https://www.pycryptodome.org/src/public_key/ecc)) are built atop the primitives of this project's `core` package.
 
 Among other things, this design permits keys generated by primitives in the `core` package to be exported to industry&ndash;standard formats such as [DER](https://en.wikipedia.org/wiki/X.690#DER_encoding) and [PEM](https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail), or to be used in protocol&ndash;level cryptographic services.
 
@@ -51,9 +53,9 @@ Among other things, this design permits keys generated by primitives in the `cor
 
 The `tests` package is subdivided into `api` and `core` sub&ndash;packages; each containing unit tests for its respective source package.
 
-# Run the Code in the `core` Package
+# Excercise the Code in the `core` Package
 
-Interacting with the code in the `core` package is the best way to learn the implementation details of the lowest&ndash;level primitives. There are three principal ways to exercise the code in this package, with instructions for each to follow:
+Interacting with the code in the `core` package is the best way to learn the implementation details of the lowest&ndash;level cryptographic primitives. There are three principal ways to exercise the code in this package, with instructions for each to follow:
 
 1. Run the unit tests (ok)
 
@@ -81,7 +83,7 @@ all rsa tests passed
 $
 </pre>
 
-Alternatively, to run _all_ the tests in the `tests` package, from the same folder type:
+Alternatively, to run _all_ the tests in the `tests.core` package, from the same folder type:
 
 <pre>
 $ python -m tests.core.all_tests
@@ -109,7 +111,7 @@ src\tests\core\util_test.py ...                         [100%]
 
 For a better experience, start a Python REPL in the `src` folder to interact with the source code directly.
 
-For example, in the following example, the elliptic curve cryptosystem is used to generate a keypair, sign a message with the private key, and then verify the signature with its corresponding public key.
+In the following example, the elliptic curve cryptosystem is used to generate a keypair, sign a message with the private key, and then verify the signature with its corresponding public key.
 
 <pre>
 $ python
@@ -124,7 +126,7 @@ False
 
 ## 3. Jupyter Notebooks
 
-For the best experience, you can load and run Jupyter notebooks (files with _.ipynb_ extensions located in the [doc](https://github.com/dchampion/crypto/tree/master/doc) folder of this repository). In addition to describing the various cryptographic protocols in detail, these notebooks allow the reader to interact with the source code in real time (to run a Jupyter server consult the link at [_jupyter.org_](https://jupyter.org/)).
+For the best experience, load and run Jupyter notebooks (files with _.ipynb_ extensions located in the [doc](https://github.com/dchampion/crypto/tree/master/doc) folder of this repository). In addition to describing the various cryptographic protocols in detail, these notebooks allow the reader to interact with the source code in real time (to run a Jupyter server, consult the link at [_jupyter.org_](https://jupyter.org/) or Google's [_Colaboratory_](https://colab.research.google.com/) project).
 
 # Run the Code in the `api` Package
 
@@ -146,8 +148,6 @@ When you are finished with your session, you can deactivate your virtual environ
 
 In the following example, an elliptic curve keypair, based on the [NIST&ndash;sanctioned Secp384r1 curve parameters](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-4.pdf), is generated and exported to industry&ndash;standard file formats.
 
-Start a Python REPL and execute the following commands:
-
 <pre>
 $ python
 >>> from core import curves
@@ -167,7 +167,7 @@ The code above creates two files: `ec_key.der`, a passphrase&ndash;protected fil
 
 # Documentation
 
-The code in these packages is thoroughly documented, both in the form of _docstrings_ at the module and function level, which describe at a high level the behavior of the module or function; and inline comments embedded in the function implementations, which are intended to clarify the effect of a particular statement or group of statements immediately following the comment.
+The source code in these packages is thoroughly documented, both in the form of _docstrings_ at the module and function level, which describe at a high level the behavior of the module or function; and inline comments embedded in the function implementations, which are intended to clarify the effect of a particular statement or group of statements immediately following the comment.
 
 The unit tests also contain documentation, the most descriptive of which is embedded in the full&ndash;protocol tests inside [dh_test.py](https://github.com/dchampion/crypto/blob/master/src/tests/core/dh_test.py), [rsa_test.py](https://github.com/dchampion/crypto/blob/master/src/tests/core/rsa_test.py) and [ec_test.py](https://github.com/dchampion/crypto/blob/master/src/tests/core/ec_test.py), which exercise the highest&ndash;level primitives in the `core` package. These tests simulate sessions from start to finish; from parameter&ndash;setup and key&ndash;negotiation to secure, authenticated message&ndash;exchange between parties over insecure channels.
 
