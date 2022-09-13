@@ -12,8 +12,8 @@ Cryptography is a branch of _cryptology_ (in Greek, the _study_ of secrets), whi
 
 This is only partially true. Cryptographers (code&ndash;makers) rely on cryptanalysts (code&ndash;breakers) to analyze the quality of the ciphers they invent; they do this by trying to break the cryptographers' ciphers. If the cryptanalysts can break the ciphers, then the cryptographers must go back to the drawing board to fix them before they are deployed in sensitive applications. This is a good thing if you are one of the good guys.
 
-Cryptography is itself subdivided into two main branches. These are _symmetric&ndash;key_ cryptography and _public&ndash;key_ (also known as _asymmetric&ndash;key_) cryptography. The former is what most people think of when they hear the words _cryptography_, _encryption_ or _cipher_. Indeed, symmetric&ndash;key cryptography was (and still is) the standard for encryption for nearly four&ndash;thousand years, starting with hieroglyphs carved into cave walls by the ancient Egyptians.
+Cryptography is itself subdivided into two main branches. These are _secret&ndash;key_ cryptography and _public&ndash;key_ cryptography. The former is what most people think of when they hear the words _cryptography_, _encryption_ or _cipher_. Indeed, secret&ndash;key cryptography was (and still is) the standard for encryption for nearly four&ndash;thousand years, starting with hieroglyphs carved into cave walls by the ancient Egyptians.
 
-Public&ndash;key cryptography is a much more recent&mdash;and arguably more interesting&mdash;invention. It emerged with the advent of the digital computer, and later the internet; technologies that demand encryption at a scale much greater than traditional, symmetric ciphers can provide.
+Public&ndash;key cryptography is a much more recent&mdash;and arguably more interesting&mdash;invention. It emerged with the advent of the digital computer, and later the internet; technologies that demand encryption at a scale much greater than traditional, secret&ndash;key ciphers can provide.
 
 It is with the subject of public&ndash;key cryptography that the artifacts in this repository are concerned.
