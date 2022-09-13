@@ -6,7 +6,7 @@ Readers are encouraged to consult the READMEs in these folders, which present ro
 
 # What is Cryptography?
 
-The word _cryptography_ comes from the ancient Greeks. Translated literally, it means _secret writing_. For centuries, cryptography was concerned with the encryption of messages into coded ciphers, in order to keep them secret from the prying eyes (or ears) of adversaries. This is largely still the case. But, since the advent of the digital age, somewhere around the middle of the last century, cryptography began to emerge from the shadowy domains of governments and spies to provide privacy protections to anyone on the planet who uses a computer, smartphone or Internet&ndash;connected device.
+The word _cryptography_ comes from the ancient Greeks. Translated literally, it means _secret writing_. For centuries, cryptography was concerned with the encryption of messages into coded ciphers, in order to keep them secret from the prying eyes (or ears) of adversaries. This is largely still the case. But, since the advent of the digital age, somewhere around the middle of the last century, cryptography began to emerge from the shadowy domains of governments and spies, and today provides privacy protections to anyone on the planet who uses a computer, smartphone or Internet&ndash;connected device.
 
 Cryptography is a branch of _cryptology_ (in Greek, the _study_ of secrets), which concerns not only code&ndash;_making_ (the stuff of cryptography) but also code&ndash;_breaking_. The code&ndash;breaking branch of cryptology is called _cryptanalysis_. One might be tempted to think cryptanalysis is the domain of spies and hackers, and only the _good guys_ do cryptography.
 
