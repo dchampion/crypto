@@ -1,49 +1,56 @@
-import random
+import os
+import concurrent.futures
 
 from core import dh
 
 from . import sym
+from . import util
 
 
 def main():
     print("Running dh tests...")
-    test_dh_setup()
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        results = executor.map(
+            test_dh_setup,
+            util.get_random_bit_lengths(dh._P_MIN_BIT_LEN, dh._P_MAX_BIT_LEN // 2),
+        )
+        util.process_results(results)
+
     test_full_protocol()
     print("all dh tests passed")
 
 
-def test_dh_setup():
-    for _ in range(5):
-        try:
-            q, p, g = dh.generate_parameters(_get_random_modulus_bit_len())
-            dh.validate_parameters(q, p, g)
+def test_dh_setup(modulus_bit_len):
+    print(f"running test_dh_setup from pid={os.getpid()}")
+    try:
+        q, p, g = dh.generate_parameters(modulus_bit_len)
+        dh.validate_parameters(q, p, g)
 
-            k_prv_1, k_pub_1 = dh.generate_keypair(q, p, g)
-            dh.validate_pub_key(k_pub_1, q, p)
-            assert 1 <= k_prv_1 < q, "k_prv_1 is out of range"
+        k_prv_1, k_pub_1 = dh.generate_keypair(q, p, g)
+        dh.validate_pub_key(k_pub_1, q, p)
+        assert 1 <= k_prv_1 < q, "k_prv_1 is out of range"
 
-            k_prv_2, k_pub_2 = dh.generate_keypair(q, p, g)
-            dh.validate_pub_key(k_pub_2, q, p)
-            assert 1 <= k_prv_2 < q, "k_prv_2 is out of range"
-            assert k_prv_1 != k_prv_2, "k_prv_1 is equal to k_prv_2; bad PRNG?"
+        k_prv_2, k_pub_2 = dh.generate_keypair(q, p, g)
+        dh.validate_pub_key(k_pub_2, q, p)
+        assert 1 <= k_prv_2 < q, "k_prv_2 is out of range"
+        assert k_prv_1 != k_prv_2, "k_prv_1 is equal to k_prv_2; bad PRNG?"
 
-            k_sess_1 = dh.generate_session_key(k_pub_2, k_prv_1, q, p)
-            k_sess_2 = dh.generate_session_key(k_pub_1, k_prv_2, q, p)
-            assert k_sess_1 == k_sess_2, "Secrets don't match"
+        k_sess_1 = dh.generate_session_key(k_pub_2, k_prv_1, q, p)
+        k_sess_2 = dh.generate_session_key(k_pub_1, k_prv_2, q, p)
+        assert k_sess_1 == k_sess_2, "Secrets don't match"
 
-        except ValueError as ve:
-            assert False, f"ValueError: {ve}"
-        except Exception as e:
-            assert False, f"Exception: {e}"
+    except ValueError as ve:
+        assert False, f"ValueError: {ve}"
+    except Exception as e:
+        assert False, f"Exception: {e}"
 
-    print("test_dh_setup passed")
-
-
-def _get_random_modulus_bit_len():
-    return random.randrange(dh._P_MIN_BIT_LEN, dh._P_MAX_BIT_LEN // 2)
+    print(
+        f"test_dh_setup passed with modulus length {modulus_bit_len} from pid={os.getpid()}"
+    )
 
 
 def test_full_protocol():
+    print("running test_full_protocol")
     ##########################################################################################
     # The following diagram illustrates the protocol simulated in this test graphically.     #
     # Values surrounded in square brackets [] are public (i.e., they can be transmitted      #
