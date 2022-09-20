@@ -1,10 +1,13 @@
+import concurrent.futures
 import copy
+import os
 
 from core import curves
 from core import ec
 from core import prng
 
 from . import sym
+from . import util
 
 # Test curve 1 parameters
 pt_group = [
@@ -88,6 +91,7 @@ def main():
     test_fast_point_at()
     test_x_times_pt()
     test_generate_keypair_and_validate_pub_key()
+    test_hash_to_int()
     test_sign_and_verify()
     test_full_protocol()
     print("all ec tests passed")
@@ -265,13 +269,9 @@ def test_fast_point_at():
 
 
 def test_x_times_pt():
-    for real_curve in real_curves:
-        ec.new_curve(real_curve)
-        for _ in range(100):
-            # Test that the order of the curve group times 100 randomly selected points on the curve
-            # yields the identity element using the secp256k1 curve.
-            _, Q = ec.generate_keypair()
-            assert ec._x_times_pt(ec._CURVE.n, Q) == ec._I
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        results = executor.map(x_times_pt, real_curves)
+        util.process_results(results)
 
     for test_curve in test_curves:
         # Test that the order of the curve group times any point on the curve yields the identity
@@ -284,18 +284,46 @@ def test_x_times_pt():
     print("test_x_times_pt passed")
 
 
+def x_times_pt(curve):
+    print(
+        f"testing scalar point multiplication on curve {type(curve).__name__} from pid={os.getpid()}"
+    )
+    ec.new_curve(curve)
+    for _ in range(100):
+        # Test that the order of the curve group times 100 randomly selected points on the curve
+        # yields the identity element using the secp256k1 curve.
+        _, Q = ec.generate_keypair()
+        assert ec._x_times_pt(ec._CURVE.n, Q) == ec._I
+
+    print(
+        f"scalar point multiplication passed on curve {type(curve).__name__} from pid={os.getpid()}"
+    )
+
+
 def test_generate_keypair_and_validate_pub_key():
-    for real_curve in real_curves:
-        ec.new_curve(real_curve)
-        for _ in range(100):
-            # Validate 100 randomly generated public keys from the secp256k1 curve.
-            _, Q = ec.generate_keypair()
-            try:
-                ec.validate_pub_key(Q)
-            except Exception:
-                assert False
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        results = executor.map(generate_keypair_and_validate_pub_key, real_curves)
+        util.process_results(results)
 
     print("test_generate_keypair passed")
+
+
+def generate_keypair_and_validate_pub_key(curve):
+    print(
+        f"testing keypair generation and validation on curve {type(curve).__name__} from pid={os.getpid()}"
+    )
+    ec.new_curve(curve)
+    for _ in range(100):
+        # Validate 100 randomly generated public keys from the secp256k1 curve.
+        _, Q = ec.generate_keypair()
+        try:
+            ec.validate_pub_key(Q)
+        except Exception:
+            assert False
+
+    print(
+        f"keypair generation and validation passed on curve {type(curve).__name__} from pid={os.getpid()}"
+    )
 
 
 def test_hash_to_int():
