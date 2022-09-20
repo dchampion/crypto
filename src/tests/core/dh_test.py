@@ -1,5 +1,5 @@
-import os
 import concurrent.futures
+import os
 
 from core import dh
 
@@ -9,19 +9,23 @@ from . import util
 
 def main():
     print("Running dh tests...")
-    with concurrent.futures.ProcessPoolExecutor() as executor:
-        results = executor.map(
-            test_dh_setup,
-            util.get_random_bit_lengths(dh._P_MIN_BIT_LEN, dh._P_MAX_BIT_LEN // 2),
-        )
-        util.process_results(results)
-
+    test_dh_setup()
     test_full_protocol()
     print("all dh tests passed")
 
 
-def test_dh_setup(modulus_bit_len):
-    print(f"running test_dh_setup from pid={os.getpid()}")
+def test_dh_setup():
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        results = executor.map(
+            dh_setup,
+            util.get_random_bit_lengths(dh._P_MIN_BIT_LEN, dh._P_MAX_BIT_LEN // 2),
+        )
+        util.process_results(results)
+
+
+def dh_setup(modulus_bit_len):
+    print(f"testing dh setup with {modulus_bit_len}-bit modulus from pid={os.getpid()}")
+
     try:
         q, p, g = dh.generate_parameters(modulus_bit_len)
         dh.validate_parameters(q, p, g)
@@ -44,13 +48,10 @@ def test_dh_setup(modulus_bit_len):
     except Exception as e:
         assert False, f"Exception: {e}"
 
-    print(
-        f"test_dh_setup passed with modulus length {modulus_bit_len} from pid={os.getpid()}"
-    )
+    print(f"dh setup passed with {modulus_bit_len}-bit modulus from pid={os.getpid()}")
 
 
 def test_full_protocol():
-    print("running test_full_protocol")
     ##########################################################################################
     # The following diagram illustrates the protocol simulated in this test graphically.     #
     # Values surrounded in square brackets [] are public (i.e., they can be transmitted      #
@@ -90,6 +91,8 @@ def test_full_protocol():
     #                                                                                        #
     # The message mB Bob decrypts must equal the message mA that Alice encrypted.            #
     ##########################################################################################
+
+    print("testing full protocol")
 
     # Alice generates the public parameters for a DH session with Bob; these are the
     # public modulus [p] (a prime), the size of the subgroup modulo p within which
@@ -142,7 +145,7 @@ def test_full_protocol():
     mB = sym.decrypt(kSessionB, mAC)
     assert mA == mB
 
-    print("test_full_protocol passed")
+    print("full protocol test passed")
 
 
 if __name__ == "__main__":
