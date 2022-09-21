@@ -98,6 +98,8 @@ def main():
 
 
 def test_add():
+    print("test_add started")
+
     for test_curve in test_curves:
         ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
         pt_group_local = test_curve["pts"]
@@ -172,6 +174,7 @@ def test_add():
 
 
 def test_double():
+    print("test_double started")
     for test_curve in test_curves:
         ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
         pt_group_local = test_curve["pts"]
@@ -192,6 +195,7 @@ def test_double():
 
 
 def test_validate_curve_params():
+    print("test_validate_curve_params started")
     # Test with default curve
     for real_curve in real_curves:
         ec.new_curve(real_curve)
@@ -243,6 +247,7 @@ def test_validate_curve_params():
 
 
 def test_point_at():
+    print("test_point_at started")
     for test_curve in test_curves:
         # Test slow, add-only method of finding a point.
         ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
@@ -256,6 +261,7 @@ def test_point_at():
 
 
 def test_fast_point_at():
+    print("test_fast_point_at started")
     for test_curve in test_curves:
         # Test fast, double-and-add method of finding a point.
         ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
@@ -269,6 +275,7 @@ def test_fast_point_at():
 
 
 def test_x_times_pt():
+    print("test_x_times_pt started")
     with concurrent.futures.ProcessPoolExecutor() as executor:
         results = executor.map(x_times_pt, real_curves)
         util.process_results(results)
@@ -286,7 +293,7 @@ def test_x_times_pt():
 
 def x_times_pt(curve):
     print(
-        f"testing scalar point multiplication on curve {type(curve).__name__} from pid={os.getpid()}"
+        f"\ttesting scalar point multiplication on curve {type(curve).__name__} from pid={os.getpid()}"
     )
     ec.new_curve(curve)
     for _ in range(100):
@@ -296,11 +303,12 @@ def x_times_pt(curve):
         assert ec._x_times_pt(ec._CURVE.n, Q) == ec._I
 
     print(
-        f"scalar point multiplication passed on curve {type(curve).__name__} from pid={os.getpid()}"
+        f"\tscalar point multiplication passed on curve {type(curve).__name__} from pid={os.getpid()}"
     )
 
 
 def test_generate_keypair_and_validate_pub_key():
+    print("test_generate_keypair started")
     with concurrent.futures.ProcessPoolExecutor() as executor:
         results = executor.map(generate_keypair_and_validate_pub_key, real_curves)
         util.process_results(results)
@@ -310,7 +318,7 @@ def test_generate_keypair_and_validate_pub_key():
 
 def generate_keypair_and_validate_pub_key(curve):
     print(
-        f"testing keypair generation and validation on curve {type(curve).__name__} from pid={os.getpid()}"
+        f"\ttesting keypair generation and validation on curve {type(curve).__name__} from pid={os.getpid()}"
     )
     ec.new_curve(curve)
     for _ in range(100):
@@ -322,11 +330,12 @@ def generate_keypair_and_validate_pub_key(curve):
             assert False
 
     print(
-        f"keypair generation and validation passed on curve {type(curve).__name__} from pid={os.getpid()}"
+        f"\tkeypair generation and validation passed on curve {type(curve).__name__} from pid={os.getpid()}"
     )
 
 
 def test_hash_to_int():
+    print("test_hash_to_int started")
     # Test bit length of integer representative does not exceed that of the curve's order.
     for real_curve in real_curves:
         ec.new_curve(real_curve)
@@ -344,13 +353,10 @@ def test_hash_to_int():
 
 
 def test_sign_and_verify():
-    for real_curve in real_curves:
-        ec.new_curve(real_curve)
-        for m in ["When", "in", "the", "course", "of", "human", "events..."]:
-            # Test sign/verify using the secp256k1 curve.
-            d, Q = ec.generate_keypair()
-            S = ec.sign(d, m)
-            assert ec.verify(Q, m, S)
+    print("test_sign_and_verify started")
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        results = executor.map(sign_and_verify, real_curves)
+        util.process_results(results)
 
     for test_curve in test_curves:
         ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
@@ -363,7 +369,32 @@ def test_sign_and_verify():
     print("test_sign_and_verify passed")
 
 
+def sign_and_verify(curve):
+    print(
+        f"\ttesting sign and verify on curve {type(curve).__name__} from pid={os.getpid()}"
+    )
+    ec.new_curve(curve)
+    for m in ["When", "in", "the", "course", "of", "human", "events..."]:
+        # Test sign/verify using the secp256k1 curve.
+        d, Q = ec.generate_keypair()
+        S = ec.sign(d, m)
+        assert ec.verify(Q, m, S)
+
+    print(
+        f"\tsign and verify passed on curve {type(curve).__name__} from pid={os.getpid()}"
+    )
+
+
 def test_full_protocol():
+    print("test_full_protocol started")
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        results = executor.map(full_protocol, real_curves)
+        util.process_results(results)
+
+    print("test_full_protocol passed")
+
+
+def full_protocol(curve):
     ########################################################################################
     # The following diagram illustrates the protocol simulated in this test graphically.   #
     # Values surrounded in square brackets [] are public (i.e., they can be transmitted    #
@@ -404,45 +435,50 @@ def test_full_protocol():
     # and encrypted.                                                                       #
     ########################################################################################
 
-    for real_curve in real_curves:
-        ec.new_curve(real_curve)
+    print(
+        f"\ttesting full protocol on curve {type(curve).__name__} from pid={os.getpid()}"
+    )
 
-        # Alice generates her keypair, dA and [QA], and transmits her public key [QA] to Bob.
-        # She keeps her private key dA secret.
-        dA, QA = ec.generate_keypair()
+    ec.new_curve(curve)
 
-        # Bob generates his keypair, dB and [QB], and transmits his public key [QB] to Alice.
-        # He keeps his private key dB secret.
-        dB, QB = ec.generate_keypair()
+    # Alice generates her keypair, dA and [QA], and transmits her public key [QA] to Bob.
+    # She keeps her private key dA secret.
+    dA, QA = ec.generate_keypair()
 
-        # Alice generates her ECDH session key kSessionA; this key must be kept secret.
-        kSessionA = ec.generate_session_key(dA, QB)
+    # Bob generates his keypair, dB and [QB], and transmits his public key [QB] to Alice.
+    # He keeps his private key dB secret.
+    dB, QB = ec.generate_keypair()
 
-        # Bob generates his ECDH session key kSessionB; this key must be kept secret. Due to the
-        # essential property of DH, Bob's session key kSessionB should be identical to Alice's
-        # kSessionB, and it should be computationally infeasible for an attacker to derive this
-        # key with possession of either Alice or Bob's public keys, [QA] or [QB].
-        kSessionB = ec.generate_session_key(dB, QA)
+    # Alice generates her ECDH session key kSessionA; this key must be kept secret.
+    kSessionA = ec.generate_session_key(dA, QB)
 
-        # Alice produces a message mA, and signs it with her private key dA, thus producing the
-        # ECDSA signature [sA].
-        mA = "8675309"
-        sA = ec.sign(dA, mA)
+    # Bob generates his ECDH session key kSessionB; this key must be kept secret. Due to the
+    # essential property of DH, Bob's session key kSessionB should be identical to Alice's
+    # kSessionB, and it should be computationally infeasible for an attacker to derive this
+    # key with possession of either Alice or Bob's public keys, [QA] or [QB].
+    kSessionB = ec.generate_session_key(dB, QA)
 
-        # Alice encrypts her message mA using her ECDH session key kSessionA. Alice transmits the
-        # message ciphertext [mAC] and the message signature [sA] to Bob.
-        mAC = sym.encrypt(kSessionA, mA)
+    # Alice produces a message mA, and signs it with her private key dA, thus producing the
+    # ECDSA signature [sA].
+    mA = "8675309"
+    sA = ec.sign(dA, mA)
 
-        # Bob decrypts the ciphertext [mAC] of Alice's message mA with his ECDH session key
-        # kSessionB, and stores the result in mB. Then he verifies the decrypted message mB with
-        # the signature Alice sent him [sA], and her public key [QA]. If the verify operation
-        # returns True, Bob can be satisfied that nobody but he and Alice knows the contents of
-        # mB (confidentiality), no one has tampered with mB (integrity), and that it was indeed
-        # Alice who sent him mB (authenticity).
-        mB = sym.decrypt(kSessionB, mAC)
-        assert ec.verify(QA, mB, sA)
+    # Alice encrypts her message mA using her ECDH session key kSessionA. Alice transmits the
+    # message ciphertext [mAC] and the message signature [sA] to Bob.
+    mAC = sym.encrypt(kSessionA, mA)
 
-    print("test_full_protocol passed")
+    # Bob decrypts the ciphertext [mAC] of Alice's message mA with his ECDH session key
+    # kSessionB, and stores the result in mB. Then he verifies the decrypted message mB with
+    # the signature Alice sent him [sA], and her public key [QA]. If the verify operation
+    # returns True, Bob can be satisfied that nobody but he and Alice knows the contents of
+    # mB (confidentiality), no one has tampered with mB (integrity), and that it was indeed
+    # Alice who sent him mB (authenticity).
+    mB = sym.decrypt(kSessionB, mAC)
+    assert ec.verify(QA, mB, sA)
+
+    print(
+        f"\tfull protocol test on curve {type(curve).__name__} passed from pid={os.getpid()}"
+    )
 
 
 if __name__ == "__main__":

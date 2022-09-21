@@ -21,6 +21,7 @@ def main():
 
 
 def test_generate_rsa_prime():
+    print("test_generate_rsa_prime started")
     with concurrent.futures.ProcessPoolExecutor() as executor:
         results = executor.map(
             generate_rsa_prime,
@@ -30,10 +31,12 @@ def test_generate_rsa_prime():
         )
         util.process_results(results)
 
+    print("test_generate_rsa_prime passed")
+
 
 def generate_rsa_prime(factor_bit_len):
     print(
-        f"testing generate rsa prime with {factor_bit_len} prime from pid={os.getpid()}"
+        f"\ttesting generate rsa prime with {factor_bit_len} prime from pid={os.getpid()}"
     )
 
     n = rsa._generate_rsa_prime(factor_bit_len)
@@ -45,11 +48,12 @@ def generate_rsa_prime(factor_bit_len):
     assert n % rsa.ENCRYPTION_EXPONENT != 1, "n-1 must not be a multiple of 5"
 
     print(
-        f"generate rsa prime passed with {factor_bit_len}-bit prime from pid={os.getpid()}"
+        f"\tgenerate rsa prime passed with {factor_bit_len}-bit prime from pid={os.getpid()}"
     )
 
 
 def test_generate_rsa_key():
+    print("test_generate_rsa_key started")
     with concurrent.futures.ProcessPoolExecutor() as executor:
         results = executor.map(
             generate_rsa_key,
@@ -59,10 +63,12 @@ def test_generate_rsa_key():
         )
         util.process_results(results)
 
+    print("test_generate_rsa_key passed")
+
 
 def generate_rsa_key(modulus_bit_len):
     print(
-        f"testing generate rsa key with {modulus_bit_len}-bit modulus from pid={os.getpid()}"
+        f"\ttesting generate rsa key with {modulus_bit_len}-bit modulus from pid={os.getpid()}"
     )
 
     p, q, n, d3, d5 = rsa.generate_rsa_key(modulus_bit_len)
@@ -81,11 +87,12 @@ def generate_rsa_key(modulus_bit_len):
     ), f"expected inverse of {d5} and {t} is {rsa.ENCRYPTION_EXPONENT}, got {euclid.inverse(d5, t)}"
 
     print(
-        f"generate rsa key passed with {modulus_bit_len}-bit modulus from pid={os.getpid()}"
+        f"\tgenerate rsa key passed with {modulus_bit_len}-bit modulus from pid={os.getpid()}"
     )
 
 
 def test_encrypt_decrypt():
+    print("test_encrypt_decrypt started")
     with concurrent.futures.ProcessPoolExecutor() as executor:
         results = executor.map(
             encrypt_decrypt,
@@ -95,10 +102,12 @@ def test_encrypt_decrypt():
         )
         util.process_results(results)
 
+    print("test_encrypt_decrypt passed")
+
 
 def encrypt_decrypt(modulus_bit_len):
     print(
-        f"testing encrypt decrypt with {modulus_bit_len}-bit modulus from pid={os.getpid()}"
+        f"\ttesting encrypt decrypt with {modulus_bit_len}-bit modulus from pid={os.getpid()}"
     )
 
     p, q, n, _, d5 = rsa.generate_rsa_key(modulus_bit_len)
@@ -107,11 +116,12 @@ def encrypt_decrypt(modulus_bit_len):
     assert K1 == K2, "Keys don't match"
 
     print(
-        f"encrypt decrypt passed with {modulus_bit_len}-bit modulus from pid={os.getpid()}"
+        f"\tencrypt decrypt passed with {modulus_bit_len}-bit modulus from pid={os.getpid()}"
     )
 
 
 def test_sign_verify():
+    print("test_sign_verify started")
     with concurrent.futures.ProcessPoolExecutor() as executor:
         results = executor.map(
             sign_verify,
@@ -121,10 +131,12 @@ def test_sign_verify():
         )
         util.process_results(results)
 
+    print("test_sign_verify passed")
+
 
 def sign_verify(modulus_bit_len):
     print(
-        f"testing sign verify with {modulus_bit_len}-bit modulus from pid={os.getpid()}"
+        f"\ttesting sign verify with {modulus_bit_len}-bit modulus from pid={os.getpid()}"
     )
 
     p, q, n, d3, _ = rsa.generate_rsa_key(modulus_bit_len)
@@ -133,7 +145,7 @@ def sign_verify(modulus_bit_len):
     assert rsa.verify(n, rsa.VERIFICATION_EXPONENT, m, o)
 
     print(
-        f"sign verify passed with {modulus_bit_len}-bit modulus from pid={os.getpid()}"
+        f"\tsign verify passed with {modulus_bit_len}-bit modulus from pid={os.getpid()}"
     )
 
 
@@ -185,7 +197,7 @@ def test_full_protocol():
     # and encrypted.                                                                       #
     ########################################################################################
 
-    print("testing full protocol")
+    print("test_full_protocol started")
 
     # Alice generates her RSA parameters, and sends the public component (the modulus [nA])
     # to Bob. In this simulated protocol, we assume that Bob knows Alice's signature-
@@ -241,7 +253,7 @@ def test_full_protocol():
     verified = rsa.verify(nA, rsa.VERIFICATION_EXPONENT, mB, oA)
     assert verified
 
-    print("full protocol test passed")
+    print("test_full_protocol passed")
 
 
 if __name__ == "__main__":

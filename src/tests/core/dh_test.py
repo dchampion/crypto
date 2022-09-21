@@ -15,6 +15,7 @@ def main():
 
 
 def test_dh_setup():
+    print("test_dh_setup started")
     with concurrent.futures.ProcessPoolExecutor() as executor:
         results = executor.map(
             dh_setup,
@@ -22,9 +23,13 @@ def test_dh_setup():
         )
         util.process_results(results)
 
+    print("test_dh_setup passed")
+
 
 def dh_setup(modulus_bit_len):
-    print(f"testing dh setup with {modulus_bit_len}-bit modulus from pid={os.getpid()}")
+    print(
+        f"\ttesting dh setup with {modulus_bit_len}-bit modulus from pid={os.getpid()}"
+    )
 
     try:
         q, p, g = dh.generate_parameters(modulus_bit_len)
@@ -48,7 +53,9 @@ def dh_setup(modulus_bit_len):
     except Exception as e:
         assert False, f"Exception: {e}"
 
-    print(f"dh setup passed with {modulus_bit_len}-bit modulus from pid={os.getpid()}")
+    print(
+        f"\tdh setup passed with {modulus_bit_len}-bit modulus from pid={os.getpid()}"
+    )
 
 
 def test_full_protocol():
@@ -92,7 +99,7 @@ def test_full_protocol():
     # The message mB Bob decrypts must equal the message mA that Alice encrypted.            #
     ##########################################################################################
 
-    print("testing full protocol")
+    print("test_full_protocol started")
 
     # Alice generates the public parameters for a DH session with Bob; these are the
     # public modulus [p] (a prime), the size of the subgroup modulo p within which
@@ -145,7 +152,7 @@ def test_full_protocol():
     mB = sym.decrypt(kSessionB, mAC)
     assert mA == mB
 
-    print("full protocol test passed")
+    print("test_full_protocol passed")
 
 
 if __name__ == "__main__":
