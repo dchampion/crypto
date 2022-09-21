@@ -4,11 +4,11 @@ from api import ec_w
 from core import curves
 
 curves = (
-    curves.Secp192r1(),
-    curves.Secp224r1(),
-    curves.Secp256r1(),
-    curves.Secp384r1(),
-    curves.Secp521r1(),
+    curves.Secp192r1.__name__.lower(),
+    curves.Secp224r1.__name__.lower(),
+    curves.Secp256r1.__name__.lower(),
+    curves.Secp384r1.__name__.lower(),
+    curves.Secp521r1.__name__.lower(),
 )
 
 

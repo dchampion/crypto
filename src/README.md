@@ -149,9 +149,8 @@ In the following example, an elliptic curve keypair, based on the [NIST&ndash;sa
 
 <pre>
 $ python
->>> from core import curves
 >>> from api import ec_w
->>> ec_key = ec_w.construct(curves.Secp384r1())
+>>> ec_key = ec_w.construct("secp384r1")
 >>> f = open("ec_key.der", "wb")
 >>> f.write(ec_key.export_key(format="DER", passphrase="abc", protection="PBKDF2WithHMAC-SHA1AndAES128-CBC")) 
 274
