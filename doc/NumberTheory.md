@@ -85,7 +85,7 @@ A corollary to Euler's theorem is that for any integers $x$ and $y$, $x \equiv y
 
 - $x \equiv y \pmod{\phi(n)}$
 - $x - y = \phi(n)k$, for some integer $k$
-- $ x = y + \phi(n)k$
+- $x = y + \phi(n)k$
 - $a^x = a^{y+\phi(n)k} = a^y(a^{\phi(n)})^{k} \equiv a^y1^k \equiv a^y \pmod{n}$
 
 # [Lagrange's Theorem](<https://en.wikipedia.org/wiki/Lagrange%27s_theorem_(group_theory)>)
