@@ -5,15 +5,176 @@ import math
 from . import prng
 from . import util
 
-small_primes =  [  3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
-                  73, 79, 83, 83, 89, 97,101,103,107,109,113,127,131,137,139,149,151,157,163,
-                 167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,
-                 271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,367,373,379,383,
-                 389,397,401,409,419,421,431,433,439,443,449,457,461,463,467,479,487,491,499,
-                 503,509,521,523,541,547,557,563,569,571,577,587,593,599,601,607,613,617,619,
-                 631,641,643,647,653,659,661,673,677,683,691,701,709,719,727,733,739,743,751,
-                 757,761,769,773,787,797,809,811,821,823,827,829,839,853,857,859,863,877,881,
-                 883,887,907,911,919,929,937,941,947,953,967,971,977,983,991,997]
+small_primes = [
+    3,
+    5,
+    7,
+    11,
+    13,
+    17,
+    19,
+    23,
+    29,
+    31,
+    37,
+    41,
+    43,
+    47,
+    53,
+    59,
+    61,
+    67,
+    71,
+    73,
+    79,
+    83,
+    83,
+    89,
+    97,
+    101,
+    103,
+    107,
+    109,
+    113,
+    127,
+    131,
+    137,
+    139,
+    149,
+    151,
+    157,
+    163,
+    167,
+    173,
+    179,
+    181,
+    191,
+    193,
+    197,
+    199,
+    211,
+    223,
+    227,
+    229,
+    233,
+    239,
+    241,
+    251,
+    257,
+    263,
+    269,
+    271,
+    277,
+    281,
+    283,
+    293,
+    307,
+    311,
+    313,
+    317,
+    331,
+    337,
+    347,
+    349,
+    353,
+    359,
+    367,
+    373,
+    379,
+    383,
+    389,
+    397,
+    401,
+    409,
+    419,
+    421,
+    431,
+    433,
+    439,
+    443,
+    449,
+    457,
+    461,
+    463,
+    467,
+    479,
+    487,
+    491,
+    499,
+    503,
+    509,
+    521,
+    523,
+    541,
+    547,
+    557,
+    563,
+    569,
+    571,
+    577,
+    587,
+    593,
+    599,
+    601,
+    607,
+    613,
+    617,
+    619,
+    631,
+    641,
+    643,
+    647,
+    653,
+    659,
+    661,
+    673,
+    677,
+    683,
+    691,
+    701,
+    709,
+    719,
+    727,
+    733,
+    739,
+    743,
+    751,
+    757,
+    761,
+    769,
+    773,
+    787,
+    797,
+    809,
+    811,
+    821,
+    823,
+    827,
+    829,
+    839,
+    853,
+    857,
+    859,
+    863,
+    877,
+    881,
+    883,
+    887,
+    907,
+    911,
+    919,
+    929,
+    937,
+    941,
+    947,
+    953,
+    967,
+    971,
+    977,
+    983,
+    991,
+    997,
+]
 
 
 def is_prime(n: int) -> bool:
@@ -45,7 +206,7 @@ def is_prime(n: int) -> bool:
 def miller_rabin(n: int) -> bool:
     """
     Returns True if the supplied positive odd integer n is prime with a probability
-    of 1 - .5^128. Returns False if n is composite.
+    of 1 - .5^128. Returns False with a probability of 1 if n is composite.
     """
     _validate_param(n)
 
@@ -53,27 +214,95 @@ def miller_rabin(n: int) -> bool:
         # return True in this most trivial edge case.
         return True
 
-    # factor n into 2^e * m+1.
+    # factor n - 1 into 2^e * m + 1.
     m, e = _factor_n(n)
-    for _ in range(0, 128, 2):
-        b = prng.randrange(2, n - 1)
-        x = util.fast_mod_exp(b, m, n)
+    for _ in range(64):
+        # select a random base a in the range [2..n-1].
+        a = prng.randrange(2, n - 1)
 
-        # if x is 1, repeated squaring will not change the result, so go back to the beginning
-        # and try another random b.
+        # raise the base a to the power of m and assign to x.
+        x = util.fast_mod_exp(a, m, n)
+
+        # if x is 1, we have a possible prime, and repeatedly squaring it will not change
+        # the result, so start over with another random base. If x is not 1, then we have
+        # a possible composite and should continue testing.
         if x != 1:
             i = 0
-            while x != n - 1:
-                if i == e - 1:
-                    # if we don't find an x = n-1 by repeated squaring, n cannot be prime,
-                    # so return False and we're done.
-                    return False
-                else:
-                    x = x**2 % n
-                    i = i + 1
 
-    # if we haven't found a composite after 64 rounds, then n is prime with a 1-(2^-128)
-    # degree of probability.
+            # if x is n - 1, then we have a possible prime, so start over with another
+            # random base.
+            while x != n - 1:
+
+                # we are here if x is neither 1 nor n - 1, which means n is a possible
+                # composite.
+                if i == e - 1:
+
+                    # if we don't find an x = n-1 by repeated squaring, n must be
+                    # composite, so return False.
+                    return False
+
+                # square x modulo n and increment i.
+                x = x**2 % n
+                i = i + 1
+
+    # if we haven't found a composite after trying 64 random bases, then n is prime with a
+    # 1 - 2^-128 degree of probability (because 1 in 4 bases is a false witness).
+    return True
+
+
+def _factor_n(n: int) -> tuple[int, int]:
+    """
+    Returns the tuple (m, e), after conversion of the supplied positive odd integer n to the
+    form 2^e * m+1, where m is the greatest odd divisor of n-1.
+    """
+    _validate_param(n)
+
+    m = n - 1
+    e = 0
+
+    while m % 2 == 0:
+        m //= 2
+        e = e + 1
+
+    return m, e
+
+
+def miller_rabin_naive(n: int) -> bool:
+    """
+    A less efficient implementation of the Miller-Rabin primality test that demonstrates
+    its effect more clearly than the more efficient approach implemented in the function
+    miller_rabin() above.
+
+    The algorithm works as follows:
+
+    1. Given a candidate prime n, select a random base a in the range [2..n-1].
+    2. Set x = a to the power of e modulo n, where e = (n-1)/2 (note that the square
+    root of a^(n-1) is a^((n-1)/2)).
+    3. If x = 1, divide e by 2 and go to step 2. Continue while x = 1 and until e's
+    square roots are exhausted, then go to step 1 (n might b prime).
+    4. If x = n-1, go to step 1 (n might be prime).
+    5. If x != 1 and x != n-1, n MUST be composite; return False.
+    6. If a composite is not discovered after executing steps 1-5 64 times, with randomly
+    chosen bases, then n is prime with a probability of 1 - .5^-128; return True.
+
+    The small likelihood (i.e., .5^-128) of this function falsely reporting n as prime
+    when it is in fact composite comes from the fact that, on average, 1 in 4 bases will
+    pass the Miller-Rabin test if n is composite. So each time the test is repeated with a
+    new base, the likelihood is halved (i.e., 1 / 4^64)
+    """
+    for _ in range(64):
+        a = prng.randrange(2, n - 1)
+        e = n - 1
+        while e >= 2 and e % 2 == 0:
+            e //= 2
+            x = util.fast_mod_exp(a, e, n)
+            if x == 1:
+                continue
+            elif x == n - 1:
+                break
+            else:
+                return False
+
     return True
 
 
@@ -139,23 +368,6 @@ def fermat_factor(n: int) -> tuple[True, int, int] or False:
 
 def _is_square(n: int) -> bool:
     return n == math.isqrt(n) ** 2
-
-
-def _factor_n(n: int) -> tuple[int, int]:
-    """
-    Returns the tuple (m, e), after conversion of the supplied positive odd integer n to the
-    form 2^e * m+1, where m is the greatest odd divisor of n-1.
-    """
-    _validate_param(n)
-
-    m = n - 1
-    e = 0
-
-    while m % 2 == 0:
-        m //= 2
-        e = e + 1
-
-    return m, e
 
 
 def _validate_param(n: int) -> None:
