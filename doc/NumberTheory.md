@@ -14,11 +14,13 @@ Argues why a lemma or theorem is true. A special case is a proof by contradictio
 
 # Notation
 
-The symbol | means _divides_. For example, given two positive integers $a$ and $b$, $a|b$ means $a$ divides $b$ without leaving a remainder.
+_Unless otherwise stated, assume all integers are positive._
+
+The symbol | means _divides_. For example, given two integers $a$ and $b$, $a|b$ means $a$ divides $b$ without leaving a remainder.
 
 The symbol $\equiv$ denotes a congruence relation, which in effect tranlates to _is equivalent to_. For example, $a \equiv b \pmod{c}$ means $a$ is congruent to $b$ modulo $c$, where $a$, $b$ and $c$ are all integers. In such a relation, $a - b$ is a multiple of $c$; or, more formally, $a - b = kc$ for some integer $k$.
 
-The symbol $\phi$ (the letter _phi_ in the Greek alphabet) denotes [_Euler's Totient Funtion_](https://en.wikipedia.org/wiki/Euler%27s_totient_function), as in $\phi(n)$, where $n$ is some positive integer. For any positive integer $n$, $\phi(n)$ gives the number of integers between $1$ and $n$ that are [_coprime_](https://en.wikipedia.org/wiki/Coprime_integers), or [_relatively prime_](https://en.wikipedia.org/wiki/Coprime_integers), to $n$.
+The symbol $\phi$ (the letter _phi_ in the Greek alphabet) denotes [_Euler's Totient Funtion_](https://en.wikipedia.org/wiki/Euler%27s_totient_function), as in $\phi(n)$, where $n$ is some integer. For any integer $n$, $\phi(n)$ gives the number of integers between $1$ and $n$ that are [_coprime_](https://en.wikipedia.org/wiki/Coprime_integers), or [_relatively prime_](https://en.wikipedia.org/wiki/Coprime_integers), to $n$.
 
 # Transitivity of Divisors Lemma
 
@@ -32,23 +34,23 @@ If $a|b$ and $b|c$, then $a|c$.
 
 # Prime Factors Lemma
 
-Let $n$ be a positive integer greater than $1$. Let $d$ be the smallest divisor of $n$ that is greater than $1$. Then $d$ is prime.
+Let $n$ be an integer greater than $1$. Let $d$ be the smallest divisor of $n$ that is greater than $1$. Then $d$ is prime.
 
 ## Proof (by contradiction):
 
 - $n$ is a divisor of $n$, and $n > 1$; therefore, there is at least one divisor of $n$ that is greater than $1$, and there must also be a smallest divisor of $n$ that is greater than $1$
 - Assume $d$ is not a prime (contradiction)
 - If $d$ is not a prime, it has a divisor $e$ such that $1 < e < d$
-- If $e|d$ and $d|n$ then $e|n$ (proven by transitivity of divisors lemma)
-- So $e$ is a divisor of $n$ and $e$ is also smaller than $d$; but $d$ is the smallest divisor of $n$
+- If $e|d$ and $d|n$, then $e|n$ (proven by transitivity of divisors lemma)
+- So $e$ is a divisor of $n$, and $e$ is also smaller than $d$; but $d$ is the smallest divisor of $n$
 
 # [Euclid's Lemma](https://en.wikipedia.org/wiki/Euclid%27s_lemma)
 
-If $p$ is a prime, and $p|ab$, where $ab$ is the product of two positive integers $a$ and $b$, then $p$ must divide either $a$ or $b$.
+If $p$ is a prime, and $p|ab$, where $ab$ is the product of two integers $a$ and $b$, then $p$ must divide either $a$ or $b$.
 
 ## Proof
 
-- Let $p$ and $a$ be coprime
+- Let $p$ and $a$ be coprime, giving that $p$ does not divide $a$
 - There are integers $x$ and $y$ such that $xp + ya = 1$ (this is [Bezout's identity](https://en.wikipedia.org/wiki/B%C3%A9zout%27s_identity))
 - Multiply both sides of this equation by $b$, giving $xpb + yab = b$
 - The term $xpb$ is divisible by $p$
@@ -63,16 +65,18 @@ All integers greater than $1$ are the product of a unique set of primes. For exa
 ## Proof
 - If a prime divides the product of two integers, then it must divide at least one of these integers (proven by Euclid's lemma)
 
-# Square Roots Modulo a Prime
+# [Miller&ndash;Rabin Theorem](https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test) 
 
-if $p$ is prime, then the only square roots of $1$ modulo $p$ are $1$ and $-1$.
+if $p$ is prime, then the only possible square roots of $1$ modulo $p$ are either $1$ or $-1$.
+
+This is technically just a specialization of Euclid's lemma; it is important because it is used to test very large integers for primality (see subsection [_Finding Large Primes_](#finding-large-primes) for a more thorough discussion).
 
 ## Proof
 - Let $a$ be the square root of $1$ modulo $p$, such that $a^2 \equiv 1 \pmod{p}$
 - Subtract $1$ from both sides of the relation, giving $a^2 - 1 \equiv 0 \pmod{p}$
 - Thus, $p$ divides $a^2-1$
-- Factor the term $a^2 - 1$ into the difference of squares, giving $(a+1)(a-1)$
-- Thus $p$ divides $(a+1)(a-1)$
+- Factor the term $a^2 - 1$ into the difference of its squares, giving $(a+1)(a-1)$
+- Thus, $p$ divides $(a+1)(a-1)$
 - Since $p$ is prime, then $p$ divides either $(a+1)$ or $(a-1)$ (proven by Euclid's lemma)
 - Therefore, $a$ is congruent to either $1$ or $-1$ modulo $p$
 # [Euclid's Theorem](https://en.wikipedia.org/wiki/Euclid%27s_theorem)
@@ -89,7 +93,7 @@ There are an infinite number of primes.
 
 # [Fermat's Little Theorem](https://en.wikipedia.org/wiki/Fermat%27s_little_theorem)
 
-$a^{p-1} \equiv 1 \pmod{p}$, where $a$ is a positive integer not divisible by $p$, and $p$ is prime.
+$a^{p-1} \equiv 1 \pmod{p}$, where $a$ is an integer not divisible by $p$, and $p$ is prime.
 
 It therefore follows that $a^p \equiv a \pmod{p}$ for the same $a$ and $p$, if we multiply both sides of the relation by $a$, as in:
 
@@ -99,32 +103,34 @@ It therefore follows that $a^p \equiv a \pmod{p}$ for the same $a$ and $p$, if w
 - $a^p \equiv a \pmod{p}$
 
 # Finding Large Primes
-Primality&ndash;testing algorithms based on trial division are not feasible for primes of the size necessary for use in cryptographic applications. Even though the time complexity of these algorithms is linear, their candidate inputs are so large that even linear&ndash;time algorithms are too slow (as in many times the age of the universe).
+Primality&ndash;testing algorithms based on trial division are not feasible for primes of the size necessary for use in cryptographic applications. Even though the time complexity of these algorithms is linear, their candidate inputs are so large that even linear&ndash;time algorithms are too slow. (How slow? they would require many times the age of the universe to complete.)
 
-However, combining some theorems and lemmas from above, we can identify very large primes using algorithms of logarithmic time complexity. Perhaps the most common of these is the [Miller&ndash;Rabin](https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test) algorithm, developed by Michael Rabin in 1980. Rabin's variant is probabalistic, and builds on a deterministic version of the algorithm developed by Gary Miller in 1976.
+However, combining some theorems and lemmas from above, we can identify very large primes using an algorithm of logarithmic time complexity. Perhaps the most famous of these is the [Miller&ndash;Rabin](https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test) algorithm, which in its accepted form was developed by Michael Rabin in 1980. Rabin's variant is probabalistic, and builds on a deterministic version of the algorithm developed by Gary Miller in 1976.
 
-## Premises
+## Lemmas Used in Miller-Rabin
 
-- Fermat's little theorem states that if $p$ is prime, then $a^{p-1} \equiv 1 \pmod{p}$, where $1 < a <= p$.
-- Euclid's lemma states that if $p$ is prime, and $p|ab$, where $ab$ is the product of two positive integers $a$ and $b$, then $p$ must divide either $a$ or $b$.
+- Fermat's little theorem, which states that if $p$ is prime, then $a^{p-1} \equiv 1 \pmod{p}$, where $1 < a < p$.
+- Euclid's lemma, which states that if $p$ is prime, and $p|ab$, where $ab$ is the product of two integers $a$ and $b$, then $p$ must divide either $a$ or $b$.
 
-## The Reasoning
+## Miller-Rabin
 
-- By Fermat, we have that, if $p$ is prime, then $a^{p-1} \equiv 1 \pmod{p}$
-- Subtracting $1$ from both sides of the relation gives $a^{p-1} - 1 \equiv 0 \pmod{p}$, which means that $p$ divides $a^{p-1} - 1$
-- Given that the square root of $a^{p-1}$ is $a^{(p-1)/2}$, by the difference of squares we can rewrite $a^{p-1} - 1$ as $(a^{(p-1)/2} + 1)(a^{(p-1)/2} - 1)$
-- By Euclid, we have that, if $p$ is prime, then $p$ divides at least one of the terms $(a^{(p-1)/2} + 1)$ or $(a^{(p-1)/2} - 1)$
-- Therefore, $a^{(p-1)/2}$ is congruent to either $1$ or $-1$ modulo $p$
-- Stated generally, if $p$ is prime, then the square root of $a^{p-1}$ must be congruent to either $1$ or $-1$ modulo $p$
-- Conversely, if the square root of $a^{p-1}$ is _not_ congruent to either $1$ or $-1$ modulo $p$, then $p$ must be composite.
+If Miller-Rabin were a theorem, it would state that if $p$ is prime, then the square root of $1$ modulo $p$ is either $1$ or $-1$. Conversely, if the square root of $p$ modulo $1$ is neither $1$ nor $-1$, then $p$ must be composite (see subsection [_Miller&ndash;Rabin Theorem_](#miller–rabin-theorem) for a more general proof).
 
-With this reasoning, we have a test for the compositeness of an integer that runs in logarithmic time in the size of the input.
+### Proof
 
-To be continued...
+- By Fermat, we have that if $p$ is prime, then $a^{p-1} \equiv 1 \pmod{p}$
+- If we subtract $1$ from both sides of this relation, we get $a^{p-1} - 1 \equiv 0 \pmod{p}$; therefore, $p$ divides $a^{p-1} - 1$
+- The square root of $a^{p-1}$ is $a^{(p-1)/2}$, so by the difference of squares we can rewrite $a^{p-1} - 1$ as $(a^{(p-1)/2} + 1)(a^{(p-1)/2} - 1)$
+- By Euclid, we have that if $p$ is prime, then $p$ divides at least one of the terms $(a^{(p-1)/2} + 1)$ or $(a^{(p-1)/2} - 1)$
+- Therefore, the square root of $a^{p-1}$ (i.e., $a^{(p-1)/2}$) is congruent to either $1$ or $-1$ modulo $p$
+
+Stated generally, if $p$ is prime, then the square root of $a^{p-1}$ (which by Fermat we know to be congruent to $1$ modulo $p$) must either also be congruent to $1$ modulo $p$ or, if it is not, then it must be congruent to $-1$ modulo $p$.
+
+Specifically, with regard to the Miller-Rabin algorithm, if the square root of $a^{p-1}$ is _not_ congruent to either $1$ or $-1$ modulo $p$, then $p$ must be composite. We can use this fact to test for the compositeness of an integer that runs in logarithmic time in the size of the input.
 
 # [Euler's Theorem](https://en.wikipedia.org/wiki/Euler%27s_theorem)
 
-$a^{\phi(n)} \equiv 1 \pmod{n}$, where $a$ is a positive integer not divisible by $n$.
+$a^{\phi(n)} \equiv 1 \pmod{n}$, where $a$ is an integer not divisible by $n$.
 
 It therefore follows that $a^{\phi(n)+1} \equiv a \pmod{n}$ for the same $a$ and $n$.
 
@@ -145,7 +151,7 @@ A corollary to Euler's theorem is that for any integers $x$ and $y$, $x \equiv y
 
 For any group $G$, the order of every subgroup of $G$ divides the order of $G$.
 
-More specifically, the order of any element $a$ in group $G$ is the smallest positive integer $k$ such that $a^k = e$, where $e$ is the identity element of the group. $k$ thus divides the order of $G$.
+More specifically, the order of any element $a$ in group $G$ is the smallest integer $k$ such that $a^k = e$, where $e$ is the identity element of the group. $k$ thus divides the order of $G$.
 
 It follows then that $a^n = e$, where $n$ is the order of a group.
 
@@ -182,7 +188,7 @@ The Chinese Remainder Theorem (CRT) is used in RSA to accelerate the otherwise i
 
 # Muliplicative Groups Modulo a prime $p$
 
-- Each member $g$ of a group $G$ has an [_order_](<https://en.wikipedia.org/wiki/Order_(group_theory)>), which is the smallest positive integer exponent $q$ such that $g^q \equiv 1 \pmod{p}$.
+- Each member $g$ of a group $G$ has an [_order_](<https://en.wikipedia.org/wiki/Order_(group_theory)>), which is the smallest integer exponent $q$ such that $g^q \equiv 1 \pmod{p}$.
 - The group $G$ and its subgroups are [_cyclic_](https://en.wikipedia.org/wiki/Cyclic_group).
 - In the multiplicative group modulo $p$, there is at least one $g$ that generates the entire group $G$. Such a $g$ is called a _primitive element_, or _generator_, of the group.
 - Other values of $g$ generate smaller sets, or _subgroups_, of $G$.
@@ -200,12 +206,12 @@ The Chinese Remainder Theorem (CRT) is used in RSA to accelerate the otherwise i
 
 # Greatest Common Divisor
 
-- The greatest common divisor (_GCD_) of two positive integers $a$ and $b$ is the largest integer $k$ such that $k|a$ and $k|b$.
+- The greatest common divisor (_GCD_) of two integers $a$ and $b$ is the largest integer $k$ such that $k|a$ and $k|b$.
 - The [_Euclidean Algorithm_](https://github.com/dchampion/crypto/blob/master/doc/EuclideanAlgorithms.md) computes the GCD of two integers in logarithmic time.
 
 # Least Common Multiple
 
-- The least common multiple (_LCM_) of two positive integers $a$ and $b$ is smallest $k$ such that $k$ is a multiple of both $a$ and $b$; it is found by $ab / gcd(a, b)$.
+- The least common multiple (_LCM_) of two integers $a$ and $b$ is smallest $k$ such that $k$ is a multiple of both $a$ and $b$; it is found by $ab / gcd(a, b)$.
 - Whereas the original RSA whitepaper specifies that $\phi(pq)$&mdash;which recall is $(p-1)(q-1)$&mdash;be used to compute decryption and signature exponents, in practice $lcm(p-1, q-1)$ is used instead because it results in smaller, and therefore more efficient (albeit no less secure), exponents.
 
 # The Extended Euclidean Algorithm
