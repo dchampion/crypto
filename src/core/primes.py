@@ -18,17 +18,17 @@ small_primes =  [  3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59
 def is_prime(n: int) -> bool:
     """
     Returns True if the supplied positive integer n is prime, or False if it is composite.
-    This function is probabalistic, as defined by the following characteristics:
+    This function is probabilistic, as defined by the following characteristics:
 
-    If n < 1,000, the probability this function will return an incorrect answer is 0; that
-    is, this function is deterministic.
+    If n < 1,000, then the probability this function will return a correct answer is 1;
+    that is, this function is deterministic.
 
-    If n > 1,000, the probability this function will return True if n is composite is
-    .25^64 (or 2.93 x 10^-39); that is, if n is prime, this function is probabalistic,
-    but with an astronomically high level of confidence.
+    If n > 1,000, and this function returns False, then the probability n is composite is
+    also 1; that is, this function is deterministic.
 
-    If n > 1,000, the probability this function will return True if n is composite is 0;
-    that is, if n is composite, this function is deterministic.
+    However, if n > 1,000, and this function returns True, then the probability n is
+    composite is .25^64 (or 2.93 x 10^-39); that is, if n is prime, this function is
+    probabilistic, but with an astronomically high level of confidence.
     """
     assert isinstance(n, int) and n > 1
 
@@ -51,7 +51,7 @@ def is_prime(n: int) -> bool:
 
 def _miller_rabin(n: int) -> bool:
     # Returns True if the supplied positive odd integer n is prime; otherwise False. This
-    # function is probabalistic, in that it is theoretically possible for it to return True
+    # function is probabilistic, in that it is theoretically possible for it to return True
     # for an n that is in fact not prime. However, the probability of such a false positive
     # is .25^64. Conversely, if this function returns False, n is assured to be composite.
 
@@ -182,7 +182,7 @@ def _miller_rabin_2(n: int) -> bool:
 
 def _fermat(n: int) -> bool:
     # Returns True if the supplied positive odd integer n is prime; otherwise False. This
-    # function is probabalistic, in that it is possible for it to return True for an n
+    # function is probabilistic, in that it is possible for it to return True for an n
     # that is in fact not prime. For example, if n is a so-called Carmichael number,
     # this function may return True even though n is composite. Because of this, the
     # miller_rabin function, which accounts for Carmichael numbers, should be preferred to
