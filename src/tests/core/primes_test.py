@@ -56,90 +56,90 @@ large_carmichaels = [
 def main():
     print("Running primes tests...")
     test_factor_n()
-    test_fermat()
+    test_fermat_is_prime()
     test_is_prime()
     test_generate_prime()
     test_fermat_factor()
-    test_miller_rabin_2()
+    test_is_composite_2()
     print("all primes tests passed")
 
 
 def test_factor_n():
-    for n in primes.small_primes:
+    for n in primes._small_primes:
         m, e = primes._factor_n(n)
-        assert 2**e * m == n - 1, f"factor_n failed to factor {n} into {m} and {e}"
+        assert 2**e * m == n - 1, f"_factor_n failed to factor {n} into {m} and {e}"
 
     print(
-        f"factor_n passed for all {len(primes.small_primes)} \
-primes <= {primes.small_primes[len(primes.small_primes)-1]}"
+        f"_factor_n passed for all {len(primes._small_primes)} \
+primes <= {primes._small_primes[len(primes._small_primes)-1]}"
     )
 
     for n in large_primes:
         m, e = primes._factor_n(n)
-        assert (2**e) * m == n - 1, f"factor_n failed to factor {n} into {m} and {e}"
+        assert (2**e) * m == n - 1, f"_factor_n failed to factor {n} into {m} and {e}"
 
-    print(f"factor_n passed for {len(large_primes)} large primes")
+    print(f"_factor_n passed for {len(large_primes)} large primes")
 
     for n in odd_composites:
         m, e = primes._factor_n(n)
-        assert (2**e) * m == n - 1, f"factor_n failed to factor {n} into {m} and {e}"
+        assert (2**e) * m == n - 1, f"_factor_n failed to factor {n} into {m} and {e}"
 
-    print(f"factor_n passed for {len(odd_composites)} odd composites")
+    print(f"_factor_n passed for {len(odd_composites)} odd composites")
 
 
-def test_fermat():
-    for n in primes.small_primes:
-        assert primes._fermat(n), f"fermat failed to identify {n} as prime"
+def test_fermat_is_prime():
+    for n in primes._small_primes:
+        assert primes._fermat_is_prime(n), f"_fermat_is_prime failed to identify {n} as prime"
 
     print(
-        f"fermat passed for all {len(primes.small_primes)} \
-primes <= {primes.small_primes[len(primes.small_primes)-1]}"
+        f"_fermat_is_prime passed for all {len(primes._small_primes)} \
+primes <= {primes._small_primes[len(primes._small_primes)-1]}"
     )
 
     for n in odd_composites:
-        assert not primes._fermat(n), f"fermat failed to identify {n} as composite"
+        assert not primes._fermat_is_prime(n), f"_fermat_is_prime failed to identify {n} as composite"
 
-    print(f"fermat passed for {len(odd_composites)} odd composites")
+    print(f"_fermat_is_prime passed for {len(odd_composites)} odd composites")
 
     for n in small_carmichaels:
-        assert primes._fermat(n), f"fermat failed to identify composite {n} as prime"
+        assert primes._fermat_is_prime(n), f"_fermat_is_prime failed to identify composite {n} as prime"
 
     print(
-        f"fermat passed with false positives for {len(small_carmichaels)} small Carmichael numbers"
+        f"_fermat_is_prime passed with false positives for {len(small_carmichaels)} small Carmichael numbers"
     )
 
     for n in large_carmichaels:
-        assert primes._fermat(n), f"fermat failed to identify composite {n} as prime"
+        assert primes._fermat_is_prime(n), f"_fermat_is_prime failed to identify composite {n} as prime"
 
     print(
-        f"fermat passed with false positives for {len(large_carmichaels)} large Carmichael numbers"
+        f"_fermat_is_prime passed with false positives for {len(large_carmichaels)} large Carmichael numbers"
     )
 
     for n in large_primes:
-        assert primes._fermat(n), f"fermat failed to identify {n} as prime"
+        assert primes._fermat_is_prime(n), f"_fermat_is_prime failed to identify {n} as prime"
 
-    print(f"fermat passed for {len(large_primes)} large primes")
+    print(f"_fermat_is_prime passed for {len(large_primes)} large primes")
 
 
 def test_is_prime():
     # Test smallest prime.
     assert primes.is_prime(2), "2 is a prime"
 
-    for n in primes.small_primes:
+    for n in primes._small_primes:
         assert primes.is_prime(n), f"is_prime failed to identify {n} as prime"
 
     print(
-        f"is_prime passed for all {len(primes.small_primes)} \
-primes <= {primes.small_primes[len(primes.small_primes)-1]}"
+        f"is_prime passed for all {len(primes._small_primes)} \
+primes <= {primes._small_primes[len(primes._small_primes)-1]}"
     )
 
-    for n in primes.small_primes:
+    for n in primes._small_primes:
         n = n**2
         assert not primes.is_prime(n), f"is_prime failed to identify {n} as composite"
 
     print(
-        f"is_prime passed for the squares of all {len(primes.small_primes)} \
-primes <= {primes.small_primes[len(primes.small_primes)-1]}"
+        f"is_prime passed for the squares of all {len(primes._small_primes)} \
+primes <= {primes._small_primes[len(primes._small_primes)-1]}"
     )
 
     for n in odd_composites:
@@ -184,20 +184,20 @@ def test_generate_prime():
 
 
 def test_fermat_factor():
-    i = len(primes.small_primes) // 2
+    i = len(primes._small_primes) // 2
     j = i
-    while j < len(primes.small_primes):
+    while j < len(primes._small_primes):
         if j - i < 92:
             assert primes.fermat_factor(
-                primes.small_primes[i] * primes.small_primes[j]
+                primes._small_primes[i] * primes._small_primes[j]
             )[
                 0
-            ], f"factors {primes.small_primes[i]} and {primes.small_primes[j]} \
+            ], f"factors {primes._small_primes[i]} and {primes._small_primes[j]} \
 should be factorable by fermat_factor()"
         else:
             assert not primes.fermat_factor(
-                primes.small_primes[i] * primes.small_primes[j]
-            ), f"factors {primes.small_primes[i]} and {primes.small_primes[j]} \
+                primes._small_primes[i] * primes._small_primes[j]
+            ), f"factors {primes._small_primes[i]} and {primes._small_primes[j]} \
 should not be factorable by fermat_factor()"
         i -= 1
         j += 1
@@ -213,47 +213,47 @@ should not be factorable by fermat_factor()"
 
     print("fermat_factor passed for 10 1024-bit primes")
 
-def test_miller_rabin_2():
-    for n in primes.small_primes:
-        assert primes._miller_rabin_2(n), f"miller_rabin_2 failed to identify {n} as prime"
+def test_is_composite_2():
+    for n in primes._small_primes:
+        assert not primes._is_composite_2(n), f"_is_composite_2 failed to identify {n} as prime"
 
     print(
-        f"miller_rabin_2 passed for all {len(primes.small_primes)} \
-primes <= {primes.small_primes[len(primes.small_primes)-1]}"
+        f"_is_composite_2 passed for all {len(primes._small_primes)} \
+primes <= {primes._small_primes[len(primes._small_primes)-1]}"
     )
 
-    for n in primes.small_primes:
+    for n in primes._small_primes:
         n **= 2
-        assert not primes._miller_rabin_2(n), f"miller_rabin_2 failed to identify {n} as composite"
+        assert primes._is_composite_2(n), f"_is_composite_2 failed to identify {n} as composite"
 
     print(
-        f"miller_rabin_2 passed for the squares of all {len(primes.small_primes)} \
-primes <= {primes.small_primes[len(primes.small_primes)-1]}"
+        f"_is_composite_2 passed for the squares of all {len(primes._small_primes)} \
+primes <= {primes._small_primes[len(primes._small_primes)-1]}"
     )
 
     for n in odd_composites:
-        assert not primes._miller_rabin_2(n), f"miller_rabin_2 failed to identify {n} as composite"
+        assert primes._is_composite_2(n), f"_is_composite_2 failed to identify {n} as composite"
 
-    print(f"miller_rabin_2 passed for {len(odd_composites)} odd composites")
+    print(f"_is_composite_2 passed for {len(odd_composites)} odd composites")
 
     for n in small_carmichaels:
-        assert not primes._miller_rabin_2(n), f"miller_rabin_2 failed to identify {n} as composite"
+        assert primes._is_composite_2(n), f"_is_composite_2 failed to identify {n} as composite"
 
     print(
-        f"miller_rabin_2 passed with true negatives for {len(small_carmichaels)} small Carmichael numbers"
+        f"_is_composite_2 passed with true negatives for {len(small_carmichaels)} small Carmichael numbers"
     )
 
     for n in large_carmichaels:
-        assert not primes._miller_rabin_2(n), f"miller_rabin_2 failed to identify {n} as composite"
+        assert primes._is_composite_2(n), f"_is_composite_2 failed to identify {n} as composite"
 
     print(
-        f"miller_rabin_2 passed with true negatives for {len(large_carmichaels)} large Carmichael numbers"
+        f"_is_composite_2 passed with true negatives for {len(large_carmichaels)} large Carmichael numbers"
     )
 
     for n in large_primes:
-        assert primes._miller_rabin_2(n), f"miller_rabin_2 failed to identify {n} as prime"
+        assert not primes._is_composite_2(n), f"_is_composite_2 failed to identify {n} as prime"
 
-    print(f"miller_rabin_2 passed for {len(large_primes)} large primes")
+    print(f"_is_composite_2 passed for {len(large_primes)} large primes")
 
 if __name__ == "__main__":
     main()

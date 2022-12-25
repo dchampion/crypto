@@ -5,7 +5,7 @@ import math
 from . import prng
 from . import util
 
-small_primes =  [  3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
+_small_primes =  [  3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
                   73, 79, 83, 83, 89, 97,101,103,107,109,113,127,131,137,139,149,151,157,163,
                  167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,
                  271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,367,373,379,383,
@@ -41,19 +41,20 @@ def is_prime(n: int) -> bool:
     # Dispense with small primes and multiples thereof. Return True for an n that matches
     # any of the first 168 primes (less than 1,000). Any multiples thereof are composites
     # (but for those return False).
-    for prime in small_primes:
+    for prime in _small_primes:
         if n % prime == 0:
             return n == prime
 
-    # n is neither even, a small prime, nor a multiple of thereof; so call Miller-Rabin.
-    return _miller_rabin(n)
+    # n is neither even, a small prime, nor a multiple of thereof; use Miller-Rabin.
+    return not _is_composite(n)
 
 
-def _miller_rabin(n: int) -> bool:
-    # Returns True if the supplied positive odd integer n is prime; otherwise False. This
-    # function is probabilistic, in that it is theoretically possible for it to return True
-    # for an n that is in fact not prime. However, the probability of such a false positive
-    # is .25^64. Conversely, if this function returns False, n is assured to be composite.
+def _is_composite(n: int) -> bool:
+    # The Miller-Rabin primality test. Returns True if the supplied positive odd
+    # integer n is composite; otherwise False. This function is probabilistic, in
+    # that it is theoretically possible for it to return False for an n that is in
+    # fact composite. However, the probability of such an error is .25^64. Conversely,
+    # if this function returns True, n is assured to be composite.
 
     _validate_param(n)
 
@@ -83,8 +84,8 @@ def _miller_rabin(n: int) -> bool:
                 if i == t:
 
                     # if we don't find a case where x = n-1 by repeatedly squaring x
-                    # t times, then n must be composite; return False.
-                    return False
+                    # t times, then n MUST be composite; return True.
+                    return True
 
                 x = x**2 % n
                 i += 1
@@ -93,13 +94,13 @@ def _miller_rabin(n: int) -> bool:
     # 64 random bases. This means n is prime with a probability of 1 - .25^64. This
     # probability comes from the fact that roughly only 1 in 4 (or .25) bases is a
     # false witness to the primality of a composite n.
-    return True
+    return False
 
 
 def _factor_n(n: int) -> tuple[int, int]:
     # Returns the tuple (s, t), after conversion of the supplied positive odd integer
     # n to the form (2^t * s) + 1, where s is the greatest odd divisor of n-1. This
-    # function is a helper for _miller_rabin().
+    # function is a helper for _is_composite().
 
     _validate_param(n)
 
@@ -113,28 +114,29 @@ def _factor_n(n: int) -> tuple[int, int]:
     return s, t
 
 
-def _miller_rabin_2(n: int) -> bool:
+def _is_composite_2(n: int) -> bool:
     # An implementation of the Miller-Rabin primality test that is easy to
-    # reason about. It may help to start by thinking of this test as a test
-    # for the compositeness of a number n, rather than a test for its
-    # primality. We use this test instead of the Fermat test because some
-    # pseudo- prime numbers, known as Carmichael numbers, defeat the Fermat
-    # test. Specifically, for every base a, where 1 < a < n, and n is a
+    # reason about. We use this test instead of the Fermat test because some
+    # pseudo-prime numbers, known as Carmichael numbers, defeat the Fermat
+    # test. Specifically, for every base a, where 1 < a < n and n is a
     # Carmichael number, a^n = a (mod n) holds, even though n is not prime.
 
-    # First, consider these facts:
+    # To understand the mechanics of this algorithm, it first helps to
+    # consider these facts:
 
     # 1. Fermat's little theorem tells us that a^n = a (mod n) for any prime
     # n, where 1 < a < n.
     # 2. Dividing both sides by a, this can be rewritten as a^(n-1) = 1 (mod n).
-    # 3. The square root of a^(n-1) is a^((n-1)/2); e.g., 3^3 is the square root
-    # of 3^6, which is the square root of 3^12, etc.
-    # 4. The square root of 1 modulo n must be either 1 or -1 (also written as
-    # n-1) if n is prime.
-    # 5. The probability that the square root of 1 modulo n is 1 or -1 for a
-    # composite n is .25; i.e., 1 in 4 bases a are false witnesses to the
-    # primality of said composite n.
-    # 6. If a square root of 1 modulo n is neither 1 nor -1, then n is definitely
+    # 3. Further, the square root of a^(n-1) is a^((n-1)/2); e.g., 3^3 is the
+    # square root of 3^6, which is the square root of 3^12, etc.
+    # 4. If n is prime, then the square root of 1 modulo n must be either 1 or
+    # -1 (which can also written as n-1). This is a specialization of Euclid's
+    # lemma.
+    # 5. If n is composite, it is also possible for the square root of 1 modulo n
+    # to be 1 or -1, but the probability of such a result is only .25; i.e.,
+    # approximately 1 in 4 bases a are false witnesses to the primality of said
+    # composite n.
+    # 6. If a square root of 1 modulo n is neither 1 nor -1, then n must be
     # composite.
 
     # The algorithm works as follows:
@@ -145,13 +147,13 @@ def _miller_rabin_2(n: int) -> bool:
     # exponent results in a square root. For example, the square root of a^s is
     # a^(s/2).
     # 3. If x = 1, n might be prime. Repeat step 2.
-    # 4. If x = n-1, n might prime, but there is no further need to test square
-    # roots. Go to step 1. Note there is no further need to test square roots
+    # 4. If x = n-1, n might also be prime, but there is no need to test its
+    # square root. Go to step 1. There is no further need to test its square root
     # because, given that the square root of 1 modulo n is either 1 or -1, there
     # is no such gaurantee regarding the square root of -1 modulo n.
-    # 5. If x != 1 and x != n-1, n MUST be composite. Return False.
+    # 5. If x != 1 and x != n-1, n MUST be composite. Return True.
     # 6. If the compositeness of n is not established after executing steps 1-5
-    # 64 times, then n is prime with a probability of 1 - .25^64. Return True.
+    # 64 times, then n is prime with a probability of 1 - .25^64. Return False.
 
     # The small likelihood (i.e., .25^-64) of this function falsely reporting n as
     # prime when it is in fact composite comes from the fact that, on average, 1 in
@@ -162,7 +164,7 @@ def _miller_rabin_2(n: int) -> bool:
     _validate_param(n)
 
     if n == 3:
-        return True
+        return False
 
     for _ in range(64):
         a = prng.randrange(2, n - 1)
@@ -172,15 +174,14 @@ def _miller_rabin_2(n: int) -> bool:
             x = util.fast_mod_exp(a, s, n)
             if x == 1:
                 continue
-            elif x == n - 1:
+            if x == n - 1:
                 break
-            else:
-                return False
+            return True
 
-    return True
+    return False
 
 
-def _fermat(n: int) -> bool:
+def _fermat_is_prime(n: int) -> bool:
     # Returns True if the supplied positive odd integer n is prime; otherwise False. This
     # function is probabilistic, in that it is possible for it to return True for an n
     # that is in fact not prime. For example, if n is a so-called Carmichael number,

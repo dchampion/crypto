@@ -24,8 +24,8 @@ def test_crt_conversions():
     # Test edge cases
     for _ in range(100):
         while True:
-            p = random.choice(primes.small_primes[0:5])
-            q = random.choice(primes.small_primes[0:5])
+            p = random.choice(primes._small_primes[0:5])
+            q = random.choice(primes._small_primes[0:5])
             if p != q:
                 break
         x = random.randrange(1, 10)
@@ -69,8 +69,8 @@ def test_fast_mod_exp_crt():
         for e in range(0, 10):
             for _ in range(1, 10):
                 while True:
-                    p = random.choice(primes.small_primes[0:5])
-                    q = random.choice(primes.small_primes[0:5])
+                    p = random.choice(primes._small_primes[0:5])
+                    q = random.choice(primes._small_primes[0:5])
                     if p != q:
                         break
                 assert util.fast_mod_exp_crt(b, e, p, q) == b**e % (p * q)
