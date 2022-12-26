@@ -1,23 +1,12 @@
 """ Euclidean algorithms and support functions. """
 
-
-def swap(a: int, b: int) -> tuple[int, int]:
-    """Returns positive integers a and b in increasing order."""
-    _validate_params(a, b)
-
-    if a > b:
-        return b, a
-    return a, b
-
-
 def gcd(a: int, b: int) -> int:
     """Returns the greatest common divisor (or gcd) of positive
     integers a and b."""
     _validate_params(a, b)
 
-    while b != 0:
-        a, b = swap(a, b)
-        b = b % a
+    while b:
+        a, b = b, a % b
 
     return a
 
@@ -34,9 +23,7 @@ def _gcd(a: int, b: int) -> int:
     if b == 0:
         return a
 
-    a, b = swap(a, b)
-
-    return gcd(a, b % a)
+    return _gcd(b, a % b)
 
 
 def gcdx(a: int, b: int) -> int:
@@ -47,25 +34,15 @@ def gcdx(a: int, b: int) -> int:
     """
     _validate_params(a, b)
 
-    a, b = swap(a, b)
-
-    a1, b1, x1, y1 = 1, 0, 1, 0
-    while b != 0:
+    a1, b1, x, y = 1, 0, 1, 0
+    while b:
         q = a // b
-        temp = b
+        a, b = b, a - q * b
 
-        b = a - q * b
-        a = temp
+        x, b1 = b1, x - q * b1
+        y, a1 = a1, y - q * a1
 
-        temp = a1
-        a1 = y1 - q * a1
-        y1 = temp
-
-        temp = b1
-        b1 = x1 - q * b1
-        x1 = temp
-
-    return a, x1, y1
+    return a, x, y
 
 
 def _gcdx(a: int, b: int) -> int:
@@ -78,15 +55,12 @@ def _gcdx(a: int, b: int) -> int:
     """
     _validate_params(a, b)
 
-    if b == 0:
-        return a, 0, 1
+    if a == 0:
+        return b, 0, 1
 
-    a, b = swap(a, b)
+    gcd_var, x, y = _gcdx(b % a, a)
 
-    gcd_var, x1, y1 = gcdx(a, b % a)
-
-    x = y1 - (b // a) * x1
-    y = x1
+    x, y = y - (b // a) * x, x
 
     return gcd_var, x, y
 
@@ -107,14 +81,12 @@ def inverse(a: int, b: int) -> int:
     """
     _validate_params(a, b)
 
-    gcd_var, x, y = gcdx(a, b)
+    gcd_var, x, _ = gcdx(a, b)
     if gcd_var != 1:
         err_str = f"{a} has no inverse modulo {b}"
         raise ValueError(err_str)
 
-    inv = x if a < b else y
-
-    return (inv % b + b) % b
+    return x % b
 
 
 def _validate_params(a: int, b: int) -> None:

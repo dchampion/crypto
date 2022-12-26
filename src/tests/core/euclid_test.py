@@ -5,7 +5,6 @@ import math
 
 def main():
     print("Running euclid tests...")
-    test_swap()
     test_gcd()
     test__gcd()
     test_gcdx()
@@ -13,19 +12,6 @@ def main():
     test_lcm()
     test_inverse()
     print("all euclid tests passed")
-
-
-def test_swap():
-    a, b = euclid.swap(1, 2)
-    assert b > a, f"expected {b} > {a}, got {a} > {b}"
-
-    a, b = euclid.swap(2, 1)
-    assert b > a, f"expected {b} > {a}, got {a} > {b}"
-
-    a, b = euclid.swap(2, 2)
-    assert b == a, f"expected {a} == {b}, got {a} != {b}"
-
-    print("swap tests passed")
 
 
 def test_gcd():
@@ -93,8 +79,8 @@ def test_gcdx():
 
     a, x, y = euclid.gcdx(60, 7)
     assert a == 1, f"expected 1, got {a}"
-    assert x == -17, f"expected -17, got {x}"
-    assert y == 2, f"expected 2, got {y}"
+    assert x == 2, f"expected 2, got {x}"
+    assert y == -17, f"expected -17, got {y}"
 
     a, x, y = euclid.gcdx(3, 26)
     assert a == 1, f"expected 1, got {a}"
@@ -103,8 +89,8 @@ def test_gcdx():
 
     a, x, y = euclid.gcdx(26, 3)
     assert a == 1, f"expected 1, got {a}"
-    assert x == 9, f"expected 9, got {x}"
-    assert y == -1, f"expected -1, got {y}"
+    assert x == -1, f"expected -1, got {x}"
+    assert y == 9, f"expected 9, got {y}"
 
     a, x, y = euclid.gcdx(7, 997)
     assert a == 1, f"expected 1, got {a}"
@@ -113,8 +99,8 @@ def test_gcdx():
 
     a, x, y = euclid.gcdx(997, 7)
     assert a == 1, f"expected 1, got {a}"
-    assert x == 285, f"expected 285, got {x}"
-    assert y == -2, f"expected -2, got {y}"
+    assert x == -2, f"expected -2, got {x}"
+    assert y == 285, f"expected 285, got {y}"
 
     a, x, y = euclid.gcdx(8, 60)
     assert a == 4, f"expected 4, got {a}"
@@ -123,8 +109,8 @@ def test_gcdx():
 
     a, x, y = euclid.gcdx(60, 8)
     assert a == 4, f"expected 4, got {a}"
-    assert x == -7, f"expected -7, got {x}"
-    assert y == 1, f"expected 1, got {y}"
+    assert x == 1, f"expected 1, got {x}"
+    assert y == -7, f"expected -7, got {y}"
 
     print("gcdx tests passed")
 
@@ -137,8 +123,8 @@ def test__gcdx():
 
     a, x, y = euclid._gcdx(60, 7)
     assert a == 1, f"expected 1, got {a}"
-    assert x == -17, f"expected -17, got {x}"
-    assert y == 2, f"expected 2, got {y}"
+    assert x == 2, f"expected 2, got {x}"
+    assert y == -17, f"expected -17, got {y}"
 
     a, x, y = euclid._gcdx(3, 26)
     assert a == 1, f"expected 1, got {a}"
@@ -147,8 +133,8 @@ def test__gcdx():
 
     a, x, y = euclid._gcdx(26, 3)
     assert a == 1, f"expected 1, got {a}"
-    assert x == 9, f"expected 9, got {x}"
-    assert y == -1, f"expected -1, got {y}"
+    assert x == -1, f"expected -1, got {x}"
+    assert y == 9, f"expected 9, got {y}"
 
     a, x, y = euclid._gcdx(7, 997)
     assert a == 1, f"expected 1, got {a}"
@@ -157,8 +143,8 @@ def test__gcdx():
 
     a, x, y = euclid._gcdx(997, 7)
     assert a == 1, f"expected 1, got {a}"
-    assert x == 285, f"expected 285, got {x}"
-    assert y == -2, f"expected -2, got {y}"
+    assert x == -2, f"expected -2, got {x}"
+    assert y == 285, f"expected 285, got {y}"
 
     a, x, y = euclid._gcdx(8, 60)
     assert a == 4, f"expected 4, got {a}"
@@ -167,8 +153,8 @@ def test__gcdx():
 
     a, x, y = euclid._gcdx(60, 8)
     assert a == 4, f"expected 4, got {a}"
-    assert x == -7, f"expected -7, got {x}"
-    assert y == 1, f"expected 1, got {y}"
+    assert x == 1, f"expected 1, got {x}"
+    assert y == -7, f"expected -7, got {y}"
 
     print("_gcdx tests passed")
 
