@@ -141,7 +141,7 @@ Recall that $\phi(n)$ gives the number of integers between 1 and $n$ that are co
 
 Euler's totient function is _multiplicative_, meaning that if two integers $p$ and $q$ are relatively prime, then $\phi(pq) = \phi(p) \times \phi(q) = (p-1)(q-1)$.
 
-A corollary to Euler's theorem&mdash;and one that is crucial to the efficacy of the RSA algorithm&mdash;is that for any integers $x$ and $y$, $x \equiv y \pmod{\phi(n)}$ implies $a^x \equiv a^y \pmod{n}$, if $a$ is coprime to $n$. This is proven as follows:
+A corollary to Euler's theorem&mdash;and one that is crucial to understanding the RSA algorithm&mdash;is that for any integers $x$ and $y$, $x \equiv y \pmod{\phi(n)}$ implies $a^x \equiv a^y \pmod{n}$, if $a$ is coprime to $n$. This is proven as follows:
 
 - $x \equiv y \pmod{\phi(n)}$
 - $x - y = \phi(n)k$, for some integer $k$
