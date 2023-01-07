@@ -67,14 +67,14 @@ def _generate_rsa_factors(modulus_bit_len: int) -> tuple[int, int]:
     assert modulus_bit_len % 32 == 0
 
     p = _generate_rsa_prime(modulus_bit_len // 2)
-    q = p
+    q = _generate_rsa_prime(modulus_bit_len // 2)
 
     # The product of two n-bit numbers will be smaller than 2n bits if one or both of the n-bit
     # factors is small enough. Whereas in principle a modulus of length 2n-1 bits is secure
     # (enough), some implementations will complain if the modulus bit length is not a multiple
     # of 8. So the trial-and-error here trades performance for compatibility/interoperability
     # with such systems.
-    while q == p or (p * q).bit_length() < modulus_bit_len:
+    while (p * q).bit_length() < modulus_bit_len:
         q = _generate_rsa_prime(modulus_bit_len // 2)
 
     # Test for bad PRNG
