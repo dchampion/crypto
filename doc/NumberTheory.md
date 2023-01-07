@@ -2,7 +2,7 @@
 
 ## _Theorem_
 
-A statement that has been proven to be true.
+A statement of fact that has been proven to be true.
 
 ## _Lemma_
 
@@ -14,11 +14,11 @@ Argues why a lemma or theorem is true. A special case is a proof by contradictio
 
 # Notation
 
-_Unless otherwise stated, assume all integers are positive._
+_Unless otherwise noted, assume all integers are positive._
 
 The symbol | means _divides_. For example, given two integers $a$ and $b$, $a|b$ means $a$ divides $b$ without leaving a remainder.
 
-The symbol $\equiv$ denotes a congruence relation, which in effect tranlates to _is equivalent to_. For example, $a \equiv b \pmod{c}$ means $a$ is congruent to $b$ modulo $c$, where $a$, $b$ and $c$ are all integers. In such a relation, $a - b$ is a multiple of $c$; or, more formally, $a - b = kc$ for some integer $k$.
+The symbol $\equiv$ denotes a congruence relation (which in effect tranlates to _is equivalent to_). For example, $a \equiv b \pmod{c}$ means $a$ is congruent to $b$ modulo $c$, where $a$, $b$ and $c$ are all integers. In such a relation, $a - b$ is a multiple of $c$; or, more formally, $a - b = kc$ for some integer $k$.
 
 The symbol $\phi$ (the letter _phi_ in the Greek alphabet) denotes [_Euler's Totient Funtion_](https://en.wikipedia.org/wiki/Euler%27s_totient_function), as in $\phi(n)$, where $n$ is some integer. For any integer $n$, $\phi(n)$ gives the number of integers between $1$ and $n$ that are [_coprime_](https://en.wikipedia.org/wiki/Coprime_integers), or [_relatively prime_](https://en.wikipedia.org/wiki/Coprime_integers), to $n$.
 
@@ -72,7 +72,7 @@ if $p$ is prime, then the only possible square roots of $1$ modulo $p$ are eithe
 This is technically just a specialization of Euclid's lemma; it is important because it is used to test very large integers for primality (see subsection [_Finding Large Primes_](#finding-large-primes) for a more thorough discussion).
 
 ## Proof
-- Let $a$ be the square root of $1$ modulo $p$, such that $a^2 \equiv 1 \pmod{p}$
+- Let $a^2 \equiv 1 \pmod{p}$, giving that $a$ is the square root of $1$ modulo $p$
 - Subtract $1$ from both sides of the relation, giving $a^2 - 1 \equiv 0 \pmod{p}$
 - Thus, $p$ divides $a^2-1$
 - Factor the term $a^2 - 1$ into the difference of its squares, giving $(a+1)(a-1)$
@@ -107,26 +107,27 @@ Primality&ndash;testing algorithms based on trial division are not feasible for 
 
 However, combining some theorems and lemmas from above, we can identify very large primes using an algorithm of logarithmic time complexity. Perhaps the most famous of these is the [Miller&ndash;Rabin](https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test) algorithm, which in its accepted form was developed by Michael Rabin in 1980. Rabin's variant is probabalistic, and builds on a deterministic version of the algorithm developed by Gary Miller in 1976.
 
-## Lemmas Used in Miller-Rabin
+## Lemmas Used in Miller&ndash;Rabin
 
 - Fermat's little theorem, which states that if $p$ is prime, then $a^{p-1} \equiv 1 \pmod{p}$, where $1 < a < p$.
 - Euclid's lemma, which states that if $p$ is prime, and $p|ab$, where $ab$ is the product of two integers $a$ and $b$, then $p$ must divide either $a$ or $b$.
 
-## Miller-Rabin
+## Miller&ndash;Rabin
 
-If Miller-Rabin were a theorem, it would state that if $p$ is prime, then the square root of $1$ modulo $p$ is either $1$ or $-1$. Conversely, if the square root of $p$ modulo $1$ is neither $1$ nor $-1$, then $p$ must be composite (see subsection [_Miller&ndash;Rabin Theorem_](#miller–rabin-theorem) for a more general proof).
+If Miller&ndash;Rabin were a theorem, it would state that if $p$ is prime, then the square root of $1$ modulo $p$ is either $1$ or $-1$. Conversely, if the square root of $p$ modulo $1$ is neither $1$ nor $-1$, then $p$ must be composite (see subsection [_Miller&ndash;Rabin Theorem_](#miller–rabin-theorem) for a more general proof).
 
 ### Proof
 
 - By Fermat, we have that if $p$ is prime, then $a^{p-1} \equiv 1 \pmod{p}$
-- If we subtract $1$ from both sides of this relation, we get $a^{p-1} - 1 \equiv 0 \pmod{p}$; therefore, $p$ divides $a^{p-1} - 1$
+- If we subtract $1$ from both sides of this relation, we get $a^{p-1} - 1 \equiv 0 \pmod{p}$
+- Therefore, $p$ divides $a^{p-1} - 1$
 - The square root of $a^{p-1}$ is $a^{(p-1)/2}$, so by the difference of squares we can rewrite $a^{p-1} - 1$ as $(a^{(p-1)/2} + 1)(a^{(p-1)/2} - 1)$
 - By Euclid, we have that if $p$ is prime, then $p$ divides at least one of the terms $(a^{(p-1)/2} + 1)$ or $(a^{(p-1)/2} - 1)$
-- Therefore, the square root of $a^{p-1}$ (i.e., $a^{(p-1)/2}$) is congruent to either $1$ or $-1$ modulo $p$
+- Therefore, the square root of $a^{p-1}$, or $a^{(p-1)/2}$, is congruent to either $1$ or $-1$ modulo $p$
 
 Stated generally, if $p$ is prime, then the square root of $a^{p-1}$ (which by Fermat we know to be congruent to $1$ modulo $p$) must either also be congruent to $1$ modulo $p$ or, if it is not, then it must be congruent to $-1$ modulo $p$.
 
-Specifically, with regard to the Miller-Rabin algorithm, if the square root of $a^{p-1}$ is _not_ congruent to either $1$ or $-1$ modulo $p$, then $p$ must be composite. We can use this fact to test for the compositeness of an integer that runs in logarithmic time in the size of the input.
+Specifically, with regard to the Miller&ndash;Rabin algorithm, if the square root of $a^{p-1}$ is _not_ congruent to either $1$ or $-1$ modulo $p$, then $p$ must be composite. We can use this fact to test for the compositeness of an integer that runs in logarithmic time in the size of the input.
 
 # [Euler's Theorem](https://en.wikipedia.org/wiki/Euler%27s_theorem)
 
@@ -138,9 +139,9 @@ Euler's theorem is a generalization of Fermat's little theorem, since $n$ can be
 
 Recall that $\phi(n)$ gives the number of integers between 1 and $n$ that are coprime with $n$. Therefore, if $n$ is prime, then $\phi(n) = n - 1$, and we have $a^{n-1} \equiv 1 \pmod{n}$ (Fermat).
 
-Euler's totient function is _multiplicative_, meaning that if two integers $p$ and $q$ are relatively prime, then $\phi(pq) = \phi(p)\phi(q) = (p-1)(q-1)$.
+Euler's totient function is _multiplicative_, meaning that if two integers $p$ and $q$ are relatively prime, then $\phi(pq) = \phi(p) \times \phi(q) = (p-1)(q-1)$.
 
-A corollary to Euler's theorem is that for any integers $x$ and $y$, $x \equiv y \pmod{\phi(n)}$ implies $a^x \equiv a^y \pmod{n}$, if $a$ is coprime to $n$. This is proven as follows:
+A corollary to Euler's theorem&mdash;and one that is crucial to the efficacy of the RSA algorithm&mdash;is that for any integers $x$ and $y$, $x \equiv y \pmod{\phi(n)}$ implies $a^x \equiv a^y \pmod{n}$, if $a$ is coprime to $n$. This is proven as follows:
 
 - $x \equiv y \pmod{\phi(n)}$
 - $x - y = \phi(n)k$, for some integer $k$
@@ -159,9 +160,9 @@ If $n$ is prime, the group is _cyclic_ and _simple_; i.e., its only subgroups ar
 
 # [The Chinese Remainder Theorem](https://en.wikipedia.org/wiki/Chinese_remainder_theorem)
 
-For any number of integers that are pairwise coprime, if one knows the remainders of the division of those integers by $x$, one can identify $x$. A special case is that if one knows the pair of integers ($x \bmod{p}, x \bmod{q}$), where $p$ and $q$ are distinct odd primes, one can uniquely determine the value of $x \bmod{pq}$.
+For any number of integers that are pairwise coprime, if one knows the remainders of the division of those integers by $x$, one can identify $x$. A special case is that if one knows the pair of integers $(x \bmod{p}, x \bmod{q})$, where $p$ and $q$ are distinct odd primes, one can uniquely determine the value of $x \bmod{pq}$.
 
-Stated another way, each $x$ in $\mathbb{Z}_{n}$ corresponds to a unique pair ($x \bmod{p}, x \bmod{q}$).
+Stated another way, each $x$ in $\mathbb{Z}_{n}$ corresponds to a unique pair $(x \bmod{p}, x \bmod{q})$.
 
 The Chinese Remainder Theorem (CRT) is used in RSA to accelerate the otherwise intolerably expensive operations of decryption and digital signature.
 
@@ -182,7 +183,7 @@ The Chinese Remainder Theorem (CRT) is used in RSA to accelerate the otherwise i
 
 - A [_group_](<https://en.wikipedia.org/wiki/Group_(mathematics)>) is a finite field together with a single binary operation, such as addition or multiplication.
 - The numbers in $\mathbb{Z}_{p}$ form a group together with addition; one can add or subtract any two numbers in the group and the result will be a number in the group.
-- A group whose operator is multiplication cannot contain 0 (because one cannot divide by 0), and consists of the set $1, ..., p - 1$; this is known as the _muliplicative group_ modulo $p$, and is written $\mathbb{Z^*}_{p}$.
+- A group whose operator is multiplication cannot contain 0 (because one cannot divide by 0), and consists of the set $1, ..., p - 1$; this is known as the _muliplicative group_ modulo $p$, and is written $\mathbb{Z_p^*}$.
 - A group can contain _subgroups_; a subgroup is a subset of the elements in the full group.
 - If you apply the group operator to two elements in a subgroup, you again get an element in the subgroup.
 
@@ -201,7 +202,7 @@ The Chinese Remainder Theorem (CRT) is used in RSA to accelerate the otherwise i
 - These integers do not form a finite field, but rather a [_ring_](<https://en.wikipedia.org/wiki/Ring_(mathematics)>).
 - For any prime $p$, for all $x$ where $0 < x < p$, the congruence relation $x^{p-1} \equiv 1 \pmod{p}$ holds. This is [_Fermat's Little Theorem_](https://en.wikipedia.org/wiki/Fermat%27s_little_theorem).
 - For a composite $n$ that is the product of exactly two distinct odd primes $p$ and $q$, there is an exponent $t$ such that $x^t \equiv 1 \pmod{n}$ for _almost_ all $x$; the exceptions are values of $x$ that are multiples of either $p$ or $q$.
-- The frequency of such exceptions is in the proportion $(p + q) / pq$, and diminishes quadratically in the size of $pq$.
+- The frequency of such exceptions is in the proportion $\displaystyle \frac{(p+q)}{pq}$, and diminishes quadratically in the size of $pq$.
 - The smallest $t$ that is a multiple of $p - 1$ and $q - 1$ is their least common mulitple, or $lcm(p-1, q-1)$.
 
 # Greatest Common Divisor
@@ -211,7 +212,7 @@ The Chinese Remainder Theorem (CRT) is used in RSA to accelerate the otherwise i
 
 # Least Common Multiple
 
-- The least common multiple (_LCM_) of two integers $a$ and $b$ is smallest $k$ such that $k$ is a multiple of both $a$ and $b$; it is found by $ab / gcd(a, b)$.
+- The least common multiple (_LCM_) of two integers $a$ and $b$ is smallest $k$ such that $k$ is a multiple of both $a$ and $b$; it is found by $\displaystyle \frac{ab}{gcd(a, b)}$.
 - Whereas the original RSA whitepaper specifies that $\phi(pq)$&mdash;which recall is $(p-1)(q-1)$&mdash;be used to compute decryption and signature exponents, in practice $lcm(p-1, q-1)$ is used instead because it results in smaller, and therefore more efficient (albeit no less secure), exponents.
 
 # The Extended Euclidean Algorithm
