@@ -59,7 +59,7 @@ def _is_composite(n: int) -> bool:
     _validate_param(n)
 
     if n == 3:
-        return True
+        return False
 
     # factor n into s and t, such that n = ((2^t) * s) + 1.
     s, t = _factor_n(n)
