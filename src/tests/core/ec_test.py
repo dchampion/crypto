@@ -31,7 +31,7 @@ pt_group = [
     [5, 16],
     [None, None],
 ]
-test_curve_1 = {"curve": curves.Curve(17, 2, 2, 5, 1, 19, 1), "pts": pt_group}
+test_curve_1 = {"curve": curves.Curve(p=17, a=2, b=2, Gx=5, Gy=1, n=19, h=1), "pts": pt_group}
 
 # Test curve 2 parameters
 pt_group = [
@@ -65,7 +65,7 @@ pt_group = [
     [0, 21],
     [None, None],
 ]
-test_curve_2 = {"curve": curves.Curve(23, 1, 4, 0, 2, 29, 1), "pts": pt_group}
+test_curve_2 = {"curve": curves.Curve(p=23, a=1, b=4, Gx=0, Gy=2, n=29, h=1), "pts": pt_group}
 test_curves = [test_curve_1, test_curve_2]
 
 real_curves = [
@@ -210,8 +210,8 @@ def test_validate_curve_params():
             assert False
 
     try:
-        # Test with invalid curve parameter on test curve.
-        ec.new_curve(curves.Curve(23, 1, 4, 2, 2, 29, 1), _TEST_CURVE_B_ITERS)
+        # Test with invalid curve parameter on test curve (swap Gx, Gy)
+        ec.new_curve(curves.Curve(p=17, a=2, b=2, Gy=5, Gx=1, n=19, h=1), _TEST_CURVE_B_ITERS)
         ec._validate_curve_params(_TEST_CURVE_B_ITERS)
         assert False
     except Exception as e:
