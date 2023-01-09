@@ -173,7 +173,7 @@ def decrypt_random_key(d: int, c: int, p: int, q: int) -> bytes:
     return K
 
 
-def sign(d: int, p: int, q: int, m: any) -> int:
+def sign(d: int, p: int, q: int, m: object) -> int:
     """
     Given a private signing key d, and the factors p and q of a public RSA modulus n,
     signs a message m and returns its signature. This function is the inverse of the function
@@ -194,7 +194,7 @@ def sign(d: int, p: int, q: int, m: any) -> int:
     return o
 
 
-def verify(n: int, e: int, m: any, o: int) -> bool:
+def verify(n: int, e: int, m: object, o: int) -> bool:
     """
     Given a public modulus n and exponent e, a message m and a signature o, returns True
     if the signature is valid for the message m, or False otherwise. This function is the
@@ -216,7 +216,7 @@ def verify(n: int, e: int, m: any, o: int) -> bool:
     return o1 == s
 
 
-def _msg_to_rsa_number(n: int, m: any) -> int:
+def _msg_to_rsa_number(n: int, m: object) -> int:
     # Maps a message m to an integer suitable for signing.
 
     assert isinstance(n, int) and n.bit_length() >= _MODULUS_MIN_BIT_LEN

@@ -15,10 +15,10 @@ def _get_random_bit_len(min: int, max: int, step: int = 1) -> int:
 
 def _iterations() -> int:
     num_cores = _num_cores()
-    return 4 if num_cores < 4 else num_cores
+    return 4 if (num_cores is None or num_cores < 4) else num_cores
 
 
-def _num_cores() -> int:
+def _num_cores() -> int | None:
     return os.cpu_count()
 
 

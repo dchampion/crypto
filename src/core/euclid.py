@@ -26,7 +26,7 @@ def _gcd(a: int, b: int) -> int:
     return _gcd(b, a % b)
 
 
-def gcdx(a: int, b: int) -> int:
+def gcdx(a: int, b: int) -> tuple[int, int, int]:
     """
     Returns the greatest common divisor (or gcd) of positive
     integers a and b, and the x and y solutions for the relation
@@ -45,7 +45,7 @@ def gcdx(a: int, b: int) -> int:
     return a, x, y
 
 
-def _gcdx(a: int, b: int) -> int:
+def _gcdx(a: int, b: int) -> tuple[int, int, int]:
     """
     Returns the greatest common divisor (or gcd) of positive integers
     a and b, and the x and y solutions for the relation ax + by = gcd(a,b)

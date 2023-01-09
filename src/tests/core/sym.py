@@ -29,4 +29,4 @@ def _to_int(s):
 
 def _to_str(i):
     i_bytes = i.to_bytes((i.bit_length() + 7) // 8, byteorder="big")
-    return i_bytes.decode("utf-8").lstrip("\x00")
+    return i_bytes.decode("utf-8")

@@ -148,7 +148,7 @@ def generate_session_key(d: int, Q: list[int]) -> bytes:
     return util.digest(k_pt[_X])
 
 
-def sign(d: int, m: any) -> tuple[int, int]:
+def sign(d: int, m: object) -> tuple[int, int]:
     """
     Returns a tuple of the form (r, s), which comprises the signature of the message m
     using the caller's private key d. Receivers of this signature can verify the message's
@@ -179,7 +179,7 @@ def sign(d: int, m: any) -> tuple[int, int]:
     return r, s
 
 
-def verify(Q: list[int], m: any, S: tuple[int, int]) -> bool:
+def verify(Q: list[int], m: object, S: tuple[int, int]) -> bool:
     """
     Returns True if the signature S, a tuple of the form (r, s) that is returned
     by this module's sign function, is valid for the message m and a public key Q;
@@ -222,7 +222,7 @@ def verify(Q: list[int], m: any, S: tuple[int, int]) -> bool:
     return v == r
 
 
-def _hash_to_int(m: any) -> int:
+def _hash_to_int(m: object) -> int:
     # Converts a message m to an integer representation of its hash.
 
     h = util.digest(m)
@@ -303,7 +303,7 @@ def _on_curve(pt: list[int]) -> bool:
     )
 
 
-def _validate_priv_key(d: int) -> None:
+def _validate_priv_key(d: int) -> bool:
     # Private keys must fall in the range 1 <= d < n
 
     return isinstance(d, int) and 1 <= d < _CURVE.n

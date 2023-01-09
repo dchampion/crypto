@@ -1,6 +1,7 @@
 """ Various functions for generating primes and primality testing. """
 
 import math
+from typing import Literal
 
 from . import prng
 from . import util
@@ -205,7 +206,7 @@ def _fermat_is_prime(n: int) -> bool:
     return True
 
 
-def fermat_factor(n: int) -> tuple[True, int, int] or False:
+def fermat_factor(n: int) -> tuple[Literal[True], int, int] | Literal[False]:
     """
     Attempts to factor a composite (or, more specifically, a semiprime) integer n using Fermat's
     factorization algorithm. Returns the tuple (True, p, q) if the factorization is successful,

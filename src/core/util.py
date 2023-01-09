@@ -85,7 +85,7 @@ def to_crt(x: int, p: int, q: int) -> tuple[int, int]:
     return x % p, x % q
 
 
-def digest(k: any) -> bytes:
+def digest(k: object) -> bytes:
     """
     Returns a hashed byte array of input k.
     """
