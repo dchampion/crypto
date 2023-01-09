@@ -220,5 +220,5 @@ The Chinese Remainder Theorem (CRT) is used in RSA to accelerate the otherwise i
 - Division is not possible in a multiplicative group, because division can produce fractional results.
 - Therefore, to _simulate_ division in a multiplicative group, we use the [_Extended Euclidean
   Algorithm_](https://github.com/dchampion/crypto/blob/master/doc/EuclideanAlgorithms.md).
-- This can be thought of as _multiplication by an inverse_ in the real numbers. For example, $5 / 2$ (division) is the same as $5 \times \frac{1}{2}$ (multiplication). In the latter, we multiply $5$ by the _inverse_ of $2$, or $\frac{1}{2}$. Both operations yield the same result, which is $2 \frac{1}{2}$.
+- This can be thought of as _multiplication by an inverse_ in the real numbers. For example, $\frac{5}{2}$ (division) is the same as $5 \times \frac{1}{2}$ (multiplication). In the latter, we multiply $5$ by the _inverse_ of $2$, or $\frac{1}{2}$. Both operations yield the same result, which is $2 \frac{1}{2}$.
 - The extended euclidean algorithm finds two integers $u$ and $v$ such that $ua + vb = gcd(a, b)$, which allows one to compute the mulitiplicative inverse of an integer modulo $p$.
