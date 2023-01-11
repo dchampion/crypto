@@ -167,8 +167,8 @@ def test_full_protocol():
     #                                                                                      #
     # [nB] (v=3 and e=5 are known.)       <---    [nB]                                     #
     #                                                                                      #
-    # mA = "8675309" (Message to be                                                        #
-    #         signed and encrypted.)                                                       #
+    # mA = "Sign and encrypt me!" (Message                                                 #
+    #         to be signed and encrypted.)                                                 #
     #                                                                                      #
     # [oA] =                                                                               #
     #   rsa_sign(d3A, pA, qA, mA)                                                          #
@@ -214,7 +214,7 @@ def test_full_protocol():
     # resulting signature is stored in [oA]. Note that, although it is unclear from this
     # interface, the message mA is not signed directly; rather, it is hashed first, to the
     # full domain of the modulus nA, and then signed.
-    mA = "8675309"
+    mA = "Sign and encrypt me!"
     oA = rsa.sign(d3A, pA, qA, mA)
 
     # Alice computes and encrypts a symmetric key, using Bob's public key [nB, 5], and

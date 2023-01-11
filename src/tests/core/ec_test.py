@@ -414,8 +414,8 @@ def full_protocol(curve):
     # kSessionA =                                 kSessionB =                              #
     #   generate_session_key(dA, QB)                generate_session_key(dB, QA)           #
     #                                                                                      #
-    # mA = "8675309" (Message to be                                                        #
-    #         signed and encrypted.)                                                       #
+    # mA = "Sign and encrypt me!" (Message                                                 #
+    #         to be signed and encrypted.)                                                 #
     #                                                                                      #
     # [sA] = sign(dA, mA)                                                                  #
     #                                                                                      #
@@ -460,7 +460,7 @@ def full_protocol(curve):
 
     # Alice produces a message mA, and signs it with her private key dA, thus producing the
     # ECDSA signature [sA].
-    mA = "8675309"
+    mA = "Sign and encrypt me!"
     sA = ec.sign(dA, mA)
 
     # Alice encrypts her message mA using her ECDH session key kSessionA. Alice transmits the
