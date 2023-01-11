@@ -1,6 +1,6 @@
 """
-A symmetric cipher that should be used for only for testing the public-key
-primitives in this package.
+A symmetric, xor-based cipher that should be used for only for testing
+the public-key primitives in this package.
 """
 
 
@@ -10,8 +10,16 @@ def encrypt(k: bytes, m: object) -> int:
 
     Use decrypt(k, c), where k is key passed to this function, and c is
     the ciphertext returned by this function, to recover m.
+
+    If the bit length of the message m exceeds that of the key k, raises
+    a ValueError.
     """
-    return _to_int(k) ^ _to_int(m)
+    k_int = _to_int(k)
+    m_int = _to_int(m)
+    if k_int.bit_length() < m_int.bit_length():
+        raise ValueError("Bit length of message exceeds bit length of key")
+
+    return k_int ^ m_int
 
 
 def decrypt(k: bytes, c: int, decode: bool=True) -> str | bytes:
