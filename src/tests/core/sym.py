@@ -1,6 +1,6 @@
 """
-A symmetric, xor-based cipher that should be used for only for testing
-the public-key primitives in this package.
+A symmetric, xor-based cipher that should be used only for testing the
+public-key primitives in this package.
 """
 
 
