@@ -258,6 +258,9 @@ def test_full_protocol():
     print("test_full_protocol passed")
 
 def test_rsa_class():
+
+    print("test_rsa_class started")
+
     rsa_key_a = rsa.make_key()          # Alice makes a keypair.
 
     mA = "Sign and encrypt me!"         # Alice composes a message and stores it
@@ -293,6 +296,8 @@ def test_rsa_class():
     assert mA == mB
                                         # Bob verifies the signature.
     assert rsa_key_b.verify(rsa_key_a.n, mB, sA)
+    print("test_rsa_class passed")
+
 
 if __name__ == "__main__":
     main()
