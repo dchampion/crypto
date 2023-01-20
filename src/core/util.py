@@ -90,3 +90,27 @@ def digest(k: object) -> bytes:
     Returns a hashed byte array of input k.
     """
     return hashlib.sha256(str(k).encode("utf-8")).digest()
+
+
+def to_int(o: object, byteorder: str="big") -> int:
+    """
+    Given an object o, and an optional parameter byteorder (default="big"),
+    returns the integer representation of o.
+    """
+    if isinstance(o, int):
+        return o
+    elif isinstance(o, bytes):
+        i = int.from_bytes(o, byteorder=byteorder)
+    else:
+        i = int.from_bytes(str(o).encode("utf-8"), byteorder=byteorder)
+
+    return i
+
+
+def to_bytes(i: int, byteorder: str="big") -> bytes:
+    """
+    Given an integer i, and an optional parameter byteorder (default="big"),
+    returns a byte array representation of i.
+    """
+    return i.to_bytes((i.bit_length() + 7) // 8, byteorder=byteorder)
+

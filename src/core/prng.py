@@ -9,6 +9,8 @@ to provide maximum transparency into their implementation.
 
 import os
 
+from core import util
+
 
 def randrange(l: int, u: int) -> int:
     """
@@ -51,7 +53,7 @@ def randbits(k: int) -> int:
 
     # bits / 8 and rounded up
     numbytes = (k + 7) // 8
-    x = int.from_bytes(os.urandom(numbytes), byteorder="big")
+    x = util.to_int(os.urandom(numbytes))
 
     # trim excess bits
     return x >> (numbytes * 8 - k)

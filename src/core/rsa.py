@@ -121,7 +121,7 @@ def _validate_factors(p: int, q: int) -> None:
     assert not primes.fermat_factor(p * q), "p is too close to q"
 
 
-def encrypt_random_key(n: int, e: int) -> tuple[bytes, int]:
+def encrypt_random_key(n: int, e: int) -> tuple[bytes, bytes]:
     """
     Given a public RSA key, consisting of a modulus n and an encryption exponent e, returns
     a symmetric key K that is a hash of a random integer r in the range 0 to n-1, and the
@@ -146,10 +146,10 @@ def encrypt_random_key(n: int, e: int) -> tuple[bytes, int]:
     c = util.fast_mod_exp(r, e, n)
 
     # K must be kept secret; send only the ciphertext of r (i.e., c) to the other party.
-    return K, c
+    return K, util.to_bytes(c)
 
 
-def decrypt_random_key(d: int, c: int, p: int, q: int) -> bytes:
+def decrypt_random_key(d: int, c: object, p: int, q: int) -> bytes:
     """
     Given a private RSA key d, a ciphertext c, and the prime factors p and q of a public RSA
     modulus n, returns a symmetric key K that is identical to that returned by the function
@@ -157,13 +157,14 @@ def decrypt_random_key(d: int, c: int, p: int, q: int) -> bytes:
     """
 
     assert isinstance(d, int)
-    assert isinstance(c, int)
     assert isinstance(p, int)
     assert isinstance(q, int)
-    assert 0 <= c <= p * q
+
+    ci = util.to_int(c)
+    assert 0 <= ci <= p * q
 
     # Recover r from its ciphertext c (using CRT for fast exponentiation).
-    r = util.fast_mod_exp_crt(c, d, p, q)
+    r = util.fast_mod_exp_crt(ci, d, p, q)
 
     # Hash r to arrive at the same key K as that computed by the encrypting party (see function
     # encrypt_random_key).
@@ -232,6 +233,7 @@ def _msg_to_rsa_number(n: int, m: object) -> int:
 
     # Convert byte string to an integer "representative", whose bit length is in the full range
     # of the modulus n.
-    xi = int.from_bytes(xb, byteorder="little") % n.bit_length()
+    # TODO: revisit endian-ness.
+    xi = util.to_int(xb, byteorder="little") % n.bit_length()
 
     return xi

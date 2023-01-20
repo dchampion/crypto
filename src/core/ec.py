@@ -226,7 +226,7 @@ def _hash_to_int(m: object) -> int:
     # Converts a message m to an integer representation of its hash.
 
     h = util.digest(m)
-    i = int.from_bytes(h, byteorder="big")
+    i = util.to_int(h)
 
     if _CURVE.n.bit_length() >= i.bit_length():
         e = i
