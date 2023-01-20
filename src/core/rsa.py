@@ -21,8 +21,50 @@ _MODULUS_MAX_BIT_LEN = _FACTOR_MAX_BIT_LEN * 2
 VERIFICATION_EXPONENT = 3
 ENCRYPTION_EXPONENT = 5
 
+class RSAKey(object):
+    def __init__(self, modulus_bit_len):
+        self._p, self._q, self._n, self._d3, self._d5 = _generate_rsa_key(modulus_bit_len)
+    
+    def modulus_bit_length(self) -> int:
+        return self._n.bit_length()
+    
+    @property
+    def p(self) -> int:
+        return self._p
+    
+    @property
+    def q(self) -> int:
+        return self._q
+    
+    @property
+    def n(self) -> int:
+        return self._n
+    
+    @property
+    def d3(self) -> int:
+        return self._d3
+    
+    @property
+    def d5(self) -> int:
+        return self._d5
+    
+    def sign(self, message: object) -> int:
+        return _sign(self.d3, self.p, self.q, message)
+    
+    def verify(self, n: int, message: object, sig: int) -> bool:
+        return _verify(n, VERIFICATION_EXPONENT, message, sig)
+    
+    def encrypt_key(self, n: int):
+        return _encrypt_random_key(n, ENCRYPTION_EXPONENT)
+    
+    def decrypt_key(self, ciphertext):
+        return _decrypt_random_key(self.d5, ciphertext, self.p, self.q)
 
-def generate_rsa_key(modulus_bit_len: int) -> tuple[int, int, int, int, int]:
+def generate_rsa_key2(modulus_bit_len: int) -> RSAKey:
+    return RSAKey(modulus_bit_len)
+
+
+def _generate_rsa_key(modulus_bit_len: int) -> tuple[int, int, int, int, int]:
     """
     Returns a tuple of the form (p, q, n, d3, d5), where p and q are randomly-selected, distinct
     prime factors of size modulus_bit_len/2, n is the semiprime product of p and q (this is
@@ -121,7 +163,7 @@ def _validate_factors(p: int, q: int) -> None:
     assert not primes.fermat_factor(p * q), "p is too close to q"
 
 
-def encrypt_random_key(n: int, e: int) -> tuple[bytes, bytes]:
+def _encrypt_random_key(n: int, e: int) -> tuple[bytes, bytes]:
     """
     Given a public RSA key, consisting of a modulus n and an encryption exponent e, returns
     a symmetric key K that is a hash of a random integer r in the range 0 to n-1, and the
@@ -156,6 +198,8 @@ def decrypt_random_key(d: int, c: object, p: int, q: int) -> bytes:
     encrypt_random_key. K must be kept secret by callers of this function.
     """
 
+    c_i = int.from_bytes(c, byteorder="big")
+
     assert isinstance(d, int)
     assert isinstance(p, int)
     assert isinstance(q, int)
@@ -174,7 +218,7 @@ def decrypt_random_key(d: int, c: object, p: int, q: int) -> bytes:
     return K
 
 
-def sign(d: int, p: int, q: int, m: object) -> int:
+def _sign(d: int, p: int, q: int, m: object) -> int:
     """
     Given a private signing key d, and the factors p and q of a public RSA modulus n,
     signs a message m and returns its signature. This function is the inverse of the function
@@ -195,7 +239,7 @@ def sign(d: int, p: int, q: int, m: object) -> int:
     return o
 
 
-def verify(n: int, e: int, m: object, o: int) -> bool:
+def _verify(n: int, e: int, m: object, o: int) -> bool:
     """
     Given a public modulus n and exponent e, a message m and a signature o, returns True
     if the signature is valid for the message m, or False otherwise. This function is the
