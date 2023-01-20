@@ -18,6 +18,7 @@ def main():
     test_encrypt_decrypt()
     test_sign_verify()
     test_full_protocol()
+    test_rsa_class()
     print("all rsa tests passed")
 
 
@@ -72,7 +73,7 @@ def generate_rsa_key(modulus_bit_len):
         f"\ttesting generate rsa key with {modulus_bit_len}-bit modulus from pid={os.getpid()}"
     )
 
-    p, q, n, d3, d5 = rsa._generate_rsa_key(modulus_bit_len)
+    p, q, n, d3, d5 = rsa.generate_rsa_key(modulus_bit_len)
     assert primes.is_prime(p), "p is not prime"
     assert primes.is_prime(q), "q is not prime"
     assert n == p * q, "n != p*q"
@@ -111,9 +112,9 @@ def encrypt_decrypt(modulus_bit_len):
         f"\ttesting encrypt decrypt with {modulus_bit_len}-bit modulus from pid={os.getpid()}"
     )
 
-    p, q, n, _, d5 = rsa._generate_rsa_key(modulus_bit_len)
-    K1, c = rsa._encrypt_random_key(n, rsa.ENCRYPTION_EXPONENT)
-    K2 = rsa._decrypt_random_key(d5, c, p, q)
+    p, q, n, _, d5 = rsa.generate_rsa_key(modulus_bit_len)
+    K1, c = rsa.encrypt_random_key(n, rsa.ENCRYPTION_EXPONENT)
+    K2 = rsa.decrypt_random_key(d5, c, p, q)
     assert K1 == K2, "Keys don't match"
 
     print(
@@ -140,10 +141,10 @@ def sign_verify(modulus_bit_len):
         f"\ttesting sign verify with {modulus_bit_len}-bit modulus from pid={os.getpid()}"
     )
 
-    p, q, n, d3, _ = rsa._generate_rsa_key(modulus_bit_len)
+    p, q, n, d3, _ = rsa.generate_rsa_key(modulus_bit_len)
     m = random.randbytes(random.randint(20, 40))
-    o = rsa._sign(d3, p, q, m)
-    assert rsa._verify(n, rsa.VERIFICATION_EXPONENT, m, o)
+    o = rsa.sign(d3, p, q, m)
+    assert rsa.verify(n, rsa.VERIFICATION_EXPONENT, m, o)
 
     print(
         f"\tsign verify passed with {modulus_bit_len}-bit modulus from pid={os.getpid()}"
@@ -204,25 +205,25 @@ def test_full_protocol():
     # to Bob. In this simulated protocol, we assume that Bob knows Alice's signature-
     # verification and encryption exponents (the numbers 3 and 5, respectively); these,
     # together with [nA], comprise Alice's public key.
-    pA, qA, nA, d3A, _ = rsa._generate_rsa_key(rsa._MODULUS_MIN_BIT_LEN)
+    pA, qA, nA, d3A, _ = rsa.generate_rsa_key(rsa._MODULUS_MIN_BIT_LEN)
 
     # Bob generates his own RSA parameters, and sends the public component (the modulus
     # [nB]) to Alice. Alice, too, knows Bob's public signature-verification and encryption
     # exponents (again, v=3 and e=5).
-    pB, qB, nB, _, d5B = rsa._generate_rsa_key(rsa._MODULUS_MIN_BIT_LEN)
+    pB, qB, nB, _, d5B = rsa.generate_rsa_key(rsa._MODULUS_MIN_BIT_LEN)
 
     # Alice produces a message mA, and signs it using her private signing key d3A. The
     # resulting signature is stored in [oA]. Note that, although it is unclear from this
     # interface, the message mA is not signed directly; rather, it is hashed first, to the
     # full domain of the modulus nA, and then signed.
     mA = "Sign and encrypt me!"
-    oA = rsa._sign(d3A, pA, qA, mA)
+    oA = rsa.sign(d3A, pA, qA, mA)
 
     # Alice computes and encrypts a symmetric key, using Bob's public key [nB, 5], and
     # stores it in KA; this she must keep private. [cA] is the ciphertext of the symmetric
     # key input material, which Alice will transmit to Bob, and which Bob will use to
     # reconstruct the symmetric key KA.
-    KA, cA = rsa._encrypt_random_key(nB, rsa.ENCRYPTION_EXPONENT)
+    KA, cA = rsa.encrypt_random_key(nB, rsa.ENCRYPTION_EXPONENT)
 
     # Using the symmetric key KA, Alice encrypts the message mA using a symmetric
     # scheme. For the purposes of this example, that scheme is a simple bitwise xor of
@@ -233,7 +234,7 @@ def test_full_protocol():
     # From the ciphertext [cA], Bob decrypts Alice's symmetric key KA using his
     # private RSA decryption key (d5B, pB, qB). He stores the result in KB (KB
     # should be identical to KA).
-    KB = rsa._decrypt_random_key(d5B, cA, pB, qB)
+    KB = rsa.decrypt_random_key(d5B, cA, pB, qB)
     assert KA == KB
 
     # Bob decrypts Alice's ciphertext message [mAC] using the same symmetric scheme
@@ -251,27 +252,47 @@ def test_full_protocol():
     # was signed by Alice). We have thus acheived the three key characteristics
     # required for a public-key scheme: confidentiality (via encryption),
     # authenticity and integrity (via signature and verification).
-    verified = rsa._verify(nA, rsa.VERIFICATION_EXPONENT, mB, oA)
+    verified = rsa.verify(nA, rsa.VERIFICATION_EXPONENT, mB, oA)
     assert verified
 
     print("test_full_protocol passed")
 
-def test_full_protocol2():
-    #rsa_key_a = rsa.generate_rsa_key2(rsa._MODULUS_MIN_BIT_LEN)
-    rsa_key_a = RSAKey(2048)
-    mA = "Sign and encrypt me!"
-    oA = rsa_key_a.sign(mA)
-    
-    #rsa_key_b = rsa.generate_rsa_key2(rsa._MODULUS_MIN_BIT_LEN)
-    rsa_key_b = RSAKey(2048)
-    KA, cA = rsa_key_a.encrypt_key(rsa_key_b.n)
-    mAC = sym.encrypt(KA, mA)
+def test_rsa_class():
+    rsa_key_a = rsa.make_key()          # Alice makes a keypair.
 
-    KB = rsa_key_b.decrypt_key(cA)
-    mB = sym.decrypt(KB, mAC)
-    
+    mA = "Sign and encrypt me!"         # Alice composes a message and stores it
+                                        # in mA.
+
+    sA = rsa_key_a.sign(mA)             # Alice signs the message mA and stores
+                                        # the signature in sA.
+
+    rsa_key_b = rsa.make_key()          # Bob makes a keypair.
+
+    nB = rsa_key_b.n                    # Bob stores his public key in nB.
+
+    # Bob --> nB --> Alice              # Bob transmits his public key nB to Alice.
+
+    KA, cA = rsa_key_a.encrypt_key(nB)  # Alice computes a session key KA, and its
+                                        # ciphertext cA, using Bob's public key nB.
+
+    mAC = sym.encrypt(KA, mA)           # Using the session key KA, Alice encrypts
+                                        # the message mA and stores the ciphertext
+                                        # in mAC.
+
+    # Alice ---> (mAC, oA, cA) ---> Bob # Alice transmits the the encrypted message
+                                        # mAC, the message's signature oA, and the
+                                        # encrypted session key cA to Bob.
+
+    KB = rsa_key_b.decrypt_key(cA)      # Bob recovers the session key KB from its
+                                        # ciphertext cA.
+    assert KA == KB
+
+    mB = sym.decrypt(KB, mAC)           # Bob recovers the message mB from its
+                                        # ciphertext mAC.
+
     assert mA == mB
-    assert rsa_key_b.verify(rsa_key_a.n, mB, oA)
+                                        # Bob verifies the signature.
+    assert rsa_key_b.verify(rsa_key_a.n, mB, sA)
 
 if __name__ == "__main__":
     main()
