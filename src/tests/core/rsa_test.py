@@ -261,41 +261,56 @@ def test_rsa_class():
 
     print("test_rsa_class started")
 
-    rsa_key_a = rsa.make_key()          # Alice makes a keypair.
+    rsa_key_a = rsa.make_key()          # Alice makes a keypair, and stores her
+    nA = rsa_key_a.n                    # public key in nA (she will transmit
+                                        # this key to Bob later in the sequence).
 
-    mA = "Sign and encrypt me!"         # Alice composes a message and stores it
-                                        # in mA.
+    mA = "Sign and encrypt me!"         # Alice composes a message for Bob, and
+                                        # stores the message contents in mA.
 
-    sA = rsa_key_a.sign(mA)             # Alice signs the message mA and stores
-                                        # the signature in sA.
+    sA = rsa_key_a.sign(mA)             # Alice signs the message, and stores the
+                                        # signature in sA.
 
-    rsa_key_b = rsa.make_key()          # Bob makes a keypair.
+    rsa_key_b = rsa.make_key()          # Bob makes a keypair, stores his public
+    nB = rsa_key_b.n                    # key in nB, and transmits his public key
+                                        # to Alice.
+                                        # Bob -----> (nB) -----> Alice
 
-    nB = rsa_key_b.n                    # Bob stores his public key in nB.
-
-    # Bob --> nB --> Alice              # Bob transmits his public key nB to Alice.
-
-    KA, cA = rsa_key_a.encrypt_key(nB)  # Alice computes a session key KA, and its
-                                        # ciphertext cA, using Bob's public key nB.
+    KA, cA = rsa_key_a.encrypt_key(nB)  # Having received Bob's public key nB,
+                                        # Alice uses it to compute a session key
+                                        # KA, and an encrypted version of it cA
+                                        # (the encrypted key is the one she will
+                                        # transmit to Bob).
 
     mAC = sym.encrypt(KA, mA)           # Using the session key KA, Alice encrypts
-                                        # the message mA and stores the ciphertext
-                                        # in mAC.
-
-    # Alice ---> (mAC, oA, cA) ---> Bob # Alice transmits the the encrypted message
-                                        # mAC, the message's signature oA, and the
-                                        # encrypted session key cA to Bob.
+                                        # Bob's message, and stores its ciphertext
+                                        # in mAC. Alice transmits her public key nA,
+                                        # the encrypted message mAC, the message's
+                                        # signature sA, and the encrypted session
+                                        # key cA to Bob.
+                                        # Alice -----> (nA, mAC, sA, cA) -----> Bob
 
     KB = rsa_key_b.decrypt_key(cA)      # Bob recovers the session key KB from its
-                                        # ciphertext cA.
+                                        # ciphertext cA. Because Alice used Bob's
+                                        # public key nB to encrypt her session key
+                                        # KA into cA, Bob can recover the session
+                                        # key from cA using his corresponding
+                                        # private key.
     assert KA == KB
 
-    mB = sym.decrypt(KB, mAC)           # Bob recovers the message mB from its
-                                        # ciphertext mAC.
+    mB = sym.decrypt(KB, mAC)           # Using the unencrypted session key KB, Bob
+                                        # recovers the message mB from its ciphertext
+                                        # mAC.
 
     assert mA == mB
-                                        # Bob verifies the signature.
-    assert rsa_key_b.verify(rsa_key_a.n, mB, sA)
+
+    assert rsa_key_b.verify(nA, mB, sA) # Bob verifies the message signature. If
+                                        # the verify() method returns True, Bob knows
+                                        # that (a) Alice is the author of the message,
+                                        # (b) the message was not altered by a third
+                                        # party, and (c) that no one but Alice and
+                                        # Bob knows the contents of the message.
+
     print("test_rsa_class passed")
 
 
