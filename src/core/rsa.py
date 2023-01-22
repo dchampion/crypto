@@ -130,6 +130,9 @@ class RSAKey(object):
                self.d3 == other.d3 and\
                self.d5 == other.d5
 
+    def __hash__(self):
+        return hash((self.p, self.q, self.n, self.d3, self.d5))
+
     def __neq__(self, other):
         return not self == other
 
