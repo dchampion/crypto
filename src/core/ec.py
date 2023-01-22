@@ -21,6 +21,110 @@ _Y = 1
 # Default curve is secp256k1.
 _CURVE = curves.Secp256k1()
 
+class ECPoint(object):
+    def __init__(self, x: int | None, y: int | None):
+        self._x = x
+        self._y = y
+
+    @property
+    def x(self) -> int | None:
+        return self._x
+
+    @property
+    def y(self) -> int | None:
+        return self._y
+
+    def double(self):
+        doubled = _double(self._as_list())
+        return ECPoint(doubled[0], doubled[1])
+
+    def _as_list(self) -> list:
+        return [self.x, self.y]
+
+    def __add__(self, other):
+        if not isinstance(other, ECPoint):
+            return NotImplemented
+        sum = _add(self._as_list(), other._as_list())
+        return ECPoint(sum[0], sum[1])
+
+    def __iadd__(self, other):
+        if not isinstance(other, ECPoint):
+            return NotImplemented
+        self = self.__add__(other)
+        return self
+
+    def __mul__(self, n: int):
+        if not isinstance(n, int):
+            return NotImplemented
+        product = _x_times_pt(n, self._as_list())
+        return ECPoint(product[0], product[1])
+
+    def __imul__(self, n: int):
+        if not isinstance(n, int):
+            return NotImplemented
+        self = self.__mul__(n)
+        return self
+
+    def __rmul__(self, lhs):
+        return self.__mul__(lhs)
+
+    def __str__(self):
+        return f"x={self.x}, y={self.y}"
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
+    def __hash__(self):
+        return hash((self.x, self.y))
+
+    def __neq__(self, other):
+        return not self == other
+
+class ECKey(object):
+    def __init__(self, d: int, Q: ECPoint):
+        self._d = d
+        self._Q = Q
+
+    @property
+    def d(self) -> int:
+        return self._d
+
+    @property
+    def Q(self) -> ECPoint:
+        return self._Q
+
+    def make_session_key(self, Q) -> bytes:
+        if not isinstance(Q, ECPoint):
+            raise ValueError("Q is not a curve point.")
+        return generate_session_key(self.d, Q._as_list())
+
+    def sign(self, m: object) -> tuple[int, int]:
+        return sign(self.d, m)
+
+    def verify(self, Q: ECPoint, m: object, S: tuple[int, int]) -> bool:
+        return verify(Q._as_list(), m, S)
+
+    def get_public_key(self) -> ECPoint:
+        return self.Q
+
+    def __eq__(self, other):
+        return self.d == other.d and self.Q == other.Q
+
+    def __hash__(self):
+        return hash((self.d, self.Q))
+
+    def __neq__(self, other):
+        return not self == other
+
+    def __str__(self):
+        return f"d={self.d}, Q=[{self.Q}]"
+
+def make_point(x: int | None, y: int | None) -> ECPoint:
+    return ECPoint(x, y)
+
+def make_key():
+    d, Q = generate_keypair()
+    return ECKey(d, ECPoint(x=Q[0], y=Q[1]))
 
 def new_curve(curve: curves.Curve, B_iters: int = 100) -> None:
     """

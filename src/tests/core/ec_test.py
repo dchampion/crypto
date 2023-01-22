@@ -31,7 +31,11 @@ pt_group = [
     [5, 16],
     [None, None],
 ]
-test_curve_1 = {"curve": curves.Curve(p=17, a=2, b=2, Gx=5, Gy=1, n=19, h=1), "pts": pt_group}
+test_curve_1 = (
+    {"curve": curves.Curve(p=17, a=2, b=2, Gx=5, Gy=1, n=19, h=1),
+     "pts": pt_group,
+     "ecpts": [ec.ECPoint(pt[0], pt[1]) for pt in pt_group]}
+)
 
 # Test curve 2 parameters
 pt_group = [
@@ -65,7 +69,11 @@ pt_group = [
     [0, 21],
     [None, None],
 ]
-test_curve_2 = {"curve": curves.Curve(p=23, a=1, b=4, Gx=0, Gy=2, n=29, h=1), "pts": pt_group}
+test_curve_2 = (
+    {"curve": curves.Curve(p=23, a=1, b=4, Gx=0, Gy=2, n=29, h=1),
+     "pts": pt_group,
+     "ecpts": [ec.ECPoint(pt[0], pt[1]) for pt in pt_group]}
+)
 test_curves = [test_curve_1, test_curve_2]
 
 real_curves = [
@@ -94,6 +102,9 @@ def main():
     test_hash_to_int()
     test_sign_and_verify()
     test_full_protocol()
+    test_ec_keys()
+    test_ec_point_add()
+    test_ec_point_double()
     print("all ec tests passed")
 
 
@@ -479,6 +490,139 @@ def full_protocol(curve):
     print(
         f"\tfull protocol test on curve {type(curve).__name__} passed from pid={os.getpid()}"
     )
+
+def test_ec_keys():
+    print("test_ec_keys started")
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        results = executor.map(test_ec_key, real_curves)
+        util.process_results(results)
+
+    print("test_ec_keys passed")
+
+def test_ec_key(curve):
+
+    print(
+        f"\ttesting ECKey on curve {type(curve).__name__} from pid={os.getpid()}"
+    )
+
+    ec.new_curve(curve)
+
+    key_a = ec.make_key()
+    key_b = ec.make_key()
+
+    k_sess_a = key_a.make_session_key(key_b.Q)
+    k_sess_b = key_b.make_session_key(key_a.Q)
+
+    mA = "Sign and encrypt me!"
+    sA = key_a.sign(mA)
+
+    mAC = sym.encrypt(k_sess_a, mA)
+    mB = sym.decrypt(k_sess_b, mAC)
+    assert mA == mB
+    assert key_b.verify(key_a.Q, mB, sA)
+
+    print(
+        f"\tECKey test on curve {type(curve).__name__} passed from pid={os.getpid()}"
+    )
+
+def test_ec_point_add():
+    print("test_ec_point_add started")
+
+    for test_curve in test_curves:
+        ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
+        pt_group_local = test_curve["ecpts"]
+
+        # Repeated addition of all group elements to the specified base point.
+        base_pt = ec.make_point(test_curve["curve"].Gx, test_curve["curve"].Gy)
+        for i in range(1, len(pt_group_local)):
+            pt = base_pt + pt_group_local[i-1]
+            assert pt == pt_group_local[i]
+
+        # Repeated addition of all group elements to a randomly selected base point.
+        rand_index = prng.randrange(0, len(pt_group_local))
+        pt_set2 = set()
+        pt_set2.add(pt_group_local[rand_index])
+        for i in range(1, len(pt_group_local)):
+            pt = pt_group_local[rand_index] + pt_group_local[i-1]
+            pt_set2.add(pt)
+
+        pt_set1 = set([pt for pt in pt_group_local])
+        assert len(pt_set2.difference(pt_set1)) == 0
+
+        # Add selected group elements.
+        pt = pt_group_local[0] + pt_group_local[9]
+        assert pt == pt_group_local[10]
+
+        # Commute.
+        pt = pt_group_local[9] + pt_group_local[0]
+        assert pt == pt_group_local[10]
+
+        # Add selected group elements.
+        pt = pt_group_local[5] + pt_group_local[3]
+        assert pt == pt_group_local[9]
+
+        # Commute.
+        pt = pt_group_local[5] + pt_group_local[3]
+        assert pt == pt_group_local[9]
+
+        # Add the identity element to the base point.
+        identity = ec.make_point(ec._I[0], ec._I[1])
+        pt = base_pt + identity
+        assert pt == base_pt
+
+        # Commute.
+        pt = identity + base_pt
+        assert pt == base_pt
+
+        # Add selected point to the identity element.
+        pt = pt_group_local[3] + identity
+        assert pt == pt_group_local[3]
+
+        # Commute.
+        pt = identity + pt_group_local[3]
+        assert pt == pt_group_local[3]
+
+        # Add the identity elements.
+        pt = ec._add(ec._I, ec._I)
+        pt = identity + identity
+        assert pt == identity
+
+        # Add the same two group elements.
+        pt = pt_group_local[2] + pt_group_local[2]
+        assert pt == pt_group_local[5]
+
+        # Add first and last (non-identity) group elements.
+        pt = pt_group_local[0] + pt_group_local[len(pt_group_local) - 2]
+        assert pt == identity
+
+    # Try to add bogus points.
+    try:
+        ec.ECPoint(6, 12) + ec.ECPoint(19, 2)
+        assert False
+    except Exception:
+        pass
+
+    print("test_ec_point_add passed")
+
+def test_ec_point_double():
+    print("test_ec_point_double started")
+    for test_curve in test_curves:
+        ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
+        pt_group_local = test_curve["ecpts"]
+
+        # Double each group element starting with the base point.
+        for i in range(1, len(pt_group_local)):
+            pt = pt_group_local[i-1].double()
+            assert pt == pt_group_local[((i * 2) % test_curve["curve"].n) - 1]
+
+    # Try to double a bogus point.
+    try:
+        ec.ECPoint(19, 2).double()
+        assert False
+    except Exception:
+        pass
+
+    print("test_ec_point_double passed")
 
 
 if __name__ == "__main__":
