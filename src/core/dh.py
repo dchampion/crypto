@@ -163,7 +163,7 @@ def validate_pub_key(k_pub: int, q: int, p: int) -> None:
     valid = True
 
     # k_pub must be in the interval [2, p-1].
-    if valid and k_pub <= 1 or k_pub >= p:
+    if valid and (k_pub <= 1 or k_pub >= p):
         valid = False
 
     # k_pub must be in the subgroup of order (or size) q.
