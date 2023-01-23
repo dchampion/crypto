@@ -23,6 +23,7 @@ _CURVE = curves.Secp256k1()
 
 class ECPoint(object):
     def __init__(self, x: int | None, y: int | None):
+        _validate_pt([x, y])
         self._x = x
         self._y = y
 
@@ -82,6 +83,8 @@ class ECPoint(object):
 
 class ECKey(object):
     def __init__(self, d: int, Q: ECPoint):
+        _validate_priv_key(d)
+        validate_pub_key(Q._as_list())
         self._d = d
         self._Q = Q
 
@@ -104,7 +107,7 @@ class ECKey(object):
     def verify(self, Q: ECPoint, m: object, S: tuple[int, int]) -> bool:
         return verify(Q._as_list(), m, S)
 
-    def get_public_key(self) -> ECPoint:
+    def public_key(self) -> ECPoint:
         return self.Q
 
     def __eq__(self, other):
@@ -382,7 +385,7 @@ def _point_at(d: int) -> list[int]:
     return pt
 
 
-def _validate_pt(pt: list[int]) -> None:
+def _validate_pt(pt: list[int|None]) -> None:
     # pt must be a 2-element list.
 
     assert isinstance(pt, list) and len(pt) == 2

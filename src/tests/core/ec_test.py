@@ -9,6 +9,8 @@ from core import prng
 from . import sym
 from . import util
 
+_TEST_CURVE_B_ITERS = 5
+
 # Test curve 1 parameters
 pt_group = [
     [5, 1],
@@ -31,8 +33,9 @@ pt_group = [
     [5, 16],
     [None, None],
 ]
+ec.new_curve(curves.Curve(p=17, a=2, b=2, Gx=5, Gy=1, n=19, h=1), _TEST_CURVE_B_ITERS)
 test_curve_1 = (
-    {"curve": curves.Curve(p=17, a=2, b=2, Gx=5, Gy=1, n=19, h=1),
+    {"curve": ec._CURVE,
      "pts": pt_group,
      "ecpts": [ec.ECPoint(pt[0], pt[1]) for pt in pt_group]}
 )
@@ -69,8 +72,9 @@ pt_group = [
     [0, 21],
     [None, None],
 ]
+ec.new_curve(curves.Curve(p=23, a=1, b=4, Gx=0, Gy=2, n=29, h=1), _TEST_CURVE_B_ITERS)
 test_curve_2 = (
-    {"curve": curves.Curve(p=23, a=1, b=4, Gx=0, Gy=2, n=29, h=1),
+    {"curve": ec._CURVE,
      "pts": pt_group,
      "ecpts": [ec.ECPoint(pt[0], pt[1]) for pt in pt_group]}
 )
@@ -87,8 +91,6 @@ real_curves = [
     curves.Secp521r1(),
 ]
 
-_TEST_CURVE_B_ITERS = 5
-
 
 def main():
     print("Running ec tests...")
@@ -102,9 +104,11 @@ def main():
     test_hash_to_int()
     test_sign_and_verify()
     test_full_protocol()
-    test_ec_keys()
-    test_ec_point_add()
-    test_ec_point_double()
+    test_point_add_ec_class()
+    test_point_double_ec_class()
+    test_x_times_pt_ec_class()
+    test_misc_ec_class()
+    test_full_protocol_ec_class()
     print("all ec tests passed")
 
 
@@ -491,42 +495,14 @@ def full_protocol(curve):
         f"\tfull protocol test on curve {type(curve).__name__} passed from pid={os.getpid()}"
     )
 
-def test_ec_keys():
-    print("test_ec_keys started")
-    with concurrent.futures.ProcessPoolExecutor() as executor:
-        results = executor.map(test_ec_key, real_curves)
-        util.process_results(results)
 
-    print("test_ec_keys passed")
-
-def test_ec_key(curve):
-
-    print(
-        f"\ttesting ECKey on curve {type(curve).__name__} from pid={os.getpid()}"
-    )
-
-    ec.new_curve(curve)
-
-    key_a = ec.make_key()
-    key_b = ec.make_key()
-
-    k_sess_a = key_a.make_session_key(key_b.Q)
-    k_sess_b = key_b.make_session_key(key_a.Q)
-
-    mA = "Sign and encrypt me!"
-    sA = key_a.sign(mA)
-
-    mAC = sym.encrypt(k_sess_a, mA)
-    mB = sym.decrypt(k_sess_b, mAC)
-    assert mA == mB
-    assert key_b.verify(key_a.Q, mB, sA)
-
-    print(
-        f"\tECKey test on curve {type(curve).__name__} passed from pid={os.getpid()}"
-    )
-
-def test_ec_point_add():
-    print("test_ec_point_add started")
+############################################################################################
+# The following tests are repeats of some of the module-based tests above, only they
+# exercise the class-based API (i.e, ECPoint and ECKey). They are distinguished from their
+# module-based counterparts by the suffix "_ec_class".
+############################################################################################
+def test_point_add_ec_class():
+    print("test_point_add_ec_class started")
 
     for test_curve in test_curves:
         ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
@@ -534,9 +510,15 @@ def test_ec_point_add():
 
         # Repeated addition of all group elements to the specified base point.
         base_pt = ec.make_point(test_curve["curve"].Gx, test_curve["curve"].Gy)
+        pt2 = base_pt
         for i in range(1, len(pt_group_local)):
+            # Test __add__ version (+)
             pt = base_pt + pt_group_local[i-1]
             assert pt == pt_group_local[i]
+
+            # Test __iadd__ version (+=)
+            pt2 += base_pt
+            assert pt2 == pt_group_local[i]
 
         # Repeated addition of all group elements to a randomly selected base point.
         rand_index = prng.randrange(0, len(pt_group_local))
@@ -566,26 +548,26 @@ def test_ec_point_add():
         assert pt == pt_group_local[9]
 
         # Add the identity element to the base point.
-        identity = ec.make_point(ec._I[0], ec._I[1])
-        pt = base_pt + identity
+        id_elem = ec.make_point(ec._I[0], ec._I[1])
+        pt = base_pt + id_elem
         assert pt == base_pt
 
         # Commute.
-        pt = identity + base_pt
+        pt = id_elem + base_pt
         assert pt == base_pt
 
         # Add selected point to the identity element.
-        pt = pt_group_local[3] + identity
+        pt = pt_group_local[3] + id_elem
         assert pt == pt_group_local[3]
 
         # Commute.
-        pt = identity + pt_group_local[3]
+        pt = id_elem + pt_group_local[3]
         assert pt == pt_group_local[3]
 
         # Add the identity elements.
         pt = ec._add(ec._I, ec._I)
-        pt = identity + identity
-        assert pt == identity
+        pt = id_elem + id_elem
+        assert pt == id_elem
 
         # Add the same two group elements.
         pt = pt_group_local[2] + pt_group_local[2]
@@ -593,7 +575,7 @@ def test_ec_point_add():
 
         # Add first and last (non-identity) group elements.
         pt = pt_group_local[0] + pt_group_local[len(pt_group_local) - 2]
-        assert pt == identity
+        assert pt == id_elem
 
     # Try to add bogus points.
     try:
@@ -602,10 +584,11 @@ def test_ec_point_add():
     except Exception:
         pass
 
-    print("test_ec_point_add passed")
+    print("test_point_add_ec_class passed")
 
-def test_ec_point_double():
-    print("test_ec_point_double started")
+
+def test_point_double_ec_class():
+    print("test_point_double_ec_class started")
     for test_curve in test_curves:
         ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
         pt_group_local = test_curve["ecpts"]
@@ -622,7 +605,153 @@ def test_ec_point_double():
     except Exception:
         pass
 
-    print("test_ec_point_double passed")
+    print("test_point_double_ec_class passed")
+
+
+def test_x_times_pt_ec_class():
+    print("test_x_times_pt_ec_class started")
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        results = executor.map(x_times_pt_ec_class, real_curves)
+        util.process_results(results)
+
+    for test_curve in test_curves:
+        # Test that the order of the curve group times any point on the curve yields the identity
+        # element using the small test curves.
+        ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
+        id_elem = ec.make_point(ec._I[0], ec._I[1])
+        pt_group_local = test_curve["ecpts"]
+        for i in range(0, len(pt_group_local)):
+            # Alternate order of operands.
+            if i % 2 == 0:
+                assert test_curve["curve"].n * pt_group_local[i] == id_elem
+            else:
+                assert id_elem == pt_group_local[i] * test_curve["curve"].n
+
+    print("test_x_times_pt_ec_class passed")
+
+
+def x_times_pt_ec_class(curve):
+    print(
+        f"\ttesting scalar point multiplication on curve {type(curve).__name__} from pid={os.getpid()}"
+    )
+    ec.new_curve(curve)
+    id_elem = ec.make_point(ec._I[0], ec._I[1])
+    for i in range(100):
+        # Test that the order of the curve group times 100 randomly selected points on the curve
+        # yields the identity element using the secp256k1 curve.
+        ec_key = ec.make_key()
+        # Alternate order of operands.
+        if i % 2 == 0:
+            assert ec._CURVE.n * ec_key.public_key() == id_elem
+        else:
+            assert id_elem == ec_key.public_key() * ec._CURVE.n
+
+    print(
+        f"\tscalar point multiplication passed on curve {type(curve).__name__} from pid={os.getpid()}"
+    )
+
+
+def test_misc_ec_class():
+    print("test_misc_ec_class started")
+
+    ec.new_curve(curves.Secp256k1())
+
+    # Test ECKey __eq__() and __hash__() behavior is correct
+    key1 = ec.make_key()
+    key2 = ec.make_key()
+    key_dict = {key1: "key1", key2: "key2"}
+    assert key_dict[key1] == "key1"
+    assert "key1" == key_dict[key1]
+    assert key_dict[key2] == "key2"
+    assert "key2" == key_dict[key2]
+    assert key_dict[key1] != "key2"
+    assert "key1" != key_dict[key2]
+    assert key_dict[key2] != "key1"
+    assert "key2" != key_dict[key1]
+
+    # Test ECKey.putlic_key() returns its public key.
+    key_pub = key1.public_key()
+    assert key_pub == key1.Q
+    assert key1.Q == key_pub
+
+    # Test bogus point construction raises exception.
+    try:
+        ec.ECKey(2, ec.ECPoint(None, None))
+        assert False
+    except:
+        pass
+
+    ec.new_curve(test_curve_1["curve"], _TEST_CURVE_B_ITERS)
+    pt_group_local = test_curve_1["ecpts"]
+
+    # Test ECPoint __eq__() and __hash__() behavior is correct
+    pt_dict = {pt_group_local[0]: "pt0", pt_group_local[1]: "pt1", pt_group_local[2]: "pt2"}
+    assert pt_dict[pt_group_local[0]] == "pt0"
+    assert "pt0" == pt_dict[pt_group_local[0]]
+    assert pt_dict[pt_group_local[1]] == "pt1"
+    assert "pt1" == pt_dict[pt_group_local[1]]
+    assert pt_dict[pt_group_local[2]] == "pt2"
+    assert "pt2" == pt_dict[pt_group_local[2]]
+
+    # Test ECPoint __imul__() and __rmul__() behavior is correct
+    pt_1 = pt_group_local[0]
+    pt_2 = pt_1
+    for i in range(0, len(pt_group_local)):
+        if i < 1:
+            continue
+
+        # Apply __imul__().
+        pt_1 *= i
+
+        # Alternate order __mul__() and __rmul__().
+        if i % 2 == 0:
+            pt_2 = pt_2 * i
+        else:
+            pt_2 = i * pt_2
+
+        assert pt_1 == pt_2
+
+    print("test_misc_ec_class passed")
+
+
+def test_full_protocol_ec_class():
+    print("test_full_protocol_ec_class started")
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        results = executor.map(full_protocol_ec, real_curves)
+        util.process_results(results)
+
+    print("test_full_protocol_ec_class passed")
+
+
+def full_protocol_ec(curve):
+
+    print(
+        f"\ttesting full protocol with ec-key class on curve {type(curve).__name__} from pid={os.getpid()}"
+    )
+
+    ec.new_curve(curve)
+
+    ec_key_a = ec.make_key()
+    pub_key_a = ec_key_a.public_key()
+
+    ec_key_b = ec.make_key()
+    pub_key_b = ec_key_b.public_key()
+
+    ses_key_a = ec_key_a.make_session_key(pub_key_b)
+    ses_key_b = ec_key_b.make_session_key(pub_key_a)
+
+    mA = "Sign and encrypt me!"
+    sA = ec_key_a.sign(mA)
+
+    mAC = sym.encrypt(ses_key_a, mA)
+    mB = sym.decrypt(ses_key_b, mAC)
+
+    assert mA == mB
+    assert ec_key_b.verify(pub_key_a, mB, sA)
+
+    print(
+        f"\tfull protocol with ec-key class test on curve {type(curve).__name__} passed from pid={os.getpid()}"
+    )
 
 
 if __name__ == "__main__":
