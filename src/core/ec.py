@@ -122,12 +122,23 @@ class ECKey(object):
     def __str__(self):
         return f"d={self.d}, Q=[{self.Q}]"
 
+
 def make_point(x: int | None, y: int | None) -> ECPoint:
     return ECPoint(x, y)
 
+
 def make_key():
     d, Q = generate_keypair()
-    return ECKey(d, ECPoint(x=Q[0], y=Q[1]))
+    return ECKey(d, make_point(Q[0], Q[1]))
+
+
+def base_point() -> ECPoint:
+    return make_point(_CURVE.Gx, _CURVE.Gy)
+
+
+def id_elem() -> ECPoint:
+    return make_point(None, None)
+
 
 def new_curve(curve: curves.Curve, B_iters: int = 100) -> None:
     """
