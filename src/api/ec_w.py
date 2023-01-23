@@ -17,9 +17,9 @@ def construct(curve: str) -> EccKey:
     """
 
     ec.new_curve(_from_str(curve))
-    d, Q = ec.generate_keypair()
+    keypair = ec.make_key()
 
-    return ECC.construct(curve=curve, d=d, point_x=Q[0], point_y=Q[1])
+    return ECC.construct(curve=curve, d=keypair.d, point_x=keypair.Q.x, point_y=keypair.Q.y)
 
 
 def _from_str(as_str: str) -> curves.Curve:
