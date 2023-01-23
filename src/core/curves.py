@@ -34,14 +34,15 @@ class Curve:
         return [self.Gx, self.Gy]
 
     def __str__(self) -> str:
-        return f"{type(self).__name__} curve parameters:\n\
+        return (
+f"""{type(self).__name__} curve parameters:\n\
  p:  {self.p}\n\
  a:  {self.a}\n\
  b:  {self.b}\n\
  Gx: {self.Gx}\n\
  Gy: {self.Gy}\n\
  n:  {self.n}\n\
- h:  {self.h}"
+ h:  {self.h}""")
 
 
 class Secp192k1(Curve):
