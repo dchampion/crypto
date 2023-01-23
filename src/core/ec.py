@@ -22,6 +22,10 @@ _Y = 1
 _CURVE = curves.Secp256k1()
 
 class ECPoint(object):
+    """
+    A class representing an elliptic curve point. Do not instantiate this
+    class directly; instead use the ec module function make_point().
+    """
     def __init__(self, x: int | None, y: int | None):
         _validate_pt([x, y])
         self._x = x
@@ -29,17 +33,22 @@ class ECPoint(object):
 
     @property
     def x(self) -> int | None:
+        """Return the x-coordinate of this point."""
         return self._x
 
     @property
     def y(self) -> int | None:
+        """Return the y-coordinate of this point."""
         return self._y
 
     def double(self):
+        """Return the doubled value of this point (i.e., 2*point)."""
         doubled = _double(self._as_list())
         return ECPoint(doubled[0], doubled[1])
 
     def _as_list(self) -> list:
+        # Return this point as a 2-member list consumable by the module
+        # API.
         return [self.x, self.y]
 
     def __add__(self, other):
@@ -82,6 +91,10 @@ class ECPoint(object):
         return not self == other
 
 class ECKey(object):
+    """
+    A class representing an elliptic curve keypair. Do not instantiate
+    this class directly; instead use the ec module function make_key().
+    """
     def __init__(self, d: int, Q: ECPoint):
         _validate_priv_key(d)
         validate_pub_key(Q._as_list())
@@ -90,24 +103,48 @@ class ECKey(object):
 
     @property
     def d(self) -> int:
+        """
+        The private key of this keypair. This value should be kept secret.
+        """
         return self._d
 
     @property
     def Q(self) -> ECPoint:
+        """
+        The public key of this keypair. This value can be shared freely.
+        """
         return self._Q
 
     def make_session_key(self, Q) -> bytes:
+        """
+        Given a public key Q supplied by another party, returns a session
+        key suitable for use in a symmetric cipher with the other party.
+        This value should be kept secret.
+        """
         if not isinstance(Q, ECPoint):
             raise ValueError("Q is not a curve point.")
         return generate_session_key(self.d, Q._as_list())
 
     def sign(self, m: object) -> tuple[int, int]:
+        """
+        Given a message m, returns the signature of m by this keypair's
+        private key.
+        """
         return sign(self.d, m)
 
     def verify(self, Q: ECPoint, m: object, S: tuple[int, int]) -> bool:
+        """
+        Given a public key Q, a message m and a signature S supplied by
+        another party, returns True if m was signed by the private key
+        corresponding to Q; otherwise returns False.
+        """
         return verify(Q._as_list(), m, S)
 
     def public_key(self) -> ECPoint:
+        """
+        Returns the public key of this keypair. This value can be
+        shared freely.
+        """
         return self.Q
 
     def __eq__(self, other):
@@ -123,28 +160,44 @@ class ECKey(object):
         return f"d={self.d}, Q=[{self.Q}]"
 
 
-def make_point(x: int | None, y: int | None) -> ECPoint:
-    return ECPoint(x, y)
-
-
 def make_key():
+    """
+    Constructs and returns an elliptic curve keypair (ECKey) for the
+    currently active elliptic curve.
+    """
     d, Q = generate_keypair()
     return ECKey(d, make_point(Q[0], Q[1]))
 
 
+def make_point(x: int | None, y: int | None) -> ECPoint:
+    """
+    Constructs and returns an elliptic curve point (ECPoint) on the
+    currently active elliptic curve.
+    """
+    return ECPoint(x, y)
+
+
 def base_point() -> ECPoint:
+    """
+    Returns the base point (ECPoint) on the currently active elliptic
+    curve.
+    """
     return make_point(_CURVE.Gx, _CURVE.Gy)
 
 
 def id_elem() -> ECPoint:
+    """
+    Returns the identity element (ECPoint) of the currently active
+    elliptic curve.
+    """
     return make_point(None, None)
 
 
 def new_curve(curve: curves.Curve, B_iters: int = 100) -> None:
     """
-    Given a curve (either one selected from the "curves" module of this package,
-    or one that is user-defined), redefines this module's default elliptic curve
-    (secp256k1) and validates the new curve's parameters.
+    Given a curve (either one selected from the "curves" module of this
+    package, or one that is user-defined), redefines this module's default
+    elliptic curve (secp256k1) and validates the new curve's parameters.
     """
 
     global _CURVE
