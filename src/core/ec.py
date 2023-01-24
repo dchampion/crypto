@@ -33,18 +33,18 @@ class ECPoint(object):
 
     @property
     def x(self) -> int | None:
-        """Return the x-coordinate of this point."""
+        """The x-coordinate of this point."""
         return self._x
 
     @property
     def y(self) -> int | None:
-        """Return the y-coordinate of this point."""
+        """The y-coordinate of this point."""
         return self._y
 
     def double(self):
         """Return the doubled value of this point (i.e., 2*point)."""
         doubled = _double(self._as_list())
-        return ECPoint(doubled[0], doubled[1])
+        return ECPoint(doubled[_X], doubled[_Y])
 
     def _as_list(self) -> list:
         # Return this point as a 2-member list consumable by the module
@@ -55,7 +55,7 @@ class ECPoint(object):
         if not isinstance(other, ECPoint):
             return NotImplemented
         sum = _add(self._as_list(), other._as_list())
-        return ECPoint(sum[0], sum[1])
+        return ECPoint(sum[_X], sum[_Y])
 
     def __iadd__(self, other):
         if not isinstance(other, ECPoint):
@@ -67,7 +67,7 @@ class ECPoint(object):
         if not isinstance(n, int):
             return NotImplemented
         product = _x_times_pt(n, self._as_list())
-        return ECPoint(product[0], product[1])
+        return ECPoint(product[_X], product[_Y])
 
     def __imul__(self, n: int):
         if not isinstance(n, int):
@@ -166,7 +166,7 @@ def make_key():
     currently active elliptic curve.
     """
     d, Q = generate_keypair()
-    return ECKey(d, make_point(Q[0], Q[1]))
+    return ECKey(d, make_point(Q[_X], Q[_Y]))
 
 
 def make_point(x: int | None, y: int | None) -> ECPoint:
