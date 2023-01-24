@@ -262,7 +262,7 @@ def test_rsa_class():
     print("test_rsa_class started")
 
     rsa_key_a = rsa.make_key()          # Alice makes a keypair, and stores her
-    nA = rsa_key_a.n                    # public key in nA (she will transmit
+    nA = rsa_key_a.get_public_key()     # public key in nA (she will transmit
                                         # this key to Bob later in the sequence).
 
     mA = "Sign and encrypt me!"         # Alice composes a message for Bob, and
@@ -272,7 +272,7 @@ def test_rsa_class():
                                         # signature in sA.
 
     rsa_key_b = rsa.make_key()          # Bob makes a keypair, stores his public
-    nB = rsa_key_b.n                    # key in nB, and transmits his public key
+    nB = rsa_key_b.get_public_key()     # key in nB, and transmits his public key
                                         # to Alice.
                                         # Bob -----> (nB) -----> Alice
 

@@ -72,20 +72,18 @@ class RSAKey(object):
         """
         return self._d5
     
-    def get_public_key(self) -> tuple[int, int, int]:
+    def get_public_key(self) -> int:
         """
-        Returns a tuple of the form (n, 3, 5), where n is the public modulus,
-        the integer constant 3 is the public verification exponent, and the integer
-        constant 5 is the public encryption exponent of this RSA key. These values
-        comprise the public components of this RSA key and may be shared freely.
+        Returns the public modulus of this RSA key. This value may be shared
+        freely.
         """
-        return self.n, VERIFICATION_EXPONENT, ENCRYPTION_EXPONENT
+        return self.n
 
     def get_modulus_size(self) -> int:
         """
         Returns the size, in bits, of the public modulus of this RSA key.
         """
-        return self._n.bit_length()
+        return self.n.bit_length()
 
     def sign(self, message: object) -> bytes:
         """
