@@ -18,6 +18,120 @@ _P_MIN_BIT_LEN = 2048
 _P_MAX_BIT_LEN = 8192
 
 
+class DHParameters(object):
+    """
+    This class represents the public parameters of a Diffie-Hellman integer
+    group. These are the group's generator (g), the group's modulus (p), and
+    the order of the smallest subgroup of the entire group modulo p (q).
+
+    Do not instantiate this class directly; instead use the dh module function
+    make_parameters().
+    """
+    def __init__(self, size: int=_P_MIN_BIT_LEN):
+        self._q, self._p, self._g = generate_parameters(size)
+
+    @property
+    def q(self) -> int:
+        """The order of this group's smallest subgroup modulo p."""
+        return self._q
+
+    @property
+    def p(self) -> int:
+        """This group's modulus."""
+        return self._p
+
+    @property
+    def g(self) -> int:
+        """This group's generator."""
+        return self._g
+
+    def __eq__(self, other):
+        return self.q == other.q and\
+               self.p == other.p and\
+               self.g == other.g
+
+    def __hash__(self):
+        return hash((self.q, self.p, self.g))
+
+    def __neq__(self, other):
+        return not self == other
+
+class DHKey(object):
+    """
+    This class represents a Diffie-Hellman keypair consisting of a public
+    and private key.
+
+    Do not instantiate this class directly; instead use the dh module function
+    make_key().
+    """
+    def __init__(self, params: DHParameters):
+        self.params = params
+        self._prv, self._pub = \
+            generate_keypair(self.params.q, self.params.p, self.params.g)
+
+    def public_key(self) -> int:
+        """
+        Returns the public key of this keypair. This key may be shared freely.
+        """
+        return self._pub
+
+    def public_parameters(self) -> DHParameters:
+        """
+        Returns the group parameters used to derive this keypair. These
+        parameters may be shared freely.
+        """
+        return self.params
+
+    def size(self) -> int:
+        """
+        Returns the size, in bits, of this keypair (or, more specifically,
+        the size of the modulus p).
+        """
+        return self.params.p.bit_length()
+
+    def make_session_key(self, pub_key: int) -> bytes:
+        """
+        Given a public key supplied by another party, computes a shared
+        key to be used by two parties in a symmetric cipher. This key must
+        be kept secret.
+        """
+        return generate_session_key( \
+            pub_key, self._prv, self.params.q, self.params.p)
+
+    def __eq__(self, other):
+        return self.params == other.params and\
+               self._prv == other._priv and\
+               self._pub == other._pub
+
+    def __hash__(self):
+        return ((self.params, self._prv, self._pub))
+
+    def __neq__(self, other):
+        return not self == other
+
+
+def make_parameters(size: int=_P_MIN_BIT_LEN) -> DHParameters:
+    """
+    Returns a new DHParameters instance based on the supplied modulus size
+    (the default is 2048 if none is specified). These consist of the group
+    parameters required for a secure key negotiation.
+    """
+    return DHParameters(size)
+
+def make_key(params: DHParameters=None) -> DHKey:
+    """
+    Returns a new DHKey instance consisting of a public and private key. This
+    kepair will be derived from the supplied group parameters (optional). If
+    no group parameters are supplied, new ones will be generated based on a
+    default modulus size of 2048 bits. Note that for two parties to negotiate
+    a shared symmetric key, both party's keypairs must share the same group
+    parameters.
+    """
+    if params is None:
+        return DHKey(DHParameters())
+    return DHKey(params)
+
+
 def generate_parameters(p_bit_len: int) -> tuple[int, int, int]:
     """
     Returns the public parameters necessary for two parties to negotiate a shared,

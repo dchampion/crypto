@@ -11,6 +11,7 @@ from . import util
 def main():
     test_dh_setup()
     test_full_protocol()
+    test_full_protocol_dh_class()
 
 
 @util.test_log
@@ -132,6 +133,27 @@ def test_full_protocol():
     # Bob receives the ciphertext [mAC], and decrypts it using his session key kSessionB.
     # The message Bob decrypts mB must equal the message Alice encrypted mA.
     mB = sym.decrypt(kSessionB, mAC)
+    assert mA == mB
+
+
+@util.test_log
+def test_full_protocol_dh_class():
+    key_a = dh.make_key()
+    key_params_a = key_a.public_parameters()
+    key_pub_a = key_a.public_key()
+
+    key_b = dh.make_key(key_params_a)
+    assert key_b.public_parameters() == key_params_a
+
+    key_pub_b = key_b.public_key()
+    ses_key_b = key_b.make_session_key(key_pub_a)
+
+    ses_key_a = key_a.make_session_key(key_pub_b)
+    assert ses_key_a == ses_key_b
+
+    mA = "Encrypt me!"
+    mAC = sym.encrypt(ses_key_a, mA)
+    mB = sym.decrypt(ses_key_b, mAC)
     assert mA == mB
 
 
