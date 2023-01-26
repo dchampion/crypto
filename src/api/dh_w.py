@@ -14,7 +14,8 @@ def construct(bit_len: int) -> DsaKey:
     (see https://www.pycryptodome.org/src/public_key/dsa# for relevant documentation and examples).
     """
 
-    q, p, g = dh.generate_parameters(bit_len)
-    k_prv, k_pub = dh.generate_keypair(q, p, g)
+    dh_key = dh.make_key()
+    dh_key_params = dh_key.public_parameters()
 
-    return DSA.construct((k_pub, g, p, q, k_prv))
+    return DSA.construct((dh_key.public_key(), \
+        dh_key_params.g, dh_key_params.p, dh_key_params.q, dh_key._prv))
