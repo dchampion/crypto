@@ -1,21 +1,20 @@
 from core import euclid
+from . import util
 
 import math
 
-
+@util.test_log
 def main():
-    print("Running euclid tests...")
     test_gcd()
     test__gcd()
     test_gcdx()
     test__gcdx()
     test_lcm()
     test_inverse()
-    print("all euclid tests passed")
 
 
+@util.test_log
 def test_gcd():
-
     a = euclid.gcd(7, 60)
     assert a == 1, f"expected 1, got {a}"
 
@@ -40,9 +39,7 @@ def test_gcd():
     a = euclid.gcd(60, 8)
     assert a == 4, f"expected 4, got {a}"
 
-    print("gcd tests passed")
-
-
+@util.test_log
 def test__gcd():
     a = euclid._gcd(7, 60)
     assert a == 1, f"expected 1, got {a}"
@@ -68,9 +65,8 @@ def test__gcd():
     a = euclid._gcd(60, 8)
     assert a == 4, f"expected 4, got {a}"
 
-    print("_gcd tests passed")
 
-
+@util.test_log
 def test_gcdx():
     a, x, y = euclid.gcdx(7, 60)
     assert a == 1, f"expected 1, got {a}"
@@ -112,9 +108,8 @@ def test_gcdx():
     assert x == 1, f"expected 1, got {x}"
     assert y == -7, f"expected -7, got {y}"
 
-    print("gcdx tests passed")
 
-
+@util.test_log
 def test__gcdx():
     a, x, y = euclid._gcdx(7, 60)
     assert a == 1, f"expected 1, got {a}"
@@ -156,9 +151,8 @@ def test__gcdx():
     assert x == 1, f"expected 1, got {x}"
     assert y == -7, f"expected -7, got {y}"
 
-    print("_gcdx tests passed")
 
-
+@util.test_log
 def test_lcm():
     assert euclid.lcm(9, 2) == math.lcm(
         9, 2
@@ -185,9 +179,8 @@ def test_lcm():
         3499734995, 887083423
     ), f"expected {math.lcm(3499734995,887083423)}, got {euclid.lcm(887083423,3499734995)}"
 
-    print("lcm tests passed")
 
-
+@util.test_log
 def test_inverse():
     a = euclid.inverse(60, 7)
     assert a == 2, f"expected 2, got {a}"
@@ -212,8 +205,6 @@ def test_inverse():
         assert False, "Expected inverse(60,8) to raise an exeption, but didn't"
     except Exception as e:
         assert isinstance(e, ValueError)
-
-    print("inverse tests passed")
 
 
 if __name__ == "__main__":

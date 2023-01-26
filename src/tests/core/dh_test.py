@@ -7,30 +7,18 @@ from . import sym
 from . import util
 
 
+@util.test_log
 def main():
-    print("Running dh tests...")
     test_dh_setup()
     test_full_protocol()
-    print("all dh tests passed")
 
 
+@util.test_log
 def test_dh_setup():
-    print("test_dh_setup started")
-    with concurrent.futures.ProcessPoolExecutor() as executor:
-        results = executor.map(
-            dh_setup,
-            util.get_random_bit_lengths(dh._P_MIN_BIT_LEN, dh._P_MAX_BIT_LEN // 2),
-        )
-        util.process_results(results)
-
-    print("test_dh_setup passed")
+    util.parallelize(dh_setup, util.get_random_bit_lengths(dh._P_MIN_BIT_LEN, dh._P_MAX_BIT_LEN // 2))
 
 
 def dh_setup(modulus_bit_len):
-    print(
-        f"\ttesting dh setup with {modulus_bit_len}-bit modulus from pid={os.getpid()}"
-    )
-
     try:
         q, p, g = dh.generate_parameters(modulus_bit_len)
         dh.validate_parameters(q, p, g)
@@ -53,11 +41,7 @@ def dh_setup(modulus_bit_len):
     except Exception as e:
         assert False, f"Exception: {e}"
 
-    print(
-        f"\tdh setup passed with {modulus_bit_len}-bit modulus from pid={os.getpid()}"
-    )
-
-
+@util.test_log
 def test_full_protocol():
     ##########################################################################################
     # The following diagram illustrates the protocol simulated in this test graphically.     #
@@ -98,8 +82,6 @@ def test_full_protocol():
     #                                                                                        #
     # The message mB Bob decrypts must equal the message mA that Alice encrypted.            #
     ##########################################################################################
-
-    print("test_full_protocol started")
 
     # Alice generates the public parameters for a DH session with Bob; these are the
     # public modulus [p] (a prime), the size of the subgroup modulo p within which
@@ -151,8 +133,6 @@ def test_full_protocol():
     # The message Bob decrypts mB must equal the message Alice encrypted mA.
     mB = sym.decrypt(kSessionB, mAC)
     assert mA == mB
-
-    print("test_full_protocol passed")
 
 
 if __name__ == "__main__":

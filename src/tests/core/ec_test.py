@@ -92,8 +92,8 @@ real_curves = [
 ]
 
 
+@util.test_log
 def main():
-    print("Running ec tests...")
     test_add()
     test_double()
     test_validate_curve_params()
@@ -109,12 +109,10 @@ def main():
     test_x_times_pt_ec_class()
     test_misc_ec_class()
     test_full_protocol_ec_class()
-    print("all ec tests passed")
 
 
+@util.test_log
 def test_add():
-    print("test_add started")
-
     for test_curve in test_curves:
         ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
         pt_group_local = test_curve["pts"]
@@ -185,11 +183,9 @@ def test_add():
     except Exception:
         pass
 
-    print("test_add passed")
 
-
+@util.test_log
 def test_double():
-    print("test_double started")
     for test_curve in test_curves:
         ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
         pt_group_local = test_curve["pts"]
@@ -206,11 +202,9 @@ def test_double():
     except Exception:
         pass
 
-    print("test_double passed")
 
-
+@util.test_log
 def test_validate_curve_params():
-    print("test_validate_curve_params started")
     # Test with default curve
     for real_curve in real_curves:
         ec.new_curve(real_curve)
@@ -258,11 +252,9 @@ def test_validate_curve_params():
         except Exception as e:
             assert isinstance(e, ValueError)
 
-    print("test_validate_curve_params passed")
 
-
+@util.test_log
 def test_point_at():
-    print("test_point_at started")
     for test_curve in test_curves:
         # Test slow, add-only method of finding a point.
         ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
@@ -272,11 +264,9 @@ def test_point_at():
 
         assert ec._point_at(test_curve["curve"].n) == ec._I
 
-    print("test_point_at passed")
 
-
+@util.test_log
 def test_fast_point_at():
-    print("test_fast_point_at started")
     for test_curve in test_curves:
         # Test fast, double-and-add method of finding a point.
         ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
@@ -286,14 +276,10 @@ def test_fast_point_at():
 
         assert ec._fast_point_at(test_curve["curve"].n) == ec._I
 
-    print("test_fast_point_at passed")
 
-
+@util.test_log
 def test_x_times_pt():
-    print("test_x_times_pt started")
-    with concurrent.futures.ProcessPoolExecutor() as executor:
-        results = executor.map(x_times_pt, real_curves)
-        util.process_results(results)
+    util.parallelize(x_times_pt, real_curves)
 
     for test_curve in test_curves:
         # Test that the order of the curve group times any point on the curve yields the identity
@@ -303,13 +289,8 @@ def test_x_times_pt():
         for i in range(0, len(pt_group_local)):
             assert ec._x_times_pt(test_curve["curve"].n, pt_group_local[i]) == ec._I
 
-    print("test_x_times_pt passed")
-
 
 def x_times_pt(curve):
-    print(
-        f"\ttesting scalar point multiplication on curve {type(curve).__name__} from pid={os.getpid()}"
-    )
     ec.new_curve(curve)
     for _ in range(100):
         # Test that the order of the curve group times 100 randomly selected points on the curve
@@ -317,24 +298,13 @@ def x_times_pt(curve):
         _, Q = ec.generate_keypair()
         assert ec._x_times_pt(ec._CURVE.n, Q) == ec._I
 
-    print(
-        f"\tscalar point multiplication passed on curve {type(curve).__name__} from pid={os.getpid()}"
-    )
 
-
+@util.test_log
 def test_generate_keypair_and_validate_pub_key():
-    print("test_generate_keypair started")
-    with concurrent.futures.ProcessPoolExecutor() as executor:
-        results = executor.map(generate_keypair_and_validate_pub_key, real_curves)
-        util.process_results(results)
-
-    print("test_generate_keypair passed")
+    util.parallelize(generate_keypair_and_validate_pub_key, real_curves)
 
 
 def generate_keypair_and_validate_pub_key(curve):
-    print(
-        f"\ttesting keypair generation and validation on curve {type(curve).__name__} from pid={os.getpid()}"
-    )
     ec.new_curve(curve)
     for _ in range(100):
         # Validate 100 randomly generated public keys from the secp256k1 curve.
@@ -344,13 +314,8 @@ def generate_keypair_and_validate_pub_key(curve):
         except Exception:
             assert False
 
-    print(
-        f"\tkeypair generation and validation passed on curve {type(curve).__name__} from pid={os.getpid()}"
-    )
-
-
+@util.test_log
 def test_hash_to_int():
-    print("test_hash_to_int started")
     # Test bit length of integer representative does not exceed that of the curve's order.
     for real_curve in real_curves:
         ec.new_curve(real_curve)
@@ -364,14 +329,10 @@ def test_hash_to_int():
             e = ec._hash_to_int(m)
             assert e.bit_length() <= ec._CURVE.n.bit_length()
 
-    print("test_hash_to_int passed")
 
-
+@util.test_log
 def test_sign_and_verify():
-    print("test_sign_and_verify started")
-    with concurrent.futures.ProcessPoolExecutor() as executor:
-        results = executor.map(sign_and_verify, real_curves)
-        util.process_results(results)
+    util.parallelize(sign_and_verify, real_curves)
 
     for test_curve in test_curves:
         ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
@@ -381,13 +342,8 @@ def test_sign_and_verify():
             S = ec.sign(d, m)
             assert ec.verify(Q, m, S)
 
-    print("test_sign_and_verify passed")
-
 
 def sign_and_verify(curve):
-    print(
-        f"\ttesting sign and verify on curve {type(curve).__name__} from pid={os.getpid()}"
-    )
     ec.new_curve(curve)
     for m in ["When", "in", "the", "course", "of", "human", "events..."]:
         # Test sign/verify using the secp256k1 curve.
@@ -395,18 +351,10 @@ def sign_and_verify(curve):
         S = ec.sign(d, m)
         assert ec.verify(Q, m, S)
 
-    print(
-        f"\tsign and verify passed on curve {type(curve).__name__} from pid={os.getpid()}"
-    )
 
-
+@util.test_log
 def test_full_protocol():
-    print("test_full_protocol started")
-    with concurrent.futures.ProcessPoolExecutor() as executor:
-        results = executor.map(full_protocol, real_curves)
-        util.process_results(results)
-
-    print("test_full_protocol passed")
+    util.parallelize(full_protocol, real_curves)
 
 
 def full_protocol(curve):
@@ -450,10 +398,6 @@ def full_protocol(curve):
     # and encrypted.                                                                       #
     ########################################################################################
 
-    print(
-        f"\ttesting full protocol on curve {type(curve).__name__} from pid={os.getpid()}"
-    )
-
     ec.new_curve(curve)
 
     # Alice generates her keypair, dA and [QA], and transmits her public key [QA] to Bob.
@@ -491,19 +435,14 @@ def full_protocol(curve):
     mB = sym.decrypt(kSessionB, mAC)
     assert ec.verify(QA, mB, sA)
 
-    print(
-        f"\tfull protocol test on curve {type(curve).__name__} passed from pid={os.getpid()}"
-    )
-
 
 ############################################################################################
 # The following tests are repeats of some of the module-based tests above, only they
 # exercise the class-based API (i.e, ECPoint and ECKey). They are distinguished from their
 # module-based counterparts by the suffix "_ec_class".
 ############################################################################################
+@util.test_log
 def test_point_add_ec_class():
-    print("test_point_add_ec_class started")
-
     for test_curve in test_curves:
         ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
         pt_group_local = test_curve["ecpts"]
@@ -584,11 +523,9 @@ def test_point_add_ec_class():
     except Exception:
         pass
 
-    print("test_point_add_ec_class passed")
 
-
+@util.test_log
 def test_point_double_ec_class():
-    print("test_point_double_ec_class started")
     for test_curve in test_curves:
         ec.new_curve(test_curve["curve"], _TEST_CURVE_B_ITERS)
         pt_group_local = test_curve["ecpts"]
@@ -605,14 +542,10 @@ def test_point_double_ec_class():
     except Exception:
         pass
 
-    print("test_point_double_ec_class passed")
 
-
+@util.test_log
 def test_x_times_pt_ec_class():
-    print("test_x_times_pt_ec_class started")
-    with concurrent.futures.ProcessPoolExecutor() as executor:
-        results = executor.map(x_times_pt_ec_class, real_curves)
-        util.process_results(results)
+    util.parallelize(x_times_pt_ec_class, real_curves)
 
     for test_curve in test_curves:
         # Test that the order of the curve group times any point on the curve yields the identity
@@ -627,13 +560,8 @@ def test_x_times_pt_ec_class():
             else:
                 assert id_elem == pt_group_local[i] * test_curve["curve"].n
 
-    print("test_x_times_pt_ec_class passed")
-
 
 def x_times_pt_ec_class(curve):
-    print(
-        f"\ttesting scalar point multiplication on curve {type(curve).__name__} from pid={os.getpid()}"
-    )
     ec.new_curve(curve)
     id_elem = ec.make_point(ec._I[0], ec._I[1])
     for i in range(100):
@@ -646,13 +574,9 @@ def x_times_pt_ec_class(curve):
         else:
             assert id_elem == ec_key.public_key() * ec._CURVE.n
 
-    print(
-        f"\tscalar point multiplication passed on curve {type(curve).__name__} from pid={os.getpid()}"
-    )
 
-
+@util.test_log
 def test_misc_ec_class():
-    print("test_misc_ec_class started")
 
     ec.new_curve(curves.Secp256k1())
 
@@ -711,24 +635,13 @@ def test_misc_ec_class():
 
         assert pt_1 == pt_2
 
-    print("test_misc_ec_class passed")
 
-
+@util.test_log
 def test_full_protocol_ec_class():
-    print("test_full_protocol_ec_class started")
-    with concurrent.futures.ProcessPoolExecutor() as executor:
-        results = executor.map(full_protocol_ec, real_curves)
-        util.process_results(results)
-
-    print("test_full_protocol_ec_class passed")
+    util.parallelize(full_protocol_ec, real_curves)
 
 
 def full_protocol_ec(curve):
-
-    print(
-        f"\ttesting full protocol with ec-key class on curve {type(curve).__name__} from pid={os.getpid()}"
-    )
-
     ec.new_curve(curve)
 
     ec_key_a = ec.make_key()
@@ -748,10 +661,6 @@ def full_protocol_ec(curve):
 
     assert mA == mB
     assert ec_key_b.verify(pub_key_a, mB, sA)
-
-    print(
-        f"\tfull protocol with ec-key class test on curve {type(curve).__name__} passed from pid={os.getpid()}"
-    )
 
 
 if __name__ == "__main__":
