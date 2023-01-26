@@ -1,6 +1,7 @@
 import badkeys
 
 from api import rsa_w
+from tests.core import util
 
 _DEBIAN_SSL = """-----BEGIN RSA PUBLIC KEY-----
 MIIBCgKCAQEAwJZTDExKND/DiP+LbhTIi2F0hZZt0PdX897LLwPf3+b1GOCUj1OH
@@ -119,13 +120,13 @@ _BAD_KEYS = (
 )
 
 
+@util.test_log
 def main():
-    print("Running rsa_w tests...")
     test_pubkeys()
     test_badkeys()
-    print("All rsa_w tests passed")
 
 
+@util.test_log
 def test_pubkeys():
     k_sig, k_enc = rsa_w.construct(2048)
 
@@ -136,6 +137,7 @@ def test_pubkeys():
     assert not key_info.get("results"), f"{key_info.get('results')}"
 
 
+@util.test_log
 def test_badkeys():
     for bad_key in _BAD_KEYS:
         key_info = badkeys.detectandcheck(bad_key)

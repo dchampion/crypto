@@ -1,14 +1,14 @@
 import badkeys
 
 from api import dh_w
+from tests.core import util
 
-
+@util.test_log
 def main():
-    print("Running dh_w tests...")
     test_pubkeys()
-    print("All dh_w tests passed")
 
 
+@util.test_log
 def test_pubkeys():
     dh_key = dh_w.construct(2048)
 

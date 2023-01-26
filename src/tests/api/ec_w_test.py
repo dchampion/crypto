@@ -2,6 +2,7 @@ import badkeys
 
 from api import ec_w
 from core import curves
+from tests.core import util
 
 _CURVES = (
     curves.Secp192r1.__name__.lower(),
@@ -12,12 +13,12 @@ _CURVES = (
 )
 
 
+@util.test_log
 def main():
-    print("Running ec_w tests...")
     test_pubkeys()
-    print("All ec_w tests passed")
 
 
+@util.test_log
 def test_pubkeys():
     for curve in _CURVES:
         ec_key = ec_w.construct(curve)
