@@ -23,8 +23,23 @@ ENCRYPTION_EXPONENT   = 5
 
 class RSAKey(object):
     """
-    A class representing an RSA key. Do not instantiate this class directly;
-    instead use the rsa module function make_key().
+    A class representing an RSA key. This is a dual-use key, meaning that
+    it can safely be used for both encryption and digital signature,
+    notwithstanding the generally accepted practice of using separate keys
+    for each use case. A single instance of this key can be used to (a)
+    encrypt a shared key to be used by two parties in a symmetric cipher,
+    and (b) digitally sign data of arbitrary type and length.
+
+    Note that because of its dual nature, the public components of this key
+    consist of a single modulus and two exponents; one for encryption and
+    the other for signature verification. Further, these exponents are
+    fixed integer values. Because of this, the get_public_key() method
+    of this class returns just a modulus, as it is assumed users on both
+    sides of a protocol using this key already know the encryption and
+    verification exponents.
+
+    Do not instantiate this class directly; instead use the rsa module
+    function make_key().
     """
     def __init__(self, size: int):
         """
