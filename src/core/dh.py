@@ -65,9 +65,9 @@ class DHKey(object):
     make_key().
     """
     def __init__(self, params: DHParameters):
-        self.params = params
+        self._params = params
         self._prv, self._pub = \
-            generate_keypair(self.params.q, self.params.p, self.params.g)
+            generate_keypair(self._params.q, self._params.p, self._params.g)
 
     def public_key(self) -> int:
         """
@@ -80,14 +80,14 @@ class DHKey(object):
         Returns the group parameters used to derive this keypair. These
         parameters may be shared freely.
         """
-        return self.params
+        return self._params
 
     def size(self) -> int:
         """
         Returns the size, in bits, of this keypair (or, more specifically,
         the size of the modulus p).
         """
-        return self.params.p.bit_length()
+        return self._params.p.bit_length()
 
     def make_session_key(self, pub_key: int) -> bytes:
         """
@@ -96,15 +96,15 @@ class DHKey(object):
         be kept secret.
         """
         return generate_session_key( \
-            pub_key, self._prv, self.params.q, self.params.p)
+            pub_key, self._prv, self._params.q, self._params.p)
 
     def __eq__(self, other):
-        return self.params == other.params and\
+        return self._params == other.params and\
                self._prv == other._priv and\
                self._pub == other._pub
 
     def __hash__(self):
-        return ((self.params, self._prv, self._pub))
+        return ((self._params, self._prv, self._pub))
 
     def __neq__(self, other):
         return not self == other
