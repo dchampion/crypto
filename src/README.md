@@ -138,12 +138,13 @@ False
 Each of the principal modules (i.e., `dh`, `ec` and `rsa`) features a class&ndash;based API that hides the lower&ndash;level details of the module&ndash;based API from the user. For example, using the class&ndash;based API, the code snippet above would be rewritten as follows:
 
 <pre>
-from core import ec
-key = ec.make_key()
-signature = key.sign("When in the course of human events...")
-key.verify(key.public_key(), "When in the course of human events...", signature)
+$ python
+>>> from core import ec
+>>> key = ec.make_key()
+>>> signature = key.sign("When in the course of human events...")
+>>> key.verify(key.public_key(), "When in the course of human events...", signature)
 True
-key.veriry(key.public_key(), "When in the course of bovine events...", signature)
+>>> key.veriry(key.public_key(), "When in the course of bovine events...", signature)
 False
 </pre>
 
