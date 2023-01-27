@@ -157,5 +157,32 @@ def test_full_protocol_dh_class():
     assert mA == mB
 
 
+@util.test_log
+def test_misc_dh_class():
+    key1 = dh.make_key()
+    key2 = dh.make_key()
+    key_dict = {key1: "key1", key2: "key2"}
+    assert key_dict[key1] == "key1"
+    assert "key1" == key_dict[key1]
+    assert key_dict[key2] == "key2"
+    assert "key2" == key_dict[key2]
+    assert key_dict[key1] != "key2"
+    assert "key1" != key_dict[key2]
+    assert key_dict[key2] != "key1"
+    assert "key2" != key_dict[key1]
+
+    parameters1 = dh.make_parameters()
+    parameters2 = dh.make_parameters()
+    params_dict = {parameters1: "parameters1", parameters2: "parameters2"}
+    assert params_dict[parameters1] == "parameters1"
+    assert "parameters1" == params_dict[parameters1]
+    assert params_dict[parameters2] == "parameters2"
+    assert "parameters2" == params_dict[parameters2]
+    assert params_dict[parameters1] != "parameters2"
+    assert "parameters1" != params_dict[parameters2]
+    assert params_dict[parameters2] != "parameters1"
+    assert "parameters2" != params_dict[parameters1]
+
+
 if __name__ == "__main__":
     main()

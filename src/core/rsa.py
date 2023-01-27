@@ -92,13 +92,13 @@ class RSAKey(object):
         Returns the public modulus of this RSA key. This value may be shared
         freely.
         """
-        return self.n
+        return self._n
 
     def get_modulus_size(self) -> int:
         """
         Returns the size, in bits, of the public modulus of this RSA key.
         """
-        return self.n.bit_length()
+        return self._n.bit_length()
 
     def sign(self, message: object) -> bytes:
         """
@@ -107,7 +107,7 @@ class RSAKey(object):
         using the public part of this RSA key.
         (see corresponding method verify()).
         """
-        return sign(self.d3, self.p, self.q, message)
+        return sign(self._d3, self._p, self._q, message)
 
     def verify(self, n: int, message: object, sig: object) -> bool:
         """
@@ -134,17 +134,17 @@ class RSAKey(object):
         with the party from whom the ciphertext was obtained (see corresponding
         method encrypt_key()).
         """
-        return decrypt_random_key(self.d5, encrypted_key, self.p, self.q)
+        return decrypt_random_key(self._d5, encrypted_key, self._p, self._q)
 
     def __eq__(self, other):
-        return self.p  == other.p  and\
-               self.q  == other.q  and\
-               self.n  == other.n  and\
-               self.d3 == other.d3 and\
-               self.d5 == other.d5
+        return self._p  == other._p  and\
+               self._q  == other._q  and\
+               self._n  == other._n  and\
+               self._d3 == other._d3 and\
+               self._d5 == other._d5
 
     def __hash__(self):
-        return hash((self.p, self.q, self.n, self.d3, self.d5))
+        return hash((self._p, self._q, self._n, self._d3, self._d5))
 
     def __neq__(self, other):
         return not self == other

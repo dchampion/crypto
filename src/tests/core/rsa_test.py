@@ -244,5 +244,20 @@ def test_rsa_class():
                                         # Bob knows the contents of the message.
 
 
+@util.test_log
+def test_misc_rsa_class():
+    key1 = rsa.make_key()
+    key2 = rsa.make_key()
+    key_dict = {key1: "key1", key2: "key2"}
+    assert key_dict[key1] == "key1"
+    assert "key1" == key_dict[key1]
+    assert key_dict[key2] == "key2"
+    assert "key2" == key_dict[key2]
+    assert key_dict[key1] != "key2"
+    assert "key1" != key_dict[key2]
+    assert key_dict[key2] != "key1"
+    assert "key2" != key_dict[key1]
+
+
 if __name__ == "__main__":
     main()

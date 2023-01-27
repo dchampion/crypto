@@ -616,6 +616,8 @@ def test_misc_ec_class():
     assert "pt1" == pt_dict[pt_group_local[1]]
     assert pt_dict[pt_group_local[2]] == "pt2"
     assert "pt2" == pt_dict[pt_group_local[2]]
+    assert "pt0" != pt_dict[pt_group_local[1]]
+    assert pt_dict[pt_group_local[0]] != "pt1"
 
     # Test ECPoint __imul__() and __rmul__() behavior is correct
     pt_1 = pt_group_local[0]

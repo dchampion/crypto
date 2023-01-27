@@ -46,12 +46,12 @@ class DHParameters(object):
         return self._g
 
     def __eq__(self, other):
-        return self.q == other.q and\
-               self.p == other.p and\
-               self.g == other.g
+        return self._q == other._q and\
+               self._p == other._p and\
+               self._g == other._g
 
     def __hash__(self):
-        return hash((self.q, self.p, self.g))
+        return hash((self._q, self._p, self._g))
 
     def __neq__(self, other):
         return not self == other
@@ -99,12 +99,12 @@ class DHKey(object):
             pub_key, self._prv, self._params.q, self._params.p)
 
     def __eq__(self, other):
-        return self._params == other.params and\
+        return self._params == other._params and\
                self._prv == other._priv and\
                self._pub == other._pub
 
     def __hash__(self):
-        return ((self._params, self._prv, self._pub))
+        return hash((self._params, self._prv, self._pub))
 
     def __neq__(self, other):
         return not self == other
@@ -128,7 +128,7 @@ def make_key(params: DHParameters=None) -> DHKey:
     parameters.
     """
     if params is None:
-        return DHKey(DHParameters())
+        return DHKey(make_parameters())
     return DHKey(params)
 
 

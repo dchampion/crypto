@@ -49,7 +49,7 @@ class ECPoint(object):
     def _as_list(self) -> list:
         # Return this point as a 2-member list consumable by the module
         # API.
-        return [self.x, self.y]
+        return [self._x, self._y]
 
     def __add__(self, other):
         if not isinstance(other, ECPoint):
@@ -79,13 +79,13 @@ class ECPoint(object):
         return self.__mul__(lhs)
 
     def __str__(self):
-        return f"x={self.x}, y={self.y}"
+        return f"x={self._x}, y={self._y}"
 
     def __eq__(self, other):
-        return self.x == other.x and self.y == other.y
+        return self._x == other._x and self._y == other._y
 
     def __hash__(self):
-        return hash((self.x, self.y))
+        return hash((self._x, self._y))
 
     def __neq__(self, other):
         return not self == other
@@ -123,14 +123,14 @@ class ECKey(object):
         """
         if not isinstance(Q, ECPoint):
             raise ValueError("Q is not a curve point.")
-        return generate_session_key(self.d, Q._as_list())
+        return generate_session_key(self._d, Q._as_list())
 
     def sign(self, m: object) -> tuple[int, int]:
         """
         Given a message m, returns the signature of m by this keypair's
         private key.
         """
-        return sign(self.d, m)
+        return sign(self._d, m)
 
     def verify(self, Q: ECPoint, m: object, S: tuple[int, int]) -> bool:
         """
@@ -148,16 +148,16 @@ class ECKey(object):
         return self.Q
 
     def __eq__(self, other):
-        return self.d == other.d and self.Q == other.Q
+        return self._d == other._d and self._Q == other._Q
 
     def __hash__(self):
-        return hash((self.d, self.Q))
+        return hash((self._d, self._Q))
 
     def __neq__(self, other):
         return not self == other
 
     def __str__(self):
-        return f"d={self.d}, Q=[{self.Q}]"
+        return f"d={self._d}, Q=[{self._Q}]"
 
 
 def make_key():
