@@ -53,7 +53,7 @@ class DHParameters(object):
     def __hash__(self):
         return hash((self._q, self._p, self._g))
 
-    def __neq__(self, other):
+    def __ne__(self, other):
         return not self == other
 
 class DHKey(object):

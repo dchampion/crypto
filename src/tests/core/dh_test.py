@@ -12,6 +12,7 @@ def main():
     test_dh_setup()
     test_full_protocol()
     test_full_protocol_dh_class()
+    test_misc_dh_class()
 
 
 @util.test_log

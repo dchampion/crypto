@@ -146,7 +146,7 @@ class RSAKey(object):
     def __hash__(self):
         return hash((self._p, self._q, self._n, self._d3, self._d5))
 
-    def __neq__(self, other):
+    def __ne__(self, other):
         return not self == other
 
 

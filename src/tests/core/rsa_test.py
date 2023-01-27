@@ -18,7 +18,8 @@ def main():
     test_encrypt_decrypt()
     test_sign_verify()
     test_full_protocol()
-    test_rsa_class()
+    test_full_protocol_rsa_class()
+    test_misc_rsa_class()
 
 
 @util.test_log
@@ -191,7 +192,7 @@ def test_full_protocol():
 
 
 @util.test_log
-def test_rsa_class():
+def test_full_protocol_rsa_class():
 
     rsa_key_a = rsa.make_key()          # Alice makes a keypair, and stores her
     nA = rsa_key_a.get_public_key()     # public key in nA (she will transmit

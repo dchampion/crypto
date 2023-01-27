@@ -87,7 +87,7 @@ class ECPoint(object):
     def __hash__(self):
         return hash((self._x, self._y))
 
-    def __neq__(self, other):
+    def __ne__(self, other):
         return not self == other
 
 class ECKey(object):
@@ -153,7 +153,7 @@ class ECKey(object):
     def __hash__(self):
         return hash((self._d, self._Q))
 
-    def __neq__(self, other):
+    def __ne__(self, other):
         return not self == other
 
     def __str__(self):
