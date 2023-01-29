@@ -8,14 +8,14 @@ from Crypto.PublicKey.DSA import DsaKey
 from core import dh
 
 
-def construct(bit_len: int) -> DsaKey:
+def construct(bit_len: int=2048) -> DsaKey:
     """
     Given the size of a prime modulus in bits (bit_len), returns a Crypto.PublicKey.DSA.DsaKey
     (see https://www.pycryptodome.org/src/public_key/dsa# for relevant documentation and examples).
     """
 
-    dh_key = dh.make_key()
-    dh_key_params = dh_key.public_parameters()
+    dh_parameters = dh.make_parameters(bit_len)
+    dh_key = dh.make_key(dh_parameters)
 
     return DSA.construct((dh_key.public_key(), \
-        dh_key_params.g, dh_key_params.p, dh_key_params.q, dh_key._prv))
+        dh_parameters.g, dh_parameters.p, dh_parameters.q, dh_key._prv))
