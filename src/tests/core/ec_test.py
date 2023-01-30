@@ -1,6 +1,4 @@
-import concurrent.futures
 import copy
-import os
 
 from core import curves
 from core import ec

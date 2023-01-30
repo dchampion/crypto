@@ -1,5 +1,3 @@
-import concurrent.futures
-import os
 import random
 
 from core import euclid
