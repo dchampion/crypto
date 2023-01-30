@@ -4,6 +4,7 @@ import concurrent.futures
 import inspect
 import os
 import random
+import time
 from typing import Iterator
 
 
@@ -41,8 +42,10 @@ def test_log(test_func):
             test_info = f"finished {test_info}"
         else:
             test_info = f"{test_func.__name__} passed"
+        t0 = time.time_ns()
         test_func()
-        print(test_info)
+        t1 = time.time_ns()
+        print(f"{test_info} ({round((t1-t0)/1000000, 2)} ms)")
 
     return wrapper
 
