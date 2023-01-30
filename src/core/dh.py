@@ -179,7 +179,8 @@ def _generate_p(q: int, p_bit_len: int) -> tuple[int, int]:
     max_tries = 100 * p_bit_len
     for tries in range(max_tries):
         n = prng.randrange(l, u)
-        if n % 2 == 0:  # n must be even for p to be prime, so skip if n is odd.
+        # n must be even for p to be prime (and test bit length for interoperability).
+        if n % 2 == 0 and (q * n).bit_length() == p_bit_len:
             p = q * n + 1
             if primes.is_prime(p):
                 break

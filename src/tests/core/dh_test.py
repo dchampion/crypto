@@ -1,6 +1,4 @@
-import concurrent.futures
-import os
-
+from core import primes
 from core import dh
 
 from . import sym
@@ -10,6 +8,7 @@ from . import util
 @util.test_log
 def main():
     test_dh_setup()
+    test_generate_p()
     test_full_protocol()
     test_full_protocol_dh_class()
     test_misc_dh_class()
@@ -42,6 +41,18 @@ def dh_setup(modulus_bit_len):
         assert False, f"ValueError: {ve}"
     except Exception as e:
         assert False, f"Exception: {e}"
+
+
+@util.test_log
+def test_generate_p():
+    util.parallelize(generate_p, \
+        [primes.generate_prime(dh._Q_BIT_LEN) for _ in range(util._iterations())])
+
+
+def generate_p(q):
+    _, p = dh._generate_p(q, dh._P_MIN_BIT_LEN)
+    assert p.bit_length() == dh._P_MIN_BIT_LEN
+
 
 @util.test_log
 def test_full_protocol():
