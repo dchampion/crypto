@@ -75,19 +75,20 @@ $ python -m tests.core.rsa_test
 running all tests in tests.core.rsa_test
   8 rounds of generate_rsa_prime started in parallel processes
   8 rounds of generate_rsa_prime finished in parallel processes
-test_generate_rsa_prime passed
+test_generate_rsa_prime passed (97538.44 ms)
   8 rounds of generate_rsa_key started in parallel processes
   8 rounds of generate_rsa_key finished in parallel processes
-test_generate_rsa_key passed
+test_generate_rsa_key passed (30637.62 ms)
   8 rounds of encrypt_decrypt started in parallel processes
   8 rounds of encrypt_decrypt finished in parallel processes
-test_encrypt_decrypt passed
+test_encrypt_decrypt passed (47266.54 ms)
   8 rounds of sign_verify started in parallel processes
   8 rounds of sign_verify finished in parallel processes
-test_sign_verify passed
-test_full_protocol passed
-test_rsa_class passed
-finished all tests in tests.core.rsa_test
+test_sign_verify passed (34273.69 ms)
+test_full_protocol passed (2260.78 ms)
+test_full_protocol_rsa_class passed (97053.0 ms)
+test_misc_rsa_class passed (2427.26 ms)
+finished all tests in tests.core.rsa_test (311458.33 ms)
 $
 </pre>
 
@@ -100,7 +101,7 @@ running all tests in tests.core
 ...
 (many more lines of output)
 ...
-finished all tests in tests.core
+finished all tests in tests.core (701458.08 ms)
 $
 </pre>
 
@@ -127,24 +128,26 @@ In the following example, the elliptic curve cryptosystem is used to generate a 
 <pre>
 $ python
 >>> from core import ec
->>> private_key, public_key = ec.generate_keypair()
->>> signature = ec.sign(private_key, "When in the course of human events...")
->>> ec.verify(public_key, "When in the course of human events...", signature)
+>>> key_prv, key_pub = ec.generate_keypair()
+>>> msg = "When in the course of human events..."
+>>> sig = ec.sign(key_prv, msg)
+>>> ec.verify(key_pub, msg, sig)
 True
->>> ec.verify(public_key, "When in the course of bovine events...", signature)
+>>> ec.verify(key_pub, msg.replace("human", "bovine"), sig)
 False
 </pre>
 
-Each of the principal modules (i.e., `dh`, `ec` and `rsa`) features a class&ndash;based API that hides the lower&ndash;level details of the module&ndash;based API from the user. For example, using the class&ndash;based API, the code snippet above would be rewritten as follows:
+Each of the principal modules (i.e., `dh`, `ec` and `rsa`) features a class&ndash;based API that hides lower&ndash;level details of the module&ndash;based API. For example, using the class&ndash;based API, the code snippet above would be rewritten in a more simplified fashion as follows:
 
 <pre>
 $ python
 >>> from core import ec
 >>> key = ec.make_key()
->>> signature = key.sign("When in the course of human events...")
->>> key.verify(key.public_key(), "When in the course of human events...", signature)
+>>> msg = "When in the course of human events..."
+>>> sig = key.sign(msg)
+>>> key.verify(key.public_key(), msg, sig)
 True
->>> key.veriry(key.public_key(), "When in the course of bovine events...", signature)
+>>> key.verify(key.public_key(), msg.replace("human", "bovine"), sig)
 False
 </pre>
 
