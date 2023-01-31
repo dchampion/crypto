@@ -10,12 +10,14 @@ from . import prng
 from . import util
 
 # Allowable range, in bit lengths, of the 2 prime factors (p and q) of an RSA modulus n.
-_FACTOR_MIN_BIT_LEN = 1024
-_FACTOR_MAX_BIT_LEN = 4096
+_FACTOR_MIN_BIT_LEN = 512
+_FACTOR_MID_BIT_LEN = 1024
+_FACTOR_MAX_BIT_LEN = 1536
 
 # Allowable range, in bit lengths, of the RSA modulus n.
-_MODULUS_MIN_BIT_LEN = _FACTOR_MIN_BIT_LEN * 2
-_MODULUS_MAX_BIT_LEN = _FACTOR_MAX_BIT_LEN * 2
+_MODULUS_MIN_BIT_LEN = _FACTOR_MIN_BIT_LEN * 2 # (1024)
+_MODULUS_MID_BIT_LEN = _FACTOR_MID_BIT_LEN * 2 # (2048)
+_MODULUS_MAX_BIT_LEN = _FACTOR_MAX_BIT_LEN * 2 # (3072)
 
 # Global RSA signature-verification and encryption exponents.
 VERIFICATION_EXPONENT = 3
@@ -172,8 +174,8 @@ def generate_rsa_key(modulus_bit_len: int) -> tuple[int, int, int, int, int]:
     """
 
     assert isinstance(modulus_bit_len, int)
-    assert _MODULUS_MIN_BIT_LEN <= modulus_bit_len <= _MODULUS_MAX_BIT_LEN
-    assert modulus_bit_len % 32 == 0
+    assert modulus_bit_len == _MODULUS_MIN_BIT_LEN or \
+        modulus_bit_len == _MODULUS_MID_BIT_LEN or modulus_bit_len == _MODULUS_MAX_BIT_LEN
 
     # Compute the factors p and q of RSA modulus n.
     p, q = _generate_rsa_factors(modulus_bit_len)
@@ -199,8 +201,8 @@ def _generate_rsa_factors(modulus_bit_len: int) -> tuple[int, int]:
     # Compute/return prime factors p and q of RSA modulus n.
 
     assert isinstance(modulus_bit_len, int)
-    assert _MODULUS_MIN_BIT_LEN <= modulus_bit_len <= _MODULUS_MAX_BIT_LEN
-    assert modulus_bit_len % 32 == 0
+    assert modulus_bit_len == _MODULUS_MIN_BIT_LEN or \
+        modulus_bit_len == _MODULUS_MID_BIT_LEN or modulus_bit_len == _MODULUS_MAX_BIT_LEN
 
     p = _generate_rsa_prime(modulus_bit_len // 2)
     q = _generate_rsa_prime(modulus_bit_len // 2)
@@ -228,7 +230,8 @@ def _generate_rsa_prime(factor_bit_len: int) -> int:
     # in a public RSA modulus.
 
     assert isinstance(factor_bit_len, int)
-    assert _FACTOR_MIN_BIT_LEN <= factor_bit_len <= _FACTOR_MAX_BIT_LEN
+    assert factor_bit_len == _FACTOR_MIN_BIT_LEN or \
+        factor_bit_len == _FACTOR_MID_BIT_LEN or factor_bit_len == _FACTOR_MAX_BIT_LEN
 
     l, u = 2 ** (factor_bit_len - 1), 2**factor_bit_len - 1
     max_tries = 100 * factor_bit_len
@@ -268,8 +271,10 @@ def encrypt_random_key(n: int, e: int) -> tuple[bytes, bytes]:
     by callers of this function, and only c should be transmitted on an insecure channel.
     """
 
-    assert isinstance(n, int) and n.bit_length() >= _MODULUS_MIN_BIT_LEN
     assert isinstance(e, int)
+    assert isinstance(n, int)
+    assert n.bit_length() == _MODULUS_MIN_BIT_LEN or \
+        n.bit_length() == _MODULUS_MID_BIT_LEN or n.bit_length() == _MODULUS_MAX_BIT_LEN
 
     # Select a random value r in the full range of n.
     r = prng.randrange(0, n - 1)
@@ -355,7 +360,10 @@ def verify(n: int, e: int, m: object, o: object) -> bool:
 def _msg_to_rsa_number(n: int, m: object) -> int:
     # Maps a message m to an integer suitable for signing.
 
-    assert isinstance(n, int) and n.bit_length() >= _MODULUS_MIN_BIT_LEN
+    assert isinstance(n, int)
+    assert n.bit_length() == _MODULUS_MIN_BIT_LEN or \
+        n.bit_length() == _MODULUS_MID_BIT_LEN or n.bit_length() == _MODULUS_MAX_BIT_LEN
+
 
     # Seed the PRNG with a hash of the message m (or h(m)).
     random.seed(util.digest(m))

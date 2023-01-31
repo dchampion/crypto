@@ -3,7 +3,6 @@ import random
 from core import euclid
 from core import primes
 from core import rsa
-from core.rsa import RSAKey
 
 from . import sym
 from . import util
@@ -23,7 +22,7 @@ def main():
 @util.test_log
 def test_generate_rsa_prime():
     util.parallelize(generate_rsa_prime, util.get_random_bit_lengths(
-        rsa._FACTOR_MIN_BIT_LEN, rsa._FACTOR_MAX_BIT_LEN))
+        rsa._FACTOR_MIN_BIT_LEN, rsa._FACTOR_MAX_BIT_LEN+1, 512))
 
 
 def generate_rsa_prime(factor_bit_len):
@@ -39,7 +38,7 @@ def generate_rsa_prime(factor_bit_len):
 @util.test_log
 def test_generate_rsa_key():
     util.parallelize(generate_rsa_key, util.get_random_bit_lengths(
-        rsa._MODULUS_MIN_BIT_LEN, rsa._MODULUS_MAX_BIT_LEN // 2 + 32, 32))
+        rsa._MODULUS_MIN_BIT_LEN, rsa._MODULUS_MAX_BIT_LEN+1, 1024))
 
 
 def generate_rsa_key(modulus_bit_len):
@@ -62,7 +61,7 @@ def generate_rsa_key(modulus_bit_len):
 @util.test_log
 def test_encrypt_decrypt():
     util.parallelize(encrypt_decrypt, util.get_random_bit_lengths(
-        rsa._MODULUS_MIN_BIT_LEN, rsa._MODULUS_MAX_BIT_LEN // 2 + 32, 32))
+        rsa._MODULUS_MIN_BIT_LEN, rsa._MODULUS_MAX_BIT_LEN+1, 1024))
 
 
 def encrypt_decrypt(modulus_bit_len):
@@ -75,7 +74,7 @@ def encrypt_decrypt(modulus_bit_len):
 @util.test_log
 def test_sign_verify():
     util.parallelize(sign_verify, util.get_random_bit_lengths(
-        rsa._MODULUS_MIN_BIT_LEN, rsa._MODULUS_MAX_BIT_LEN // 2 + 32, 32))
+        rsa._MODULUS_MIN_BIT_LEN, rsa._MODULUS_MAX_BIT_LEN+1, 1024))
 
 
 def sign_verify(modulus_bit_len):
