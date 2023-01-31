@@ -18,4 +18,4 @@ def construct(bit_len: int=2048) -> DsaKey:
     dh_key = dh.make_key(dh_parameters)
 
     return DSA.construct((dh_key.public_key(), \
-        dh_parameters.g, dh_parameters.p, dh_parameters.q, dh_key._prv))
+        dh_parameters.g, dh_parameters.p, dh_parameters.q, dh_key._x))
