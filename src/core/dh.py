@@ -221,11 +221,11 @@ def _generate_g(n: int, p: int) -> int:
 def generate_keypair(q: int, p: int, g: int) -> tuple[int, int]:
     """
     Given the public parameters q, p and g (which can be obtained from this
-    module's generate_parameters function), returns a tuple of the form (k_prv,
-    k_pub), where k_prv is a private key randomly selected from the range
-    (1, ..., q-1), and k_pub is a public key of the form g^k_prv % p. The
-    private key k_prv returned by this function must be kept secret; whereas
-    the public key k_pub may be shared freely.
+    module's generate_parameters function), returns a tuple of the form (x,
+    y), where x is a private key randomly selected from the range
+    (1, ..., q-1), and y is a public key of the form g^x % p. The private
+    key x returned by this function must be kept secret; whereas the public
+    key y may be shared freely.
     """
 
     validate_parameters(q, p, g)
@@ -244,8 +244,8 @@ def generate_keypair(q: int, p: int, g: int) -> tuple[int, int]:
 
 def generate_session_key(y: int, x: int, q: int, p: int) -> bytes:
     """
-    Given a private key k_prv known only to the caller of this function, a public
-    key k_pub supplied by another party, and domain parameters q and p (which can
+    Given a private key x known only to the caller of this function, a public
+    key y supplied by another party, and domain parameters q and p (which can
     be obtained from this module's generate_parameters function, or from another
     party), returns a hashed byte array suitable for use as a session key to be
     used by both parties in a symmetric cipher (e.g., 3DES, AES). The session key
@@ -269,7 +269,7 @@ def generate_session_key(y: int, x: int, q: int, p: int) -> bytes:
 
 def validate_pub_key(y: int, q: int, p: int) -> None:
     """
-    Validates a public key k_pub given the public parameters q and p used to generate
+    Validates a public key y given the public parameters q and p used to generate
     it. This function must be called, without raising an exception, by a party receiving
     the public key from another party before using the public key to generate a session
     key. If this function raises an exception, the public key should be considered invalid
@@ -282,11 +282,11 @@ def validate_pub_key(y: int, q: int, p: int) -> None:
 
     valid = True
 
-    # k_pub must be in the interval [2, p-1].
+    # y must be in the interval [2, p-1].
     if valid and (y <= 1 or y >= p):
         valid = False
 
-    # k_pub must be in the subgroup of order (or size) q.
+    # y must be in the subgroup of order (or size) q.
     if valid and util.fast_mod_exp(y, q, p) != 1:
         valid = False
 
