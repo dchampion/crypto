@@ -496,20 +496,19 @@ def validate_pub_key(Q: list[int]) -> None:
         valid = False
 
     # Q's x coordinate must be in the interval [0, p-1].
-    if valid and (Q[_X] > _CURVE.p - 1 or Q[_X] < 0):
+    if valid and not (0 <= Q[_X] <= _CURVE.p-1):
         valid = False
 
     # Q's y coordinate must be in the interval [0, p-1].
-    if valid and (Q[_Y] > _CURVE.p - 1 or Q[_Y] < 0):
+    if valid and not (0 <= Q[_Y] <= _CURVE.p-1):
         valid = False
 
     # Q must be on the curve
     if valid and not _on_curve(Q):
         valid = False
 
-    # If the cofactor h is greater than 1, then the order of the group n times Q must
-    # equal the identity element.
-    if valid and (_CURVE.h > 1 and _x_times_pt(_CURVE.n, Q) != _I):
+    # The order of the group n times Q must equal the identity element.
+    if valid and _x_times_pt(_CURVE.n, Q) != _I:
         valid = False
 
     if not valid:
@@ -525,19 +524,19 @@ def _validate_curve_params(B_iters: int = 100) -> None:
     valid = True
 
     # a must be a group element; i.e., within the interval [0, p-1].
-    if valid and (_CURVE.a > _CURVE.p - 1 or _CURVE.a < 0):
+    if valid and not (0 <= _CURVE.a <= _CURVE.p-1):
         valid = False
 
     # b must be a group element; i.e., within the interval [0, p-1].
-    if valid and (_CURVE.b > _CURVE.p - 1 or _CURVE.b < 0):
+    if valid and not (0 <= _CURVE.b <= _CURVE.p-1):
         valid = False
 
     # Gx must be a group element; i.e., within the interval [0, p-1].
-    if valid and (_CURVE.Gx > _CURVE.p - 1 or _CURVE.Gx < 0):
+    if valid and not (0 <= _CURVE.Gx <= _CURVE.p-1):
         valid = False
 
     # Gy must be a group element; i.e., within the interval [0, p-1].
-    if valid and (_CURVE.Gy > _CURVE.p - 1 or _CURVE.Gy < 0):
+    if valid and not (0 <= _CURVE.Gy <= _CURVE.p-1):
         valid = False
 
     # n must not equal p.

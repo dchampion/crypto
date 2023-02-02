@@ -258,6 +258,9 @@ def generate_session_key(y: int, x: int, q: int, p: int) -> bytes:
     assert isinstance(p, int) and \
         (p.bit_length() == _P_MIN_BIT_LEN or p.bit_length() == _P_MAX_BIT_LEN)
 
+    # Validate supplied public key.
+    validate_pub_key(y, q, p)
+
     # Compute a session key using the essential property of DH (i.e., by raising
     # the other party's public key to the power of this party's private key modulo p).
     ki = util.fast_mod_exp(y, x % q, p)
@@ -283,7 +286,7 @@ def validate_pub_key(y: int, q: int, p: int) -> None:
     valid = True
 
     # y must be in the interval [2, p-1].
-    if valid and (y <= 1 or y >= p):
+    if valid and not (2 <= y <= p-1):
         valid = False
 
     # y must be in the subgroup of order (or size) q.
