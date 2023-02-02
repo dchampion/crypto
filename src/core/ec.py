@@ -360,10 +360,8 @@ def verify(Q: list[int], m: object, S: tuple[int, int]) -> bool:
     validate_pub_key(Q)
 
     r, s = S[0], S[1]
-
-    # TODO: These should raise exceptions, not assert (see Java psychic-signature vulnerability).
-    assert 1 <= r < _CURVE.n
-    assert 1 <= s < _CURVE.n
+    if not (1 <= r < _CURVE.n) or not (1 <= s < _CURVE.n):
+        raise ValueError("Invalid signature")
 
     # Convert m to an integer representative of its hash.
     e = _hash_to_int(m)
@@ -402,7 +400,7 @@ def _hash_to_int(m: object) -> int:
     if _CURVE.n.bit_length() >= i.bit_length():
         e = i
     else:
-        # Use only the leftmost _n bits if _n is smaller than m.
+        # Use only the leftmost n bits if n is smaller than m.
         e = i >> (i.bit_length() - _CURVE.n.bit_length())
 
     return e
