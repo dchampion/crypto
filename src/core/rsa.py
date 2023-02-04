@@ -89,14 +89,14 @@ class RSAKey(object):
         """
         return self._d5
     
-    def get_public_key(self) -> int:
+    def public_key(self) -> int:
         """
         Returns the public modulus of this RSA key. This value may be shared
         freely.
         """
         return self._n
 
-    def get_modulus_size(self) -> int:
+    def modulus_size(self) -> int:
         """
         Returns the size, in bits, of the public modulus of this RSA key.
         """
@@ -152,7 +152,7 @@ class RSAKey(object):
         return not self == other
 
 
-def make_key(size: int=_MODULUS_MIN_BIT_LEN) -> RSAKey:
+def make_key(size: int=_MODULUS_MID_BIT_LEN) -> RSAKey:
     """
     Returns a new RSA key with a modulus length of size bits. This parameter is optional (the
     default is 2048 if it is omitted).

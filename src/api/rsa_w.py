@@ -18,5 +18,5 @@ def construct(bit_len: int=2048) -> tuple[RsaKey, RsaKey]:
 
     keypair = rsa.make_key(bit_len)
 
-    return RSA.construct((keypair.n, rsa.ENCRYPTION_EXPONENT,   keypair.d5, keypair.p, keypair.q)),\
-           RSA.construct((keypair.n, rsa.VERIFICATION_EXPONENT, keypair.d3, keypair.p, keypair.q))
+    return RSA.construct((keypair.public_key(), rsa.ENCRYPTION_EXPONENT,   keypair.d5, keypair.p, keypair.q)),\
+           RSA.construct((keypair.public_key(), rsa.VERIFICATION_EXPONENT, keypair.d3, keypair.p, keypair.q))
