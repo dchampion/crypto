@@ -102,6 +102,21 @@ It therefore follows that $a^p \equiv a \pmod{p}$ for the same $a$ and $p$, if w
 - $a^{p-1+1} \equiv a \pmod{p}$
 - $a^p \equiv a \pmod{p}$
 
+There are many proofs of Fermat's little theorem. The following proof uses [group theory](#groups), and is based specifically on [LaGrange's theorem](#lagranges-theorem).
+
+## Proof:
+- Let $p$ be a prime
+- Let $G$ be the set $\{1, 2, ...,p-1\}$ (which in group theory is called _the multiplicative group modulo p_)
+- Let $a$ be a member of this group, i.e., $1 \le a \le p-1$
+- Let $k$ be the order of $a$; i.e., the smallest integer such that $a^k \equiv 1 \pmod p$
+- Then the numbers $a, a^2, ..., a^k$ modulo $p$ form a subgroup of $G$ whose order is $k$
+- By LaGrange's theorem, $k$ divides the order of $G$, or $p-1$
+- Then $p-1 = km$ for some integer $m$
+- Therefore, $a^{p-1} = a^{km} = (a^{k})^m \equiv 1^m \equiv 1 \pmod p$
+
+For another interesting proof, based on [Euclid's lemma](#euclids-lemma), see [power-product expansions](https://en.wikipedia.org/wiki/Proofs_of_Fermat%27s_little_theorem#Proof_using_power_product_expansions).
+
+
 # Finding Large Primes
 Primality&ndash;testing algorithms based on trial division are not feasible for primes of the size necessary for use in cryptographic applications. Even though the time complexity of these algorithms is linear, their candidate inputs are so large that even linear&ndash;time algorithms are too slow. (How slow? they would require many times the age of the universe to complete.)
 
@@ -147,6 +162,18 @@ A corollary to Euler's theorem&mdash;and one that is crucial to understanding th
 - $x - y = \phi(n)k$, for some integer $k$
 - $x = y + \phi(n)k$
 - $a^x = a^{y+\phi(n)k} = a^y(a^{\phi(n)})^{k} \equiv a^y1^k \equiv a^y \pmod{n}$
+
+There are many proofs of Euler's theorem. The following is a generalization of the proof of [Fermat's little theorem](#fermats-little-theorem) presented above.
+
+## Proof:
+- Let $n$ be a positive integer (that is not necessarily prime)
+- Let $G$ be the set $\{1 \le a \le n-1 : gcd(a,n) = 1\}$ (which in group theory is called _the multiplicative group modulo_ $\phi(n)$.
+- Let $a$ be a member of this group
+- Let $k$ be the order $a$; i.e., the smallest integer such that $a^k \equiv 1 \pmod{\phi(n)}$
+- Then the numbers $a, a^2, ..., a^k$ modulo $n$ form a subgroup of $G$ whose order is $k$
+- By LaGrange's theorem, $k$ divides the order of $G$, or $\phi(n)$
+- Then $\phi(n) = km$ for some integer $m$
+- Therefore, $a^{\phi(n)} = a^{km} = (a^{k})^m \equiv 1^m \equiv 1 \pmod n$
 
 # [Lagrange's Theorem](<https://en.wikipedia.org/wiki/Lagrange%27s_theorem_(group_theory)>)
 
