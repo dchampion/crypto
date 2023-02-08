@@ -50,7 +50,7 @@ If $p$ is a prime, and $p|ab$, where $ab$ is the product of two integers $a$ and
 
 ## Proof
 
-- Let $p$ and $a$ be coprime, giving that $p$ does not divide $a$
+- Let $p$ be a prime, and $a$ an integer coprime with $p$; i.e., $p$ does not divide $a$
 - There are integers $x$ and $y$ such that $xp + ya = 1$ (this is [Bezout's identity](https://en.wikipedia.org/wiki/B%C3%A9zout%27s_identity))
 - Multiply both sides of this equation by $b$, giving $xpb + yab = b$
 - The term $xpb$ is divisible by $p$
@@ -167,7 +167,7 @@ There are many proofs of Euler's theorem. The following is a generalization of t
 
 ## Proof:
 - Let $n$ be a positive integer (that is not necessarily prime)
-- Let $G$ be the set $\{1 \le a \le n-1 : gcd(a,n) = 1\}$ (which in group theory is called _the multiplicative group modulo_ $\phi(n)$.
+- Let $G$ be the set $\lbrace 1 \le a \le n-1 : gcd(a,n) = 1\rbrace$ (which in group theory is called _the multiplicative group modulo_ $\phi(n)$.
 - Let $a$ be a member of this group
 - Let $k$ be the order $a$; i.e., the smallest integer such that $a^k \equiv 1 \pmod{\phi(n)}$
 - Then the numbers $a, a^2, ..., a^k$ modulo $n$ form a subgroup of $G$ whose order is $k$
