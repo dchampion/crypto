@@ -137,7 +137,7 @@ def generate_parameters(p_bit_len: int) -> tuple[int, int, int]:
     """
     Returns the public parameters necessary for two parties to negotiate a shared,
     private key to be used in a symmetric cipher (e.g., 3DES, AES). The returned
-    value is a tuple of the form (q, p, g), where q is a 256-bit prime number that
+    value is a tuple of the form (q, p, g), where q is a 256-bit "safe" prime that
     is the order of the smallest subgroup modulo p, p is a prime number of at least
     p_bit_len length (p_bit_len must be at least 2048 bits), and g is a generator
     of the subgroup of order q.
@@ -154,8 +154,8 @@ def generate_parameters(p_bit_len: int) -> tuple[int, int, int]:
     # Find values for n and p that satisfy the equation p = q * n + 1, where p is a
     # prime of p_bit_len length. This ensures that the public keys used in the secret
     # key agreement will fall into the subgroup of order (or size) q. The order of
-    # this subgroup must be large enough (i.e., at least 256 bits) to thwart collision-
-    # style attacks.
+    # this subgroup must be large enough (i.e., at least 256 bits) to thwart small
+    # subgroup attacks.
     n, p = _generate_p(q, p_bit_len)
 
     # Find a generator g that generates all elements of the subgroup of order
