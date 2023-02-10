@@ -137,10 +137,10 @@ def generate_parameters(p_bit_len: int) -> tuple[int, int, int]:
     """
     Returns the public parameters necessary for two parties to negotiate a shared,
     private key to be used in a symmetric cipher (e.g., 3DES, AES). The returned
-    value is a tuple of the form (q, p, g), where q is a 256-bit "safe" prime that
-    is the order of the smallest subgroup modulo p, p is a prime number of at least
+    value is a tuple of the form (q, p, g), where q is a 256-bit prime number that
+    is the order of the smallest subgroup modulo p, p is a "safe" prime of at least
     p_bit_len length (p_bit_len must be at least 2048 bits), and g is a generator
-    of the subgroup of order q.
+    of the subgroup.
     """
 
     assert isinstance(p_bit_len, int) and \
@@ -205,11 +205,11 @@ def _generate_g(n: int, p: int) -> int:
 
     while True:
         # Pick a random base in the full range of the modulus.
-        b = prng.randrange(2, p - 2)
+        a = prng.randrange(2, p - 2)
 
         # Any such base raised to the power of n modulo p should yield either 1,
         # or else a generator of the entire subgroup of order (or size) q.
-        g = util.fast_mod_exp(b, n, p)
+        g = util.fast_mod_exp(a, n, p)
 
         # If g is not 1, it must be a generator of the subgroup.
         if g != 1:
