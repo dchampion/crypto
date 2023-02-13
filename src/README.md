@@ -22,7 +22,7 @@ The top&ndash;level `src` folder represents the root of this package, and contai
 
 The modules in the `core` package implement the low&ndash;level cryptographic primitives on which the code in the `api` package depends.
 
-With very few exceptions, the code in this package is free of dependencies on external, third&ndash;party modules or libraries (modules such as `math` and `os` could not be avoided, but the services they provide are so essential that they could not be feasibly omitted).
+The code in these modules is free of dependencies on any external, third&ndash;party modules or libraries (modules in the Python standard library, such as `math` and `os`, could not be avoided, but the services they provide are so essential that they could not be feasibly omitted). The effect of this is complete transparency into the implementation details of these cryptosystems, offering ready proof as to their correctness (or lack thereof).
 
 Following is a short description of each module in the `core` package:
 
