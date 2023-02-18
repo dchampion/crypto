@@ -67,7 +67,7 @@ All integers greater than $1$ are the product of a unique set of primes. For exa
 
 # [Miller&ndash;Rabin Theorem](https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test) 
 
-if $p$ is prime, then the only possible square roots of $1$ modulo $p$ are either $1$ or $-1$.
+If $p$ is prime, then the only possible square roots of $1$ modulo $p$ are either $1$ or $-1$.
 
 This is technically just a specialization of Euclid's lemma; it is important because it is used to test very large integers for primality (see subsection [_Finding Large Primes_](#finding-large-primes) for a more thorough discussion).
 
@@ -79,6 +79,30 @@ This is technically just a specialization of Euclid's lemma; it is important bec
 - Thus, $p$ divides $(a+1)(a-1)$
 - Since $p$ is prime, then $p$ divides either $(a+1)$ or $(a-1)$ (proven by Euclid's lemma)
 - Therefore, $a$ is congruent to either $1$ or $-1$ modulo $p$
+
+# [Fermat Factorization Algorithm](https://en.wikipedia.org/wiki/Fermat%27s_factorization_method)
+
+Attempts to factor an odd integer $N$. If $N$ is an RSA modulus, and it can be factored using this algorithm, then the difference of its factors is too small, and the factors therefore cryptographically weak. Suitable factors of an RSA modulus should be sufficiently distant to defeat this algorithm.
+
+1. Set $i$ to the integer square root of $N$
+2. Set $a=i+1$
+3. Set $b=a^2 - N$
+4. If $b$ is not a perfect square, set $a=a+1$ and go to step 3; otherwise, $(a+b)$ and $(a-b)$ are the factors of $N$ and we're done
+5. Repeat steps 3 and 4 until $b$ is a perfect square, or a sensible number of tries has been made.
+
+Some background math: Any odd integer $N$ can be expressed as a [difference of squares](https://en.wikipedia.org/wiki/Difference_of_two_squares), i.e., $N = a^2 - b^2$ for some integers $a$ and $b$. And $a^2 - b^2$ is factorable to $(a+b)(a-b)$. If $(a+b) \ne 1$ and $(a-b) \ne 1$, then $(a+b)(a-b)$ is a nontrivial factorization of $N$.
+
+## Proof
+- Let $a = (k+n)$ for some integers $a$, $k$ and $n$
+- Let $b = k$ for some integer $b$
+- Then by the difference of squares, $N = (k + n)^2 - k^2$, for some odd integer $N$
+- $N = (k+n)^2 - k^2 = (k + n + k)(k + n - k)$
+- $N = (k+n)^2 - k^2 = (k+n)^2 + k(k + n) - (k + n)k - k^2$
+- $N = (k+n)^2 - k^2 =  (k+n)^2 - k^2$
+
+Note that if $N$ is odd, then by definition $N = 2k + 1$ for some integer $k$. Note further that if $N$ is a strong RSA modulus it cannot be even, otherwise one of its factors would be $2$.
+
+
 # [Euclid's Theorem](https://en.wikipedia.org/wiki/Euclid%27s_theorem)
 
 There are an infinite number of primes.
