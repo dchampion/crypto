@@ -84,6 +84,8 @@ This is technically just a specialization of Euclid's lemma; it is important bec
 
 Attempts to factor an odd integer $n$. If $n$ is semiprime RSA modulus, and it can be factored using this algorithm, then the difference of its factors is too small, and the factors therefore cryptographically weak. Suitable factors of an RSA modulus should be sufficiently distant to defeat this algorithm for a sufficiently long run time.
 
+Note that if $n$ is an RSA modulus it cannot be even; otherwise one of its factors would be $2$.
+
 1. Set $i$ to the integer floor of the square root of $n$
 2. Set $a=i+1$
 3. Set $b=a^2 - n$
@@ -93,15 +95,10 @@ Attempts to factor an odd integer $n$. If $n$ is semiprime RSA modulus, and it c
 Some background math: Any odd integer $n$ can be expressed as a [difference of squares](https://en.wikipedia.org/wiki/Difference_of_two_squares), i.e., $n = a^2 - b^2$ for some integers $a$ and $b$. Further, $a^2 - b^2$ is factorable to $(a+b)(a-b)$. If $(a+b) \ne 1$ and $(a-b) \ne 1$, then $(a+b)(a-b)$ is a nontrivial factorization of $n$.
 
 ## Proof
-- Let $a = (k+n)$ for some integers $k$ and $n$
-- Let $b = k$
-- Then by the difference of squares, $N = (k + n)^2 - k^2$ for some odd integer $N$
-- $N = (k+n)^2 - k^2 = (k + n + k)(k + n - k)$
-- $N = (k+n)^2 - k^2 = (k+n)^2 + k(k + n) - (k + n)k - k^2$
-- $N = (k+n)^2 - k^2 =  (k+n)^2 - k^2$
-
-Note that if $N$ is odd, then by definition $N = 2k + 1$ for some integer $k$. Note further that if $N$ is a strong RSA modulus it cannot be even, otherwise one of its factors would be $2$.
-
+- If $n$ is an odd integer, then $n = 2k+1$ trivially for some integer $k$
+- By the difference of squares, $n = a^2 - b^2$ for some integers $a$ and $b$
+- Let $a=(k+m)$ and $b=k$ for some integer $m$
+- Then $n = (k+m)^2 - k^2 = 2k+1$
 
 # [Euclid's Theorem](https://en.wikipedia.org/wiki/Euclid%27s_theorem)
 
