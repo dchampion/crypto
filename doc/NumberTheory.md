@@ -80,22 +80,22 @@ This is technically just a specialization of Euclid's lemma; it is important bec
 - Since $p$ is prime, then $p$ divides either $(a+1)$ or $(a-1)$ (proven by Euclid's lemma)
 - Therefore, $a$ is congruent to either $1$ or $-1$ modulo $p$
 
-# [Fermat Factorization Algorithm](https://en.wikipedia.org/wiki/Fermat%27s_factorization_method)
+# [Fermat's Factorization Algorithm](https://en.wikipedia.org/wiki/Fermat%27s_factorization_method)
 
-Attempts to factor an odd integer $N$. If $N$ is an RSA modulus, and it can be factored using this algorithm, then the difference of its factors is too small, and the factors therefore cryptographically weak. Suitable factors of an RSA modulus should be sufficiently distant to defeat this algorithm.
+Attempts to factor an odd integer $n$. If $n$ is semiprime RSA modulus, and it can be factored using this algorithm, then the difference of its factors is too small, and the factors therefore cryptographically weak. Suitable factors of an RSA modulus should be sufficiently distant to defeat this algorithm for a sufficiently long run time.
 
-1. Set $i$ to the integer square root of $N$
+1. Set $i$ to the integer floor of the square root of $n$
 2. Set $a=i+1$
-3. Set $b=a^2 - N$
-4. If $b$ is not a perfect square, set $a=a+1$ and go to step 3; otherwise, $(a+b)$ and $(a-b)$ are the factors of $N$ and we're done
-5. Repeat steps 3 and 4 until $b$ is a perfect square, or a sensible number of tries has been made.
+3. Set $b=a^2 - n$
+4. If $b$ is _not_ a perfect square, set $a=a+1$ and go to step 3; otherwise, $(a+b)$ and $(a-b)$ are the factors of $n$ and we're done
+5. Repeat steps 3 and 4 until $b$ is a perfect square, or a sensible number of attempts has been made.
 
-Some background math: Any odd integer $N$ can be expressed as a [difference of squares](https://en.wikipedia.org/wiki/Difference_of_two_squares), i.e., $N = a^2 - b^2$ for some integers $a$ and $b$. And $a^2 - b^2$ is factorable to $(a+b)(a-b)$. If $(a+b) \ne 1$ and $(a-b) \ne 1$, then $(a+b)(a-b)$ is a nontrivial factorization of $N$.
+Some background math: Any odd integer $n$ can be expressed as a [difference of squares](https://en.wikipedia.org/wiki/Difference_of_two_squares), i.e., $n = a^2 - b^2$ for some integers $a$ and $b$. Further, $a^2 - b^2$ is factorable to $(a+b)(a-b)$. If $(a+b) \ne 1$ and $(a-b) \ne 1$, then $(a+b)(a-b)$ is a nontrivial factorization of $n$.
 
 ## Proof
-- Let $a = (k+n)$ for some integers $a$, $k$ and $n$
-- Let $b = k$ for some integer $b$
-- Then by the difference of squares, $N = (k + n)^2 - k^2$, for some odd integer $N$
+- Let $a = (k+n)$ for some integers $k$ and $n$
+- Let $b = k$
+- Then by the difference of squares, $N = (k + n)^2 - k^2$ for some odd integer $N$
 - $N = (k+n)^2 - k^2 = (k + n + k)(k + n - k)$
 - $N = (k+n)^2 - k^2 = (k+n)^2 + k(k + n) - (k + n)k - k^2$
 - $N = (k+n)^2 - k^2 =  (k+n)^2 - k^2$
