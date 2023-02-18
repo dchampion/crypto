@@ -82,7 +82,7 @@ This is technically just a specialization of Euclid's lemma; it is important bec
 
 # [Fermat's Factorization Algorithm](https://en.wikipedia.org/wiki/Fermat%27s_factorization_method)
 
-Attempts to factor an odd integer $n$. If $n$ is semiprime RSA modulus, and it can be factored using this algorithm, then the difference of its factors is too small, and the factors therefore cryptographically weak. Suitable factors of an RSA modulus should be sufficiently distant to defeat this algorithm for a sufficiently long run time.
+Attempts to factor an odd integer $n$. If $n$ is a semiprime RSA modulus, and it can be factored using this algorithm, then the difference of its factors is too small, and the factors therefore cryptographically weak. Suitable factors of an RSA modulus should be sufficiently distant to defeat this algorithm for a sufficiently long run time.
 
 Note that if $n$ is an RSA modulus it cannot be even; otherwise one of its factors would be $2$.
 
@@ -95,10 +95,10 @@ Note that if $n$ is an RSA modulus it cannot be even; otherwise one of its facto
 Some background math: Any odd integer $n$ can be expressed as a [difference of squares](https://en.wikipedia.org/wiki/Difference_of_two_squares), i.e., $n = a^2 - b^2$ for some integers $a$ and $b$. Further, $a^2 - b^2$ is factorable to $(a+b)(a-b)$. If $(a+b) \ne 1$ and $(a-b) \ne 1$, then $(a+b)(a-b)$ is a nontrivial factorization of $n$.
 
 ## Proof
-- If $n$ is an odd integer, then $n = 2k+1$ trivially for some integer $k$
 - By the difference of squares, $n = a^2 - b^2$ for some integers $a$ and $b$
-- Let $a=(k+m)$ and $b=k$ for some integer $m$
-- Then $n = (k+m)^2 - k^2 = 2k+1$
+- If $n$ is an odd integer, then $n = 2k+1$ trivially for some integer $k$
+- Let $a=(k+l)$ and $b=k$ for some integer $l$
+- Then $n = (k+l)^2 - k^2 = 2k+1$
 
 # [Euclid's Theorem](https://en.wikipedia.org/wiki/Euclid%27s_theorem)
 
