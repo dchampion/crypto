@@ -4,6 +4,7 @@ import math
 
 from . import prng
 from . import util
+from . import euclid
 
 _small_primes =  [  3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
                   73, 79, 83, 83, 89, 97,101,103,107,109,113,127,131,137,139,149,151,157,163,
@@ -207,20 +208,21 @@ def _fermat_is_prime(n: int) -> bool:
 
 def fermat_factor(n: int) -> tuple[True, int, int] or False:
     """
-    Attempts to factor a composite (or, more specifically, a semiprime) integer n using Fermat's
-    factorization algorithm. Returns the tuple (True, p, q) if the factorization is successful,
-    where p and q are the prime factors of n; otherwise returns False. This function can be used
-    to test the suitability of a modulus in an RSA public key. A successful factorization of n
-    indicates its factors p and q are too close together, and therefore that n is not safe for
-    use in such a key. Possible causes of this could be a poorly implemented prime number-
-    generating algorithm, or a bad pseudo-random number generating algorithm.
+    Attempts to factor a valid RSA modulus n using Fermat's factorization algorithm. A valid n
+    is an integer that is the composite product of exactly two distinct prime factors. Returns
+    the tuple (True, p, q) if the factorization is successful, where p and q are the prime
+    factors of n; otherwise returns False. This function can be used to test the suitability of
+    a modulus in an RSA public key. A successful factorization of n indicates its factors p and
+    q are too close together, and therefore that n is not safe for use in such a key. Possible
+    causes of this could be a poorly implemented prime number-generating algorithm, or a bad
+    pseudo-random number generating algorithm.
     """
+    if not isinstance(n, int) or n < 3 or n % 2 == 0:
+        raise ValueError("n is either not an integer, less than 3 or even")
     if is_prime(n):
-        raise ValueError("n must be composite")
-
-    # First test that n is not a perfect square.
+        raise ValueError("n prime")
     if _is_square(n):
-        return True, math.isqrt(n), math.isqrt(n)
+        raise ValueError("n is a perfect square")
 
     # Fermat's algorithm asserts that n = (a-b)(a+b), which becomes n = a^2 - b^2, which becomes
     # b^2 = a^2-n. Here a is some number that is close to the square root of n, and b is the
@@ -241,8 +243,46 @@ def fermat_factor(n: int) -> tuple[True, int, int] or False:
 
     return True, p, q
 
+
 def _is_square(n: int) -> bool:
     return n == math.isqrt(n) ** 2
+
+
+def shor_factor(n: int) -> tuple[int, int]:
+    """
+    Attempts to factor a valid RSA modulus n using Shor's factorization algorithm. A valid n
+    is an integer that is the composite product of exactly two distinct prime factors. Returns
+    the tuple (p, q) if the factorization is successful, where p and q are the prime factors of
+    n. The runtime performance of this algorithm is exponential in the size of n; therefore it
+    should generally not be called with n > 32 bits.
+    """
+    if not isinstance(n, int) or n < 3 or n % 2 == 0:
+        raise ValueError("n is either not an integer, less than 3 or even")
+    if is_prime(n):
+        raise ValueError("n prime")
+    if _is_square(n):
+        raise ValueError("n is a perfect square")
+
+    while True:
+        k = prng.randrange(1, n)
+        g = euclid.gcd(k, n)
+        if g != 1:
+            return g, n // g
+
+        q, r, s = 1, 0, -1
+        while s != 1:
+            s = q * k % n
+            q = s
+            r += 1
+
+        if r % 2 == 0:
+            p = 1
+            for _ in range(r//2):
+                s = p * k % n
+                p = s
+
+            if p + 1 != n:
+                return euclid.gcd(p+1, n), euclid.gcd(p-1, n)
 
 
 def _validate_param(n: int) -> None:
