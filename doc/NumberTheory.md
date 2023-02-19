@@ -92,13 +92,20 @@ Note that if $n$ is an RSA modulus it cannot be even; otherwise one of its facto
 4. If $b$ is _not_ a perfect square, set $a=a+1$ and go to step 3; otherwise, $(a+b)$ and $(a-b)$ are the factors of $n$ and we're done
 5. Repeat steps 3 and 4 until $b$ is a perfect square, or a sensible number of attempts has been made.
 
-Some background math: Any odd integer $n$ can be expressed as a [difference of squares](https://en.wikipedia.org/wiki/Difference_of_two_squares), i.e., $n = a^2 - b^2$ for some integers $a$ and $b$. Further, $a^2 - b^2$ is factorable to $(a+b)(a-b)$. If $(a+b) \ne 1$ and $(a-b) \ne 1$, then $(a+b)(a-b)$ is a nontrivial factorization of $n$.
+Fermat's factorization algorithm is based on the fact that any odd integer $n$ can be expressed as the [difference of two consecutive squares](#difference-of-two-squares), i.e., $n = a^2 - b^2$ for two consecutive integers $b$ and $a$. The right&ndash;hand side of this equation can be factored into $(a+b)(a-b)$. And if $(a+b) \ne 1$ and $(a-b) \ne 1$, then $(a+b)(a-b)$ is a nontrivial factorization of $n$.
+
+# [Difference of Two Squares](https://en.wikipedia.org/wiki/Difference_of_two_squares)
+Every odd number $n$ can be expressed as the difference of two consecutive squares, such that $n=a^2-b^2$ for two consecutive integers $b$ and $a$.
 
 ## Proof
-- By the difference of squares, $n = a^2 - b^2$ for some integers $a$ and $b$
 - If $n$ is an odd integer, then $n = 2k+1$ trivially for some integer $k$
-- Let $a=(k+l)$ and $b=k$ for some integer $l$
-- Then $n = (k+l)^2 - k^2 = 2k+1$
+- By the difference of squares, $n = a^2 - b^2$ for two consecutive integers $b$ and $a$
+- Let $a=(k+1)$ and $b=k$
+- Then $n = (k+1)^2 - k^2$
+- $n = (k+1)(k+1) - k^2$
+- $n = k^2 + 2k+1 - k^2$
+- $n = 2k+1$
+
 
 # [Euclid's Theorem](https://en.wikipedia.org/wiki/Euclid%27s_theorem)
 
