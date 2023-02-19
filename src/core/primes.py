@@ -215,7 +215,8 @@ def fermat_factor(n: int) -> tuple[True, int, int] or False:
     use in such a key. Possible causes of this could be a poorly implemented prime number-
     generating algorithm, or a bad pseudo-random number generating algorithm.
     """
-    _validate_param(n)
+    if is_prime(n):
+        raise ValueError("n must be composite")
 
     # First test that n is not a perfect square.
     if _is_square(n):
@@ -225,7 +226,7 @@ def fermat_factor(n: int) -> tuple[True, int, int] or False:
     # b^2 = a^2-n. Here a is some number that is close to the square root of n, and b is the
     # distance from a to the prime factors of n.
     a = math.isqrt(n) + 1
-    c, tries = 0, 100
+    c, tries = 0, 1000
     while not _is_square(a**2 - n):
         a += 1
         c += 1
@@ -239,7 +240,6 @@ def fermat_factor(n: int) -> tuple[True, int, int] or False:
     q = a - b
 
     return True, p, q
-
 
 def _is_square(n: int) -> bool:
     return n == math.isqrt(n) ** 2
