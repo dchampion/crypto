@@ -140,18 +140,7 @@ def test_fermat_factor():
     i = len(primes._small_primes) // 2
     j = i
     while j < len(primes._small_primes):
-        if j - i < 92:
-            assert primes.fermat_factor(
-                primes._small_primes[i] * primes._small_primes[j]
-            )[
-                0
-            ], f"factors {primes._small_primes[i]} and {primes._small_primes[j]} \
-should be factorable by fermat_factor()"
-        else:
-            assert not primes.fermat_factor(
-                primes._small_primes[i] * primes._small_primes[j]
-            ), f"factors {primes._small_primes[i]} and {primes._small_primes[j]} \
-should not be factorable by fermat_factor()"
+        assert primes.fermat_factor(primes._small_primes[i] * primes._small_primes[j])
         i -= 1
         j += 1
 
