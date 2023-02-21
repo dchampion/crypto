@@ -62,6 +62,7 @@ def main():
     test_is_prime()
     test_generate_prime()
     test_fermat_factor()
+    test_shor_factor()
     test_is_composite_2()
 
 @util.test_log
@@ -137,12 +138,14 @@ def test_generate_prime():
 
 @util.test_log
 def test_fermat_factor():
-    i = len(primes._small_primes) // 2
-    j = i
-    while j < len(primes._small_primes):
-        assert primes.fermat_factor(primes._small_primes[i] * primes._small_primes[j])
-        i -= 1
-        j += 1
+    for _ in range(1000):
+        i = util.random_range(0, len(primes._small_primes)-1)
+        j = util.random_range(0, len(primes._small_primes)-1)
+        while j == i:
+            j = util.random_range(0, len(primes._small_primes)-1)
+        assert primes.fermat_factor(
+            primes._small_primes[i] * primes._small_primes[j]
+        ), f"factors {primes._small_primes[i]} and {primes._small_primes[i]} should be factorable by fermat_factor()"
 
     for _ in range(10):
         p = primes.generate_prime(1024)
@@ -151,6 +154,18 @@ def test_fermat_factor():
             p * q
         ), f"factors {p} and {q} should not be factorable by fermat_factor()"
 
+
+
+@util.test_log
+def test_shor_factor():
+    for _ in range(100):
+        i = util.random_range(0, len(primes._small_primes)-1)
+        j = util.random_range(0, len(primes._small_primes)-1)
+        while j == i:
+            j = util.random_range(0, len(primes._small_primes)-1)
+        p, q = primes.shor_factor(primes._small_primes[i] * primes._small_primes[j])
+        assert p * q == primes._small_primes[i] * primes._small_primes[j],\
+            f"factors {primes._small_primes[i]} and {primes._small_primes[i]} should be factorable by shor_factor()"
 
 @util.test_log
 def test_is_composite_2():
