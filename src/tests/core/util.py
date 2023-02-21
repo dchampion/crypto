@@ -8,11 +8,11 @@ import time
 from typing import Iterator
 
 
-def get_random_bit_lengths(min: int, max: int, step: int = 1) -> list[int]:
-    return [get_random_bit_len(min, max, step) for _ in range(num_cores())]
+def random_ranges(min: int, max: int, step: int = 1) -> list[int]:
+    return [random_range(min, max, step) for _ in range(num_cores())]
 
 
-def get_random_bit_len(min: int, max: int, step: int = 1) -> int:
+def random_range(min: int, max: int, step: int = 1) -> int:
     return random.randrange(min, max, step)
 
 

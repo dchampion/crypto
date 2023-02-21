@@ -6,7 +6,7 @@ from . import prng
 from . import util
 from . import euclid
 
-_small_primes =  [  3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
+_small_primes =  [ 3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
                   73, 79, 83, 83, 89, 97,101,103,107,109,113,127,131,137,139,149,151,157,163,
                  167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,
                  271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,367,373,379,383,
@@ -33,11 +33,9 @@ def is_prime(n: int) -> bool:
     """
     assert isinstance(n, int) and n > 1
 
-    # Dispense with even integers.
-    if n == 2:
-        return True
+    # Dispense with even numbers.
     if n % 2 == 0:
-        return False
+        return n == 2
 
     # Dispense with small primes and multiples thereof. Return True for an n that matches
     # any of the first 168 primes (less than 1,000). Any multiples thereof are composites
@@ -220,7 +218,7 @@ def fermat_factor(n: int) -> tuple[True, int, int] or False:
     if not isinstance(n, int) or n < 3 or n % 2 == 0:
         raise ValueError("n is either not an integer, less than 3 or even")
     if is_prime(n):
-        raise ValueError("n prime")
+        raise ValueError("n is prime")
     if _is_square(n):
         raise ValueError("n is a perfect square")
 
@@ -259,7 +257,7 @@ def shor_factor(n: int) -> tuple[int, int]:
     if not isinstance(n, int) or n < 3 or n % 2 == 0:
         raise ValueError("n is either not an integer, less than 3 or even")
     if is_prime(n):
-        raise ValueError("n prime")
+        raise ValueError("n is prime")
     if _is_square(n):
         raise ValueError("n is a perfect square")
 

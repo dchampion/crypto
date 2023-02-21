@@ -17,7 +17,7 @@ def main():
 @util.test_log
 def test_dh_setup():
     util.parallelize(dh_setup, \
-        util.get_random_bit_lengths(dh._P_MIN_BIT_LEN, dh._P_MAX_BIT_LEN+1, 1024))
+        util.random_ranges(dh._P_MIN_BIT_LEN, dh._P_MAX_BIT_LEN+1, 1024))
 
 
 def dh_setup(modulus_bit_len):
@@ -51,7 +51,7 @@ def test_generate_p():
 
 
 def generate_p(q):
-    p_bit_len = util.get_random_bit_len(dh._P_MIN_BIT_LEN, dh._P_MAX_BIT_LEN+1, 1024)
+    p_bit_len = util.random_range(dh._P_MIN_BIT_LEN, dh._P_MAX_BIT_LEN+1, 1024)
     _, p = dh._generate_p(q, p_bit_len)
     assert p.bit_length() == p_bit_len
 
