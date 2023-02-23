@@ -207,13 +207,13 @@ def _fermat_is_prime(n: int) -> bool:
 def fermat_factor(n: int) -> tuple[True, int, int] or False:
     """
     Attempts to factor a valid RSA modulus n using Fermat's factorization algorithm. A valid n
-    is an integer that is the composite product of exactly two distinct prime factors. Returns
+    is a composite integer that is the product of exactly two distinct prime factors. Returns
     the tuple (True, p, q) if the factorization is successful, where p and q are the prime
     factors of n; otherwise returns False. This function can be used to test the suitability of
     a modulus in an RSA public key. A successful factorization of n indicates its factors p and
     q are too close together, and therefore that n is not safe for use in such a key. Possible
-    causes of this could be a poorly implemented prime number-generating algorithm, or a bad
-    pseudo-random number generating algorithm.
+    causes of this could be too small an n, a poorly implemented prime number-generating
+    algorithm, a bad pseudo-random number generator...
     """
     if not isinstance(n, int) or n < 3 or n % 2 == 0:
         raise ValueError("n is either not an integer, less than 3 or even")
@@ -222,11 +222,13 @@ def fermat_factor(n: int) -> tuple[True, int, int] or False:
     if _is_square(n):
         raise ValueError("n is a perfect square")
 
-    # Fermat's algorithm asserts that n = (a-b)(a+b), which becomes n = a^2 - b^2, which becomes
-    # b^2 = a^2-n. Here a is some number that is close to the square root of n, and b is the
-    # distance from a to the prime factors of n.
+    # Fermat's factorization algorithm leverages the fact that a valid RSA modulus must be odd,
+    # and every odd number can be expressed as the difference of two squares; i.e., n = a^2 - b^2
+    # = (a+b)(a-b). If we start with a number a that is close to the square root of n, repeatedly
+    # increment it by 1, and find after fewer than 1m iterations that b^2 = a^2 - n, then we have
+    # found the nontrivial factors of n. Here b is the distance from a to the prime factors of n.
     a = math.isqrt(n) + 1
-    c, tries = 0, 1000
+    c, tries = 0, 1000000
     while not _is_square(a**2 - n):
         a += 1
         c += 1
@@ -236,10 +238,7 @@ def fermat_factor(n: int) -> tuple[True, int, int] or False:
     b2 = a**2 - n
     b = math.isqrt(b2)
 
-    p = a + b
-    q = a - b
-
-    return True, p, q
+    return True, a + b, a - b
 
 
 def _is_square(n: int) -> bool:
