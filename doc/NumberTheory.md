@@ -195,9 +195,9 @@ There are many proofs of Euler's theorem. The following is a generalization of t
 
 ## Proof:
 - Let $n$ be a positive integer (that is not necessarily prime)
-- Let $G$ be the set $\lbrace 1 \le a \le n-1 : gcd(a,n) = 1\rbrace$ (which in group theory is called _the multiplicative group modulo_ $\phi(n)$.
+- Let $G$ be the set $\lbrace 1 \le a \le n-1 : gcd(a,n) = 1\rbrace$ (which in group theory is called _the multiplicative group modulo_ $n$).
 - Let $a$ be a member of this group
-- Let $k$ be the order $a$; i.e., the smallest integer such that $a^k \equiv 1 \pmod{\phi(n)}$
+- Let $k$ be the order $a$; i.e., the smallest integer such that $a^k \equiv 1 \pmod{n}$
 - Then the numbers $a, a^2, ..., a^k$ modulo $n$ form a subgroup of $G$ whose order is $k$
 - By LaGrange's theorem, $k$ divides the order of $G$, or $\phi(n)$
 - Then $\phi(n) = km$ for some integer $m$
