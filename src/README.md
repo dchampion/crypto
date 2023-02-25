@@ -26,21 +26,21 @@ The code in these modules is free of dependencies on any external, third&ndash;p
 
 Following is a short description of each module in the `core` package:
 
-- [curves.py](https://github.com/dchampion/crypto/blob/master/src/core/curves.py) &mdash; The collection of elliptic curves specified in the Standards for Efficient Cryptography Group's (SECG) [_Recommended Elliptic Curve Domain Parameters_](https://www.secg.org/sec2-v2.pdf). These include Koblitz curves, and those derived from verifiably random seeds.
+- [curves.py](https://github.com/dchampion/crypto/blob/master/src/core/curves.py) &mdash; A collection of elliptic curves specified in the Standards for Efficient Cryptography Group's (SECG) [_Recommended Elliptic Curve Domain Parameters_](https://www.secg.org/sec2-v2.pdf).
 
-- [dh.py](https://github.com/dchampion/crypto/blob/master/src/core/dh.py) &mdash; An implementation of the classic Diffie-Hellman (DH) key agreement protocol based on multiplicative groups.
+- [dh.py](https://github.com/dchampion/crypto/blob/master/src/core/dh.py) &mdash; An implementation of the classic, finite&ndash;field based Diffie-Hellman (DH) key agreement scheme.
 
 - [ec.py](https://github.com/dchampion/crypto/blob/master/src//core/ec.py) &mdash; Implementations of the elliptic curve Diffie-Hellman (ECDH) and elliptic curve digital signature algorithms (ECDSA).
 
-- [euclid.py](https://github.com/dchampion/crypto/blob/master/src/core/euclid.py) &mdash; Efficient algorithms for computing the greatest common divisors (GCD), least common multiples (LCM) and modular multiplicative inverses of positive integers.
+- [euclid.py](https://github.com/dchampion/crypto/blob/master/src/core/euclid.py) &mdash; Implementations of the Euclidean and extended Euclidean algorithms.
 
-- [primes.py](https://github.com/dchampion/crypto/blob/master/src/core/primes.py) &mdash; Efficient algorithms for primality testing and prime number generation.
+- [primes.py](https://github.com/dchampion/crypto/blob/master/src/core/primes.py) &mdash; Implementations of primality testing and prime number&ndash;generating algorithms.
 
 - [prng.py](https://github.com/dchampion/crypto/blob/master/src/core/prng.py) &mdash; A cryptographically secure pseudo-random number generator.
 
-- [rsa.py](https://github.com/dchampion/crypto/blob/master/src/core/rsa.py) &mdash; Implementations of the Rivest-Shamir-Adleman (RSA) cryptosystem, including encryption, decryption, digital signature and verification procedures.
+- [rsa.py](https://github.com/dchampion/crypto/blob/master/src/core/rsa.py) &mdash; Implementations of the Rivest-Shamir-Adleman (RSA) cryptosystem, including algorithms for encryption, decryption,  digital signature, and digital signature verification.
 
-- [util.py](https://github.com/dchampion/crypto/blob/master/src/core/util.py) &mdash; Efficient algorithms for exponentiation of integer bases to powers of very large exponents.
+- [util.py](https://github.com/dchampion/crypto/blob/master/src/core/util.py) &mdash; Various helper functions common to all modules in this package.
 
 ## The `api` Package
 
