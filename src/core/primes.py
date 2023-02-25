@@ -225,7 +225,7 @@ def fermat_factor(n: int) -> tuple[True, int, int] or False:
     # increment it by 1, and find after fewer than 1m iterations that b^2 = a^2 - n, then we have
     # found the nontrivial factors of n. Here b is the distance from a to the prime factors of n.
     a = math.isqrt(n) + 1
-    c, tries = 0, 1000000
+    c, tries = 0, 100
     while not _is_square(a**2 - n):
         a += 1
         c += 1
