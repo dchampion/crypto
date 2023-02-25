@@ -215,12 +215,9 @@ def fermat_factor(n: int) -> tuple[True, int, int] or False:
     causes of this could be too small an n, a poorly implemented prime number-generating
     algorithm, a bad pseudo-random number generator...
     """
-    if not isinstance(n, int) or n < 3 or n % 2 == 0:
-        raise ValueError("n is either not an integer, less than 3 or even")
-    if is_prime(n):
-        raise ValueError("n is prime")
-    if _is_square(n):
-        raise ValueError("n is a perfect square")
+    assert isinstance(n, int) and n > 2 and n % 2 != 0
+    assert not is_prime(n)
+    assert not _is_square(n)
 
     # Fermat's factorization algorithm leverages the fact that a valid RSA modulus must be odd,
     # and every odd number can be expressed as the difference of two squares; i.e., n = a^2 - b^2
@@ -253,12 +250,9 @@ def shor_factor(n: int) -> tuple[int, int]:
     n. The runtime performance of this algorithm is exponential in the size of n; therefore it
     should generally not be called with n > 32 bits.
     """
-    if not isinstance(n, int) or n < 3 or n % 2 == 0:
-        raise ValueError("n is either not an integer, less than 3 or even")
-    if is_prime(n):
-        raise ValueError("n is prime")
-    if _is_square(n):
-        raise ValueError("n is a perfect square")
+    assert isinstance(n, int) and n > 2 and n % 2 != 0
+    assert not is_prime(n)
+    assert not _is_square(n)
 
     while True:
         k = prng.randrange(1, n)
