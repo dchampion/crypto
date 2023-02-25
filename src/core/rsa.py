@@ -256,8 +256,10 @@ def _generate_rsa_prime(factor_bit_len: int) -> int:
 
 
 def _validate_factors(p: int, q: int) -> None:
-    assert p != q, "p must not equal q"
-    assert not primes.fermat_factor(p * q), "p is too close to q"
+    if p == q:
+        raise Exception("p must not equal q")
+    if primes.fermat_factor(p*q):
+        raise Exception("p is too close to q")
 
 
 def encrypt_random_key(n: int, e: int) -> tuple[bytes, bytes]:
