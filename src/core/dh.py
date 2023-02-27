@@ -18,7 +18,7 @@ _P_MIN_BIT_LEN = 2048
 _P_MAX_BIT_LEN = 3072
 
 
-class DHParameters(object):
+class DHParameters:
     """
     This class represents the public parameters of a Diffie-Hellman integer
     group. These are the group's generator (g), the group's modulus (p), and
@@ -57,7 +57,7 @@ class DHParameters(object):
     def __ne__(self, other):
         return not self == other
 
-class DHKey(object):
+class DHKey:
     """
     This class represents a Diffie-Hellman keypair consisting of a public
     and private key.
@@ -107,7 +107,7 @@ class DHKey(object):
     def __hash__(self):
         return hash((self._params, self._x, self._y))
 
-    def __neq__(self, other):
+    def __ne__(self, other):
         return not self == other
 
 
