@@ -21,7 +21,7 @@ _Y = 1
 # Default curve is secp256k1.
 _CURVE = curves.Secp256k1()
 
-class ECPoint(object):
+class ECPoint:
     """
     A class representing an elliptic curve point. Do not instantiate this
     class directly; instead use the ec module function make_point().
@@ -90,7 +90,7 @@ class ECPoint(object):
     def __ne__(self, other):
         return not self == other
 
-class ECKey(object):
+class ECKey:
     """
     A class representing an elliptic curve keypair. Do not instantiate
     this class directly; instead use the ec module function make_key().
