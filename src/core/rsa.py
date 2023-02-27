@@ -23,7 +23,7 @@ _MODULUS_MAX_BIT_LEN = _FACTOR_MAX_BIT_LEN * 2 # (3072)
 VERIFICATION_EXPONENT = 3
 ENCRYPTION_EXPONENT   = 5
 
-class RSAKey(object):
+class RSAKey:
     """
     A class representing an RSA key. This is a dual-use key, meaning that
     it can safely be used for both encryption and digital signature,
