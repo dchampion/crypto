@@ -43,10 +43,10 @@ class ECPoint:
 
     def double(self):
         """Return the doubled value of this point (i.e., 2*point)."""
-        doubled = _double(self._as_list())
+        doubled = _double(self.as_list())
         return ECPoint(doubled[_X], doubled[_Y])
 
-    def _as_list(self) -> list:
+    def as_list(self) -> list:
         # Return this point as a 2-member list consumable by the module
         # API.
         return [self._x, self._y]
@@ -54,7 +54,7 @@ class ECPoint:
     def __add__(self, other):
         if not isinstance(other, ECPoint):
             return NotImplemented
-        sum = _add(self._as_list(), other._as_list())
+        sum = _add(self.as_list(), other.as_list())
         return ECPoint(sum[_X], sum[_Y])
 
     def __iadd__(self, other):
@@ -66,7 +66,7 @@ class ECPoint:
     def __mul__(self, n: int):
         if not isinstance(n, int):
             return NotImplemented
-        product = _x_times_pt(n, self._as_list())
+        product = _x_times_pt(n, self.as_list())
         return ECPoint(product[_X], product[_Y])
 
     def __imul__(self, n: int):
@@ -97,7 +97,7 @@ class ECKey:
     """
     def __init__(self, d: int, Q: ECPoint):
         _validate_priv_key(d)
-        validate_pub_key(Q._as_list())
+        validate_pub_key(Q.as_list())
         self._d = d
         self._Q = Q
 
@@ -123,7 +123,7 @@ class ECKey:
         """
         if not isinstance(Q, ECPoint):
             raise ValueError("Q is not a curve point.")
-        return generate_session_key(self._d, Q._as_list())
+        return generate_session_key(self._d, Q.as_list())
 
     def sign(self, m: object) -> tuple[int, int]:
         """
@@ -131,14 +131,6 @@ class ECKey:
         private key.
         """
         return sign(self._d, m)
-
-    def verify(self, Q: ECPoint, m: object, S: tuple[int, int]) -> bool:
-        """
-        Given a public key Q, a message m and a signature S supplied by
-        another party, returns True if m was signed by the private key
-        corresponding to Q; otherwise returns False.
-        """
-        return verify(Q._as_list(), m, S)
 
     def public_key(self) -> ECPoint:
         """

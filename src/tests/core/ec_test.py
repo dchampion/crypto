@@ -660,7 +660,7 @@ def full_protocol_ec(curve):
     mB = sym.decrypt(ses_key_b, mAC)
 
     assert mA == mB
-    assert ec_key_b.verify(pub_key_a, mB, sA)
+    assert ec.verify(pub_key_a.as_list(), mB, sA)
 
 
 if __name__ == "__main__":
