@@ -66,8 +66,8 @@ def test_encrypt_decrypt():
 
 def encrypt_decrypt(modulus_bit_len):
     p, q, n, _, d5 = rsa.generate_rsa_key(modulus_bit_len)
-    K1, c = rsa.encrypt_random_key(n, rsa.ENCRYPTION_EXPONENT)
-    K2 = rsa.decrypt_random_key(d5, c, p, q)
+    K1, c = rsa.encrypt_key(n)
+    K2 = rsa.decrypt_key(d5, c, p, q)
     assert K1 == K2, "Keys don't match"
 
 
@@ -81,7 +81,7 @@ def sign_verify(modulus_bit_len):
     p, q, n, d3, _ = rsa.generate_rsa_key(modulus_bit_len)
     m = random.randbytes(random.randint(20, 40))
     o = rsa.sign(d3, p, q, m)
-    assert rsa.verify(n, rsa.VERIFICATION_EXPONENT, m, o)
+    assert rsa.verify(n, m, o)
 
 
 @util.test_log
@@ -155,7 +155,7 @@ def test_full_protocol():
     # stores it in KA; this she must keep private. [cA] is the ciphertext of the symmetric
     # key input material, which Alice will transmit to Bob, and which Bob will use to
     # reconstruct the symmetric key KA.
-    KA, cA = rsa.encrypt_random_key(nB, rsa.ENCRYPTION_EXPONENT)
+    KA, cA = rsa.encrypt_key(nB)
 
     # Using the symmetric key KA, Alice encrypts the message mA using a symmetric
     # scheme. For the purposes of this example, that scheme is a simple bitwise xor of
@@ -166,7 +166,7 @@ def test_full_protocol():
     # From the ciphertext [cA], Bob decrypts Alice's symmetric key KA using his
     # private RSA decryption key (d5B, pB, qB). He stores the result in KB (KB
     # should be identical to KA).
-    KB = rsa.decrypt_random_key(d5B, cA, pB, qB)
+    KB = rsa.decrypt_key(d5B, cA, pB, qB)
     assert KA == KB
 
     # Bob decrypts Alice's ciphertext message [mAC] using the same symmetric scheme
@@ -184,7 +184,7 @@ def test_full_protocol():
     # was signed by Alice). We have thus acheived the three key characteristics
     # required for a public-key scheme: confidentiality (via encryption),
     # authenticity and integrity (via signature and verification).
-    verified = rsa.verify(nA, rsa.VERIFICATION_EXPONENT, mB, oA)
+    verified = rsa.verify(nA, mB, oA)
     assert verified
 
 
@@ -192,7 +192,7 @@ def test_full_protocol():
 def test_full_protocol_rsa_class():
 
     rsa_key_a = rsa.make_key()          # Alice makes a keypair, and stores her
-    nA = rsa_key_a.public_key()     # public key in nA (she will transmit
+    nA = rsa_key_a.public_key()         # public key in nA (she will transmit
                                         # this key to Bob later in the sequence).
 
     mA = "Sign and encrypt me!"         # Alice composes a message for Bob, and
@@ -202,11 +202,11 @@ def test_full_protocol_rsa_class():
                                         # signature in sA.
 
     rsa_key_b = rsa.make_key()          # Bob makes a keypair, stores his public
-    nB = rsa_key_b.public_key()     # key in nB, and transmits his public key
+    nB = rsa_key_b.public_key()         # key in nB, and transmits his public key
                                         # to Alice.
                                         # Bob -----> (nB) -----> Alice
 
-    KA, cA = rsa_key_a.encrypt_key(nB)  # Having received Bob's public key nB,
+    KA, cA = rsa.encrypt_key(nB)        # Having received Bob's public key nB,
                                         # Alice uses it to compute a session key
                                         # KA, and an encrypted version of it cA
                                         # (the encrypted key is the one she will
@@ -220,7 +220,7 @@ def test_full_protocol_rsa_class():
                                         # key cA to Bob.
                                         # Alice -----> (nA, mAC, sA, cA) -----> Bob
 
-    KB = rsa_key_b.decrypt_key(cA)      # Bob recovers the session key KB from its
+    KB = rsa_key_b.decrypt_key(cA)          # Bob recovers the session key KB from its
                                         # ciphertext cA. Because Alice used Bob's
                                         # public key nB to encrypt her session key
                                         # KA into cA, Bob can recover the session
@@ -234,7 +234,7 @@ def test_full_protocol_rsa_class():
 
     assert mA == mB
 
-    assert rsa_key_b.verify(nA, mB, sA) # Bob verifies the message signature. If
+    assert rsa.verify(nA, mB, sA)       # Bob verifies the message signature. If
                                         # the verify() method returns True, Bob knows
                                         # that (a) Alice is the author of the message,
                                         # (b) the message was not altered by a third

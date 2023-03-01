@@ -105,38 +105,16 @@ class RSAKey:
     def sign(self, message: object) -> bytes:
         """
         Returns the signature of the supplied message by this RSA key.
-        This signature can be verified by any party receiving this message
-        using the public part of this RSA key.
-        (see corresponding method verify()).
         """
         return sign(self._d3, self._p, self._q, message)
-
-    def verify(self, n: int, message: object, sig: object) -> bool:
-        """
-        Returns True if the supplied message matches the signature corresponding
-        to the public modulus; otherwise returns Fasle (see corresponding method
-        sign()).
-        """
-        return verify(n, VERIFICATION_EXPONENT, message, sig)
-
-    def encrypt_key(self, n: int) -> tuple[bytes, bytes]:
-        """
-        Returns a tuple of the form (kS, kE), where kS is a randomly generated
-        session key, and kE is its ciphertext. kS must be kept secret, but kE
-        may be shared with the owner of the public modulus supplied to this
-        method in order to recover kS for use in a symmetric cipher (see
-        corresponding method decrypt_key()).
-        """
-        return encrypt_random_key(n, ENCRYPTION_EXPONENT)
 
     def decrypt_key(self, encrypted_key: object) -> bytes:
         """
         Recovers a session key from the ciphertext supplied to this method,
         so that it may be used in a symmetric cipher to communicate securely
-        with the party from whom the ciphertext was obtained (see corresponding
-        method encrypt_key()).
+        with the party from whom the ciphertext was obtained.
         """
-        return decrypt_random_key(self._d5, encrypted_key, self._p, self._q)
+        return decrypt_key(self._d5, encrypted_key, self._p, self._q)
 
     def __eq__(self, other):
         return self._p  == other._p  and\
@@ -262,18 +240,17 @@ def _validate_factors(p: int, q: int) -> None:
         raise Exception("p is too close to q")
 
 
-def encrypt_random_key(n: int, e: int) -> tuple[bytes, bytes]:
+def encrypt_key(n: int) -> tuple[bytes, bytes]:
     """
-    Given a public RSA key, consisting of a modulus n and an encryption exponent e, returns
-    a symmetric key K that is a hash of a random integer r in the range 0 to n-1, and the
-    ciphertext c thereof. The function decrypt_random_key can be used by a receiving party
-    to recover r from c, which can be re-hashed using the same hash function to recover K.
-    It is assumed that both parties know this hash function in advance, and that knowledge
-    of this function by an adversary in no way helps the adversary. K must be kept secret
-    by callers of this function, and only c should be transmitted on an insecure channel.
+    Given a public RSA key n, returns a symmetric key K that is a hash of a random
+    integer r in the range 0 to n-1, and the ciphertext c thereof. The function
+    decrypt_key can be used by a receiving party to recover r from c, which can be
+    re-hashed using the same hash function to recover K. It is assumed that both
+    parties know this hash function in advance, and that knowledge of this function
+    by an adversary in no way helps the adversary. K must be kept secret by callers
+    of this function, and only c should be transmitted on an insecure channel.
     """
 
-    assert isinstance(e, int)
     assert isinstance(n, int)
     assert n.bit_length() == _MODULUS_MIN_BIT_LEN or \
         n.bit_length() == _MODULUS_MID_BIT_LEN or n.bit_length() == _MODULUS_MAX_BIT_LEN
@@ -282,21 +259,21 @@ def encrypt_random_key(n: int, e: int) -> tuple[bytes, bytes]:
     r = prng.randrange(0, n - 1)
 
     # Hash r; this will be the basis for the key K negotiated by both parties using a
-    # symmetric cipher for message encryption (see decrypt_random_key).
+    # symmetric cipher for message encryption (see decrypt_key).
     K = util.digest(r)
 
     # Encrypt r.
-    c = util.fast_mod_exp(r, e, n)
+    c = util.fast_mod_exp(r, ENCRYPTION_EXPONENT, n)
 
     # K must be kept secret; send only the ciphertext of r (i.e., c) to the other party.
     return K, util.to_bytes(c)
 
 
-def decrypt_random_key(d: int, c: object, p: int, q: int) -> bytes:
+def decrypt_key(d: int, c: object, p: int, q: int) -> bytes:
     """
     Given a private RSA key d, a ciphertext c, and the prime factors p and q of a public RSA
     modulus n, returns a symmetric key K that is identical to that returned by the function
-    encrypt_random_key. K must be kept secret by callers of this function.
+    encrypt_key. K must be kept secret by callers of this function.
     """
 
     assert isinstance(d, int)
@@ -310,7 +287,7 @@ def decrypt_random_key(d: int, c: object, p: int, q: int) -> bytes:
     r = util.fast_mod_exp_crt(ci, d, p, q)
 
     # Hash r to arrive at the same key K as that computed by the encrypting party (see function
-    # encrypt_random_key).
+    # encrypt_key).
     K = util.digest(r)
 
     # K must be kept secret.
@@ -338,22 +315,21 @@ def sign(d: int, p: int, q: int, m: object) -> bytes:
     return util.to_bytes(o)
 
 
-def verify(n: int, e: int, m: object, o: object) -> bool:
+def verify(n: int, m: object, o: object) -> bool:
     """
-    Given a public modulus n and exponent e, a message m and a signature o, returns True
-    if the signature is valid for the message m, or False otherwise. This function is the
-    inverse of the function sign.
+    Given an RSA modulus n, a message m and a signature o, returns True if the signature
+    is valid for the message m, or False otherwise. This function is the inverse of the
+    function sign.
     """
 
     assert isinstance(n, int)
-    assert isinstance(e, int)
 
     # Map k-bit hash of m to an integer n bits in length.
     s = _msg_to_rsa_number(n, m)
 
     # Sign it (can't use CRT here since the verifier doesn't know the factorization of n; anyway,
     # the exponent here is the number 3).
-    oi = util.fast_mod_exp(util.to_int(o), e, n)
+    oi = util.fast_mod_exp(util.to_int(o), VERIFICATION_EXPONENT, n)
 
     # Compare.
     return oi == s
