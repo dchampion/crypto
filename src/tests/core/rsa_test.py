@@ -220,7 +220,7 @@ def test_full_protocol_rsa_class():
                                         # key cA to Bob.
                                         # Alice -----> (nA, mAC, sA, cA) -----> Bob
 
-    KB = rsa_key_b.decrypt_key(cA)          # Bob recovers the session key KB from its
+    KB = rsa_key_b.decrypt_key(cA)      # Bob recovers the session key KB from its
                                         # ciphertext cA. Because Alice used Bob's
                                         # public key nB to encrypt her session key
                                         # KA into cA, Bob can recover the session
