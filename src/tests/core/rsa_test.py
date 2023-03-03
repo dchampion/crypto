@@ -1,3 +1,4 @@
+import hashlib
 import random
 
 from core import euclid
@@ -17,6 +18,7 @@ def main():
     test_full_protocol()
     test_full_protocol_rsa_class()
     test_misc_rsa_class()
+    test_hash_injection()
 
 
 @util.test_log
@@ -255,6 +257,26 @@ def test_misc_rsa_class():
     assert "key1" != key_dict[key2]
     assert key_dict[key2] != "key1"
     assert "key2" != key_dict[key1]
+
+@util.test_log
+def test_hash_injection():
+    p, q, n, _, d5 = rsa.generate_rsa_key(rsa._MODULUS_MIN_BIT_LEN)
+    K_a, c_a = rsa.encrypt_key(n, hashlib.sha1())
+    K_b = rsa.decrypt_key(d5, c_a, p, q, hashlib.md5())
+    assert K_a != K_b, "Keys match, but they should not"
+
+    key_b = rsa.make_key()
+    K_a, c_a = rsa.encrypt_key(key_b.public_key(), hashlib.sha224())
+    K_b = key_b.decrypt_key(c_a, hashlib.md5())
+    assert K_a != K_b, "Keys match, but they should not"
+
+    K_a, c_a = rsa.encrypt_key(n, hashlib.sha1())
+    K_b = rsa.decrypt_key(d5, c_a, p, q, hashlib.sha1())
+    assert K_a == K_b, "Keys don't match, but they should"
+
+    K_a, c_a = rsa.encrypt_key(key_b.public_key(), hashlib.md5())
+    K_b = key_b.decrypt_key(c_a, hashlib.md5())
+    assert K_a == K_b, "Keys don't match, but they should"
 
 
 if __name__ == "__main__":

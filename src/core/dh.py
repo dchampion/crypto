@@ -3,6 +3,8 @@ An implementation of the Diffie-Hellman key agreement protocol based on
 mulitplicative-group arithmetic.
 """
 
+import hashlib
+
 from . import primes
 from . import prng
 from . import util
@@ -90,14 +92,16 @@ class DHKey:
         """
         return self._params.p.bit_length()
 
-    def make_session_key(self, y: int) -> bytes:
+    def make_session_key(self, y: int, hash_obj=None) -> bytes:
         """
-        Given a public key supplied by another party, computes a shared
-        key to be used by two parties in a symmetric cipher. This key must
-        be kept secret.
+        Given a public key supplied by another party, and a hash function
+        provided by hash_obj (optional), computes a shared key to be used by
+        two parties in a symmetric cipher. This key must be kept secret. If
+        present, hash_obj must conform to the standard interface for hash
+        objects specified in the Python standard library module hashlib.
         """
         return generate_session_key( \
-            y, self._x, self._params.q, self._params.p)
+            y, self._x, self._params.q, self._params.p, hash_obj)
 
     def __eq__(self, other):
         return self._params == other._params and\
@@ -242,14 +246,16 @@ def generate_keypair(q: int, p: int, g: int) -> tuple[int, int]:
     return x, y
 
 
-def generate_session_key(y: int, x: int, q: int, p: int) -> bytes:
+def generate_session_key(y: int, x: int, q: int, p: int, hash_obj=None) -> bytes:
     """
     Given a private key x known only to the caller of this function, a public
-    key y supplied by another party, and domain parameters q and p (which can
-    be obtained from this module's generate_parameters function, or from another
-    party), returns a hashed byte array suitable for use as a session key to be
-    used by both parties in a symmetric cipher (e.g., 3DES, AES). The session key
-    returned by this function must be kept secret.
+    key y supplied by another party, domain parameters q and p (which can be
+    obtained from this module's generate_parameters function or from another
+    party), and a hash function provided by hash_obj (optional), returns a hashed
+    byte array suitable for use as a session key to be used by both parties in a
+    symmetric cipher (e.g., 3DES, AES). If present, hash_obj must conform to the
+    standard interface for hash objects specified in the Python standard library
+    module hashlib. The session key returned by this function must be kept secret.
     """
 
     assert isinstance(y, int)
@@ -267,7 +273,9 @@ def generate_session_key(y: int, x: int, q: int, p: int) -> bytes:
 
     # The session key is hashed to obscure any mathematical structure that could be
     # exploited by an adversary if it were to be leaked.
-    return util.digest(ki)
+    if hash_obj is None:
+        hash_obj = hashlib.sha256()
+    return util.digest(ki, hash_obj)
 
 
 def validate_pub_key(y: int, q: int, p: int) -> None:

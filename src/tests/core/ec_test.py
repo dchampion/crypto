@@ -1,4 +1,5 @@
 import copy
+import hashlib
 
 from core import curves
 from core import ec
@@ -107,6 +108,7 @@ def main():
     test_x_times_pt_ec_class()
     test_misc_ec_class()
     test_full_protocol_ec_class()
+    test_hash_injection()
 
 
 @util.test_log
@@ -661,6 +663,31 @@ def full_protocol_ec(curve):
 
     assert mA == mB
     assert ec.verify(pub_key_a.as_list(), mB, sA)
+
+
+@util.test_log
+def test_hash_injection():
+    ec.new_curve(real_curves[0])
+
+    dA, QA = ec.generate_keypair()
+    dB, QB = ec.generate_keypair()
+    kSessionA = ec.generate_session_key(dA, QB, hashlib.sha1())
+    kSessionB = ec.generate_session_key(dB, QA, hashlib.sha384())
+    assert kSessionA != kSessionB, "Secrets match, but they should not"
+
+    key_a = ec.make_key()
+    key_b = ec.make_key()
+    kSessionA = key_a.make_session_key(key_b.public_key(), hashlib.sha224())
+    kSessionB = key_b.make_session_key(key_a.public_key(), hashlib.sha512())
+    assert kSessionA != kSessionB, "Secrets match, but they should not"
+
+    kSessionA = ec.generate_session_key(dA, QB, hashlib.sha384())
+    kSessionB = ec.generate_session_key(dB, QA, hashlib.sha384())
+    assert kSessionA == kSessionB, "Secrets don't match, but they should"
+
+    kSessionA = key_a.make_session_key(key_b.public_key(), hashlib.sha512())
+    kSessionB = key_b.make_session_key(key_a.public_key(), hashlib.sha512())
+    assert kSessionA == kSessionB, "Secrets dont' match, but they should"
 
 
 if __name__ == "__main__":

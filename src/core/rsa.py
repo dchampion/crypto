@@ -2,6 +2,7 @@
 Implementations of the Rivest-Shamir-Adleman (RSA) algorithms for digital signature and encryption.
 """
 
+import hashlib
 import random
 
 from . import euclid
@@ -108,13 +109,16 @@ class RSAKey:
         """
         return sign(self._d3, self._p, self._q, message)
 
-    def decrypt_key(self, encrypted_key: object) -> bytes:
+    def decrypt_key(self, encrypted_key: object, hash_obj=None) -> bytes:
         """
-        Recovers a session key from the ciphertext supplied to this method,
-        so that it may be used in a symmetric cipher to communicate securely
-        with the party from whom the ciphertext was obtained.
+        Recovers a session key from the encrypted key supplied to this
+        method, so that it may be used in a symmetric cipher to communicate
+        securely with the party from whom the encrypted key was obtained. If
+        present, the optional parameter hash_obj must conform to the standard
+        interface for hash objects specified in the Python standard library
+        module hashlib.
         """
-        return decrypt_key(self._d5, encrypted_key, self._p, self._q)
+        return decrypt_key(self._d5, encrypted_key, self._p, self._q, hash_obj)
 
     def __eq__(self, other):
         return self._p  == other._p  and\
@@ -240,15 +244,18 @@ def _validate_factors(p: int, q: int) -> None:
         raise Exception("p is too close to q")
 
 
-def encrypt_key(n: int) -> tuple[bytes, bytes]:
+def encrypt_key(n: int, hash_obj=None) -> tuple[bytes, bytes]:
     """
-    Given a public RSA key n, returns a symmetric key K that is a hash of a random
-    integer r in the range 0 to n-1, and the ciphertext c thereof. The function
-    decrypt_key can be used by a receiving party to recover r from c, which can be
-    re-hashed using the same hash function to recover K. It is assumed that both
-    parties know this hash function in advance, and that knowledge of this function
-    by an adversary in no way helps the adversary. K must be kept secret by callers
-    of this function, and only c should be transmitted on an insecure channel.
+    Given a public RSA key n, and a hash function provided by hash_obj (optional),
+    returns a symmetric key K that is a hash of a random integer r in the range 0
+    to n-1, and the ciphertext c thereof. If present, hash_obj must conform to the
+    standard interface for hash objects specified in the Python standard library
+    module hashlib. The function decrypt_key can be used by a receiving party to
+    recover r from c, which can be re-hashed using the same hash function to recover
+    K. It is assumed that both parties know this hash function in advance, and that
+    knowledge of this function by an adversary in no way helps the adversary. K
+    must be kept secret by callers of this function, and only c should be transmitted
+    on an insecure channel.
     """
 
     assert isinstance(n, int)
@@ -260,7 +267,9 @@ def encrypt_key(n: int) -> tuple[bytes, bytes]:
 
     # Hash r; this will be the basis for the key K negotiated by both parties using a
     # symmetric cipher for message encryption (see decrypt_key).
-    K = util.digest(r)
+    if hash_obj is None:
+        hash_obj = hashlib.sha256()
+    K = util.digest(r, hash_obj)
 
     # Encrypt r.
     c = util.fast_mod_exp(r, ENCRYPTION_EXPONENT, n)
@@ -269,11 +278,13 @@ def encrypt_key(n: int) -> tuple[bytes, bytes]:
     return K, util.to_bytes(c)
 
 
-def decrypt_key(d: int, c: object, p: int, q: int) -> bytes:
+def decrypt_key(d: int, c: object, p: int, q: int, hash_obj=None) -> bytes:
     """
-    Given a private RSA key d, a ciphertext c, and the prime factors p and q of a public RSA
-    modulus n, returns a symmetric key K that is identical to that returned by the function
-    encrypt_key. K must be kept secret by callers of this function.
+    Given a private RSA key d, a ciphertext c, the prime factors p and q of a public RSA
+    modulus n, and a hash function provided by hash_obj (optional), returns a symmetric key
+    K that is identical to that returned by the function encrypt_key. If present, hash_obj
+    must conform to the standard interface for hash objects specified in the Python standard
+    library module hashlib. K must be kept secret by callers of this function.
     """
 
     assert isinstance(d, int)
@@ -288,7 +299,9 @@ def decrypt_key(d: int, c: object, p: int, q: int) -> bytes:
 
     # Hash r to arrive at the same key K as that computed by the encrypting party (see function
     # encrypt_key).
-    K = util.digest(r)
+    if hash_obj is None:
+        hash_obj = hashlib.sha256()
+    K = util.digest(r, hash_obj)
 
     # K must be kept secret.
     return K
@@ -344,7 +357,7 @@ def _msg_to_rsa_number(n: int, m: object) -> int:
 
 
     # Seed the PRNG with a hash of the message m (or h(m)).
-    random.seed(util.digest(m))
+    random.seed(util.digest(m, hashlib.sha256()))
 
     # Here we want a byte string that is always the same given the same m (and hence the same
     # h(m)). We are not interested in random data per se, but rather a deterministic mapping

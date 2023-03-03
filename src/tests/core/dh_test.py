@@ -1,3 +1,4 @@
+import hashlib
 from core import primes
 from core import dh
 
@@ -12,6 +13,7 @@ def main():
     test_full_protocol()
     test_full_protocol_dh_class()
     test_misc_dh_class()
+    test_hash_injection()
 
 
 @util.test_log
@@ -196,6 +198,34 @@ def test_misc_dh_class():
     assert "parameters1" != params_dict[parameters2]
     assert params_dict[parameters2] != "parameters1"
     assert "parameters2" != params_dict[parameters1]
+
+
+@util.test_log
+def test_hash_injection():
+    q, p, g = dh.generate_parameters(dh._P_MIN_BIT_LEN)
+    dh.validate_parameters(q, p, g)
+
+    x_a, y_a = dh.generate_keypair(q, p, g)
+    x_b, y_b = dh.generate_keypair(q, p, g)
+
+    ses_key_a = dh.generate_session_key(y_b, x_a, q, p, hashlib.sha224())
+    ses_key_b = dh.generate_session_key(y_a, x_b, q, p, hashlib.sha512())
+    assert ses_key_a != ses_key_b, "Secrets match, but they should not"
+
+    key_a = dh.make_key()
+    key_b = dh.make_key(key_a.public_parameters())
+
+    ses_key_a = key_a.make_session_key(key_b.public_key(), hashlib.sha1())
+    ses_key_b = key_b.make_session_key(key_a.public_key(), hashlib.sha384())
+    assert ses_key_a != ses_key_b, "Secrets match, but they should not"
+
+    ses_key_a = dh.generate_session_key(y_b, x_a, q, p, hashlib.sha224())
+    ses_key_b = dh.generate_session_key(y_a, x_b, q, p, hashlib.sha224())
+    assert ses_key_a == ses_key_b, "Secrets don't match, but they should"
+
+    ses_key_a = key_a.make_session_key(key_b.public_key(), hashlib.sha1())
+    ses_key_b = key_b.make_session_key(key_a.public_key(), hashlib.sha1())
+    assert ses_key_a == ses_key_b, "Secrets don't match, but they should"
 
 
 if __name__ == "__main__":

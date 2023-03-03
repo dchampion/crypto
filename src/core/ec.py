@@ -3,6 +3,7 @@ Implementations of the elliptic curve Diffie-Hellman (ECDH) and the elliptic
 curve digital signature algorithms (ECDSA).
 """
 
+import hashlib
 import math
 
 from . import curves
@@ -115,15 +116,18 @@ class ECKey:
         """
         return self._Q
 
-    def make_session_key(self, Q) -> bytes:
+    def make_session_key(self, Q, hash_obj=None) -> bytes:
         """
-        Given a public key Q supplied by another party, returns a session
-        key suitable for use in a symmetric cipher with the other party.
-        This value should be kept secret.
+        Given a public key Q supplied by another party, and a hash fuction
+        provided by hash_obj (optional), returns a session key suitable for
+        use in a symmetric cipher with the other party. If present, hash_obj
+        must conform to the standard interface for hash objects specified
+        in the Python standard library module hashlib. The key returned by
+        this method should be kept secret.
         """
         if not isinstance(Q, ECPoint):
             raise ValueError("Q is not a curve point.")
-        return generate_session_key(self._d, Q.as_list())
+        return generate_session_key(self._d, Q.as_list(), hash_obj)
 
     def sign(self, m: object) -> tuple[int, int]:
         """
@@ -289,12 +293,15 @@ def generate_keypair() -> tuple[int, list[int]]:
     return d, _fast_point_at(d)
 
 
-def generate_session_key(d: int, Q: list[int]) -> bytes:
+def generate_session_key(d: int, Q: list[int], hash_obj=None) -> bytes:
     """
     Given a keypair, consisting of the caller's private key d and another party's
-    public key Q, returns a byte array suitable for use as a session key in a symmetric
-    cipher (e.g., AES, 3DES) used to encrypt messages transmitted between the caller and
-    the other party. The session key returned by this function must be kept secret.
+    public key Q, and a hash function provided by hash_obj (optional), returns a
+    byte array suitable for use as a session key in a symmetric cipher (e.g., AES,
+    3DES) used to encrypt messages transmitted between the caller and the other
+    party. If present, hash_obj must conform to the standard interface for hash
+    objects specified in the Python standard library module hashlib. The session
+    key returned by this function must be kept secret.
     """
 
     assert _validate_priv_key(d)
@@ -308,7 +315,9 @@ def generate_session_key(d: int, Q: list[int]) -> bytes:
     # Use only the x-coordinate of the shared point in the shared key, and hash it
     # to obscure any mathematical structure that could be exploited by an adversary
     # if it were to be leaked.
-    return util.digest(k_pt[_X])
+    if hash_obj is None:
+        hash_obj = hashlib.sha256()
+    return util.digest(k_pt[_X], hash_obj)
 
 
 def sign(d: int, m: object) -> tuple[int, int]:
@@ -386,7 +395,7 @@ def verify(Q: list[int], m: object, S: tuple[int, int]) -> bool:
 def _hash_to_int(m: object) -> int:
     # Converts a message m to an integer representation of its hash.
 
-    h = util.digest(m)
+    h = util.digest(m, hashlib.sha256())
     i = util.to_int(h)
 
     if _CURVE.n.bit_length() >= i.bit_length():
