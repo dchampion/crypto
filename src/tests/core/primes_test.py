@@ -145,7 +145,7 @@ def test_fermat_factor():
             j = util.random_range(0, len(primes._small_primes)-1)
         assert primes.fermat_factor(
             primes._small_primes[i] * primes._small_primes[j]
-        ), f"product of {primes._small_primes[i]} and {primes._small_primes[i]} should be factorable by fermat_factor()"
+        ), f"product of {primes._small_primes[i]} and {primes._small_primes[j]} should be factorable by fermat_factor()"
 
     for _ in range(10):
         p = primes.generate_prime(1024)

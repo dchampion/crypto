@@ -47,7 +47,7 @@ class ECPoint:
         doubled = _double(self.as_list())
         return ECPoint(doubled[_X], doubled[_Y])
 
-    def as_list(self) -> list:
+    def as_list(self) -> list[int | None]:
         # Return this point as a 2-member list consumable by the module
         # API.
         return [self._x, self._y]
@@ -116,7 +116,7 @@ class ECKey:
         """
         return self._Q
 
-    def make_session_key(self, Q, hash_obj=None) -> bytes:
+    def make_session_key(self, Q: ECPoint, hash_obj=None) -> bytes:
         """
         Given a public key Q supplied by another party, and a hash fuction
         provided by hash_obj (optional), returns a session key suitable for
@@ -156,7 +156,7 @@ class ECKey:
         return f"d={self._d}, Q=[{self._Q}]"
 
 
-def make_key():
+def make_key() -> ECKey:
     """
     Constructs and returns an elliptic curve keypair (ECKey) for the
     currently active elliptic curve.
@@ -201,7 +201,7 @@ def new_curve(curve: curves.Curve, B_iters: int = 100) -> None:
     _validate_curve_params(B_iters)
 
 
-def _add(pt1: list[int], pt2: list[int]) -> list[int]:
+def _add(pt1: list, pt2: list) -> list:
     # Returns the sum of points pt1 and pt2 on the curve, according to the addition
     # rules of elliptic curves; i.e., (a) the identity element if pt1 and pt2 are
     # both the the identity element, (b) pt2 if pt1 is the identity element, (c) pt1
@@ -227,7 +227,7 @@ def _add(pt1: list[int], pt2: list[int]) -> list[int]:
     return [x, y]
 
 
-def _double(pt: list[int]) -> list[int]:
+def _double(pt: list) -> list:
     # Returns the sum of point pt with itself on the curve. If pt is the point at
     # infinity, returns the point at infinity.
 
@@ -239,14 +239,14 @@ def _double(pt: list[int]) -> list[int]:
     return _additive_inverse(_tangent_intersection(pt))
 
 
-def _additive_inverse(pt: list[int]) -> list[int]:
+def _additive_inverse(pt: list) -> list:
     # Returns the additive inverse of pt, where pt is of the form [x, y], and pt's
     # inverse is [x, -y].
 
     return [pt[_X], -pt[_Y] % _CURVE.p]
 
 
-def _tangent_intersection(pt: list[int]) -> list[int]:
+def _tangent_intersection(pt: list) -> list:
     # Returns the point of intersection on the curve of a straight line drawn tangent
     # to the point pt on the curve. For a thorough explanation of the arithmetic used in
     # this function, consult the following URL:
@@ -261,7 +261,7 @@ def _tangent_intersection(pt: list[int]) -> list[int]:
     return [pt2x, pt2y]
 
 
-def _secant_intersection(pt1: list[int], pt2: list[int]) -> list[int]:
+def _secant_intersection(pt1: list, pt2: list) -> list:
     # Returns the point of intersection on the curve of a straight line drawn between
     # points pt1 and pt2 (i.e., the secant line) on the curve. For a thorough explanation
     # of the arithmetic used in this function, consult the following URL:
@@ -276,7 +276,7 @@ def _secant_intersection(pt1: list[int], pt2: list[int]) -> list[int]:
     return [pt3x, pt3y]
 
 
-def generate_keypair() -> tuple[int, list[int]]:
+def generate_keypair() -> tuple[int, list]:
     """
     Returns a tuple of the form (d, Q), where d is a private key and Q its
     corresponding public key. d is a randomly generated positive integer in the
@@ -293,7 +293,7 @@ def generate_keypair() -> tuple[int, list[int]]:
     return d, _fast_point_at(d)
 
 
-def generate_session_key(d: int, Q: list[int], hash_obj=None) -> bytes:
+def generate_session_key(d: int, Q: list, hash_obj=None) -> bytes:
     """
     Given a keypair, consisting of the caller's private key d and another party's
     public key Q, and a hash function provided by hash_obj (optional), returns a
@@ -351,7 +351,7 @@ def sign(d: int, m: object) -> tuple[int, int]:
     return r, s
 
 
-def verify(Q: list[int], m: object, S: tuple[int, int]) -> bool:
+def verify(Q: list, m: object, S: tuple[int, int]) -> bool:
     """
     Returns True if the signature S, a tuple of the form (r, s) that is returned
     by this module's sign function, is valid for the message m and a public key Q;
@@ -407,7 +407,7 @@ def _hash_to_int(m: object) -> int:
     return e
 
 
-def _fast_point_at(d: int) -> list[int]:
+def _fast_point_at(d: int) -> list:
     # Returns the point on the curve at d point-additions of the base point, where
     # d is a positive integer in the range 1 <= d < n, and n is the order of the
     # base point. In contrast with the function _point_at, this function runs in
@@ -418,7 +418,7 @@ def _fast_point_at(d: int) -> list[int]:
     return _x_times_pt(d, _CURVE.G)
 
 
-def _x_times_pt(x: int, pt: list[int]) -> list[int]:
+def _x_times_pt(x: int, pt: list) -> list:
     # Returns the point on the curve at x point-additions of the start point pt.
 
     _validate_pt(pt)
@@ -433,7 +433,7 @@ def _x_times_pt(x: int, pt: list[int]) -> list[int]:
     return pt
 
 
-def _point_at(d: int) -> list[int]:
+def _point_at(d: int) -> list:
     # Returns the point on the curve at d point-additions of the base point, where
     # d is a positive integer in the range 1 <= d < n, and n is the order of the
     # base point. In contrast with the function _fast_point_at, this function runs
@@ -448,9 +448,9 @@ def _point_at(d: int) -> list[int]:
     return pt
 
 
-def _validate_pt(pt: list[int|None]) -> None:
-    # pt must be a 2-element list.
+def _validate_pt(pt: list) -> None:
 
+    # pt must be a 2-element list.
     assert isinstance(pt, list) and len(pt) == 2
 
     if isinstance(pt[_X], int):
@@ -464,7 +464,7 @@ def _validate_pt(pt: list[int|None]) -> None:
         assert pt[_X] is None and pt[_Y] is None
 
 
-def _on_curve(pt: list[int]) -> bool:
+def _on_curve(pt: list) -> bool:
     # Returns True if the point pt is on the curve; otherwise returns False.
 
     return (
@@ -479,7 +479,7 @@ def _validate_priv_key(d: int) -> bool:
     return isinstance(d, int) and 1 <= d < _CURVE.n
 
 
-def validate_pub_key(Q: list[int]) -> None:
+def validate_pub_key(Q: list) -> None:
     """
     Recommended public key validation from the Standards for Efficient Cryptography
     Group's (SECG) specification, "SEC 1: Elliptic Curve Cryptography, Version 2.0"

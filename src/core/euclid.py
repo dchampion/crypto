@@ -90,7 +90,5 @@ def inverse(a: int, b: int) -> int:
 
 
 def _validate_params(a: int, b: int) -> None:
-    assert isinstance(a, int)
-    assert isinstance(b, int)
-    assert a >= 0
-    assert b >= 0
+    assert isinstance(a, int) and a >= 0
+    assert isinstance(b, int) and b >= 0

@@ -123,6 +123,8 @@ def make_parameters(size: int=_P_MIN_BIT_LEN) -> DHParameters:
     """
     return DHParameters(size)
 
+
+# mypy: no_implicit_optional=False
 def make_key(params: DHParameters=None) -> DHKey:
     """
     Returns a new DHKey instance consisting of a public and private key. This

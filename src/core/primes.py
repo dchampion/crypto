@@ -204,7 +204,7 @@ def _fermat_is_prime(n: int) -> bool:
     return True
 
 
-def fermat_factor(n: int) -> tuple[True, int, int] or False:
+def fermat_factor(n: int) -> tuple[bool, int, int] | bool:
     """
     Attempts to factor a valid RSA modulus n using Fermat's factorization algorithm. A valid n
     is a composite integer that is the product of exactly two distinct prime factors. Returns
@@ -225,7 +225,7 @@ def fermat_factor(n: int) -> tuple[True, int, int] or False:
     # increment it by 1, and find after fewer than 1m iterations that b^2 = a^2 - n, then we have
     # found the nontrivial factors of n. Here b is the distance from a to the prime factors of n.
     a = math.isqrt(n) + 1
-    c, tries = 0, 100
+    c, tries = 0, 1000
     while not _is_square(a**2 - n):
         a += 1
         c += 1

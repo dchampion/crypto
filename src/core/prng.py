@@ -17,8 +17,8 @@ def randrange(l: int, u: int) -> int:
     Returns a random integer in the range (l, u-1), where l is the lower bound
     and u is the upper bound.
     """
-    assert isinstance(l, int)
-    assert isinstance(u, int)
+    assert isinstance(l, int) and l >= 0
+    assert isinstance(u, int) and u >= 1
     assert u > l
 
     width = u - l
@@ -30,7 +30,7 @@ def randbelow(n: int) -> int:
     """
     Returns a random integer in the range (0, n-1), where n is the upper bound.
     """
-    assert isinstance(n, int)
+    assert isinstance(n, int) and n >= 0
 
     if n == 0:
         return 0
