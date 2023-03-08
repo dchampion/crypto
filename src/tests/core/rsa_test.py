@@ -44,7 +44,7 @@ def test_generate_rsa_key():
 
 
 def generate_rsa_key(modulus_bit_len):
-    p, q, n, d3, d5 = rsa.generate_rsa_key(modulus_bit_len)
+    p, q, n, d_sig, d_dec = rsa.generate_rsa_key(modulus_bit_len)
     assert primes.is_prime(p), "p is not prime"
     assert primes.is_prime(q), "q is not prime"
     assert n == p * q, "n != p*q"
@@ -53,11 +53,11 @@ def generate_rsa_key(modulus_bit_len):
     ), f"expected modulus bit length of {modulus_bit_len}, got {n.bit_length()}"
     t = euclid.lcm(p - 1, q - 1)
     assert (
-        euclid.inverse(d3, t) == rsa.VERIFICATION_EXPONENT
-    ), f"expected inverse of {d3} and {t} is {rsa.VERIFICATION_EXPONENT}, got {euclid.inverse(d3, t)}"
+        euclid.inverse(d_sig, t) == rsa.VERIFICATION_EXPONENT
+    ), f"expected inverse of {d_sig} and {t} is {rsa.VERIFICATION_EXPONENT}, got {euclid.inverse(d_sig, t)}"
     assert (
-        euclid.inverse(d5, t) == rsa.ENCRYPTION_EXPONENT
-    ), f"expected inverse of {d5} and {t} is {rsa.ENCRYPTION_EXPONENT}, got {euclid.inverse(d5, t)}"
+        euclid.inverse(d_dec, t) == rsa.ENCRYPTION_EXPONENT
+    ), f"expected inverse of {d_dec} and {t} is {rsa.ENCRYPTION_EXPONENT}, got {euclid.inverse(d_dec, t)}"
 
 
 @util.test_log
@@ -67,9 +67,9 @@ def test_encrypt_decrypt():
 
 
 def encrypt_decrypt(modulus_bit_len):
-    p, q, n, _, d5 = rsa.generate_rsa_key(modulus_bit_len)
+    p, q, n, _, d_dec = rsa.generate_rsa_key(modulus_bit_len)
     K1, c = rsa.encrypt_key(n)
-    K2 = rsa.decrypt_key(d5, c, p, q)
+    K2 = rsa.decrypt_key(d_dec, c, p, q)
     assert K1 == K2, "Keys don't match"
 
 
@@ -80,9 +80,9 @@ def test_sign_verify():
 
 
 def sign_verify(modulus_bit_len):
-    p, q, n, d3, _ = rsa.generate_rsa_key(modulus_bit_len)
+    p, q, n, d_sig, _ = rsa.generate_rsa_key(modulus_bit_len)
     m = random.randbytes(random.randint(20, 40))
-    o = rsa.sign(d3, p, q, m)
+    o = rsa.sign(d_sig, p, q, m)
     assert rsa.verify(n, m, o)
 
 
@@ -98,7 +98,7 @@ def test_full_protocol():
     #                                                                                      #
     # Alice                                       Bob                                      #
     # ----------------------------                ----------------------------             #
-    # pA, qA, [nA], d3A, d5A =                    pB, qB, [nB], d3B, d5B =                 #
+    # pA, qA, [nA], d_sigA, d_decA =                    pB, qB, [nB], d_sigB, d_decB =     #
     #   generate_rsa_key(modulus_bit_length)         generate_rsa_key(modulus_bit_length)  #
     #                                                                                      #
     # [nA]                                --->    [nA] (v=3 and e=5 are known.)            #
@@ -109,7 +109,7 @@ def test_full_protocol():
     #         to be signed and encrypted.)                                                 #
     #                                                                                      #
     # [oA] =                                                                               #
-    #   rsa_sign(d3A, pA, qA, mA)                                                          #
+    #   rsa_sign(d_sigA, pA, qA, mA)                                                       #
     #                                                                                      #
     # KA, [cA] =                                                                           #
     #   rsa_encrypt_key([nB], [e=5])                                                       #
@@ -122,7 +122,7 @@ def test_full_protocol():
     #                                                        from Alice.)                  #
     #                                                                                      #
     #                                               KB                                     #
-    #                                                 = rsa_decrypt_key(d5B, [cA], pB, qB) #
+    #                                              = rsa_decrypt_key(d_decB, [cA], pB, qB) #
     #                                                                                      #
     #                                               mB = sym_decrypt_message(KB, [mAC])    #
     #                                                                                      #
@@ -139,19 +139,19 @@ def test_full_protocol():
     # to Bob. In this simulated protocol, we assume that Bob knows Alice's signature-
     # verification and encryption exponents (the numbers 3 and 5, respectively); these,
     # together with [nA], comprise Alice's public key.
-    pA, qA, nA, d3A, _ = rsa.generate_rsa_key(rsa._MODULUS_MIN_BIT_LEN)
+    pA, qA, nA, d_sigA, _ = rsa.generate_rsa_key(rsa._MODULUS_MIN_BIT_LEN)
 
     # Bob generates his own RSA parameters, and sends the public component (the modulus
     # [nB]) to Alice. Alice, too, knows Bob's public signature-verification and encryption
     # exponents (again, v=3 and e=5).
-    pB, qB, nB, _, d5B = rsa.generate_rsa_key(rsa._MODULUS_MIN_BIT_LEN)
+    pB, qB, nB, _, d_decB = rsa.generate_rsa_key(rsa._MODULUS_MIN_BIT_LEN)
 
-    # Alice produces a message mA, and signs it using her private signing key d3A. The
+    # Alice produces a message mA, and signs it using her private signing key d_sigA. The
     # resulting signature is stored in [oA]. Note that, although it is unclear from this
     # interface, the message mA is not signed directly; rather, it is hashed first, to the
     # full domain of the modulus nA, and then signed.
     mA = "Sign and encrypt me!"
-    oA = rsa.sign(d3A, pA, qA, mA)
+    oA = rsa.sign(d_sigA, pA, qA, mA)
 
     # Alice computes and encrypts a symmetric key, using Bob's public key [nB, 5], and
     # stores it in KA; this she must keep private. [cA] is the ciphertext of the symmetric
@@ -166,9 +166,9 @@ def test_full_protocol():
     mAC = sym.encrypt(KA, mA)
 
     # From the ciphertext [cA], Bob decrypts Alice's symmetric key KA using his
-    # private RSA decryption key (d5B, pB, qB). He stores the result in KB (KB
+    # private RSA decryption key (d_decB, pB, qB). He stores the result in KB (KB
     # should be identical to KA).
-    KB = rsa.decrypt_key(d5B, cA, pB, qB)
+    KB = rsa.decrypt_key(d_decB, cA, pB, qB)
     assert KA == KB
 
     # Bob decrypts Alice's ciphertext message [mAC] using the same symmetric scheme
@@ -260,9 +260,9 @@ def test_misc_rsa_class():
 
 @util.test_log
 def test_hash_injection():
-    p, q, n, _, d5 = rsa.generate_rsa_key(rsa._MODULUS_MIN_BIT_LEN)
+    p, q, n, _, d_dec = rsa.generate_rsa_key(rsa._MODULUS_MIN_BIT_LEN)
     K_a, c_a = rsa.encrypt_key(n, hashlib.sha1())
-    K_b = rsa.decrypt_key(d5, c_a, p, q, hashlib.md5())
+    K_b = rsa.decrypt_key(d_dec, c_a, p, q, hashlib.md5())
     assert K_a != K_b, "Keys match, but they should not"
 
     key_b = rsa.make_key()
@@ -271,7 +271,7 @@ def test_hash_injection():
     assert K_a != K_b, "Keys match, but they should not"
 
     K_a, c_a = rsa.encrypt_key(n, hashlib.sha1())
-    K_b = rsa.decrypt_key(d5, c_a, p, q, hashlib.sha1())
+    K_b = rsa.decrypt_key(d_dec, c_a, p, q, hashlib.sha1())
     assert K_a == K_b, "Keys don't match, but they should"
 
     K_a, c_a = rsa.encrypt_key(key_b.public_key(), hashlib.md5())

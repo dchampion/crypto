@@ -48,7 +48,7 @@ class RSAKey:
         """
         Build an RSA key.
         """
-        self._p, self._q, self._n, self._d3, self._d5 = generate_rsa_key(size)
+        self._p, self._q, self._n, self._d_sig, self._d_dec = generate_rsa_key(size)
 
     @property
     def p(self) -> int:
@@ -75,20 +75,20 @@ class RSAKey:
         return self._n
 
     @property
-    def d3(self) -> int:
+    def d_sig(self) -> int:
         """
-        The private signature exponent d3 of this RSA key. This value should be
-        kept secret by users of this class.
+        The private signature exponent d_sig of this RSA key. This value should
+        be kept secret by users of this class.
         """
-        return self._d3
+        return self._d_sig
 
     @property
-    def d5(self) -> int:
+    def d_dec(self) -> int:
         """
-        The private decryption exponent d5 of this RSA key. This value should be
-        kept secret by users of this class.
+        The private decryption exponent d_dec of this RSA key. This value should
+        be kept secret by users of this class.
         """
-        return self._d5
+        return self._d_dec
     
     def public_key(self) -> int:
         """
@@ -107,7 +107,7 @@ class RSAKey:
         """
         Returns the signature of the supplied message by this RSA key.
         """
-        return sign(self._d3, self._p, self._q, message)
+        return sign(self._d_sig, self._p, self._q, message)
 
     def decrypt_key(self, encrypted_key: object, hash_obj=None) -> bytes:
         """
@@ -118,17 +118,17 @@ class RSAKey:
         interface for hash objects specified in the Python standard library
         module hashlib.
         """
-        return decrypt_key(self._d5, encrypted_key, self._p, self._q, hash_obj)
+        return decrypt_key(self._d_dec, encrypted_key, self._p, self._q, hash_obj)
 
     def __eq__(self, other):
         return self._p  == other._p  and\
                self._q  == other._q  and\
                self._n  == other._n  and\
-               self._d3 == other._d3 and\
-               self._d5 == other._d5
+               self._d_sig == other._d_sig and\
+               self._d_dec == other._d_dec
 
     def __hash__(self):
-        return hash((self._p, self._q, self._n, self._d3, self._d5))
+        return hash((self._p, self._q, self._n, self._d_sig, self._d_dec))
 
     def __ne__(self, other):
         return not self == other
@@ -144,15 +144,16 @@ def make_key(size: int=_MODULUS_MID_BIT_LEN) -> RSAKey:
 
 def generate_rsa_key(modulus_bit_len: int) -> tuple[int, int, int, int, int]:
     """
-    Returns a tuple of the form (p, q, n, d3, d5), where p and q are randomly-selected, distinct
-    prime factors of size modulus_bit_len/2, n is the semiprime product of p and q (this is
-    the public RSA modulus), d3 is the modular multiplicative inverse of 3 modulo t, where t is
-    the least common multiple of p-1 and q-1 (algebraically, this is "lcm(p-1, q-1)"), and d5 is
-    the modular multiplicative inverse of 5 modulo t. d3 and d5 are the exponents to be used for
-    message signature and decryption, respectively. The signature-verification and encryption
-    exponents (the constants 3 and 5, respectively), together with the RSA modulus n, comprise
-    the RSA public key and may be shared freely. The prime factors p and q, and the signature
-    and decryption exponents d3 and d5, however, must be kept secret by callers of this function.
+    Returns a tuple of the form (p, q, n, d_sig, d_dec), where p and q are randomly-selected,
+    distinct prime factors of size modulus_bit_len/2, n is the semiprime product of p and q
+    (this is the public RSA modulus), d_sig is the modular multiplicative inverse of 3 modulo
+    t, where t is the least common multiple of p-1 and q-1 (algebraically, this is
+    "lcm(p-1, q-1)"), and d_dec is the modular multiplicative inverse of 5 modulo t. d_sig and
+    d_dec are the exponents to be used for message signature and decryption, respectively. The
+    signature-verification and encryption exponents (the constants 3 and 5, respectively),
+    together with the RSA modulus n, comprise the RSA public key and may be shared freely. The
+    prime factors p and q, and the signature and decryption exponents d_sig and d_dec, however,
+    must be kept secret by callers of this function.
     """
 
     assert isinstance(modulus_bit_len, int)
@@ -164,19 +165,19 @@ def generate_rsa_key(modulus_bit_len: int) -> tuple[int, int, int, int, int]:
 
     # Compute the lcm of p-1 and q-1, as its behavior will be just as correct as for the
     # totient of p*q (as specified in the original RSA paper). However, because the lcm will
-    # likely be smaller, so too will the exponenents d3 and d5, thus resulting in faster arithmetic.
+    # likely be smaller, so too will the exponenents d_sig and d_dec, thus resulting in faster arithmetic.
     t = euclid.lcm(p - 1, q - 1)
 
-    # Compute the signature and decryption exponents, d3 and d5, respectively.
-    d3 = euclid.inverse(VERIFICATION_EXPONENT, t)
-    d5 = euclid.inverse(ENCRYPTION_EXPONENT, t)
+    # Compute the signature and decryption exponents, d_sig and d_dec, respectively.
+    d_sig = euclid.inverse(VERIFICATION_EXPONENT, t)
+    d_dec = euclid.inverse(ENCRYPTION_EXPONENT, t)
 
-    # p, q, d3 and d5 must be kept secret; only n (i.e., p*q), together with the signature-
+    # p, q, d_sig and d_dec must be kept secret; only n (i.e., p*q), together with the signature-
     # verification and encryption exponents (the numbers 3 and 5, respectively), are part of
     # the public key. This implementation assumes a protocol will be used in which the public
     # exponents are understood by both parties to be 3 and 5 in advance, so returning them
     # here is unnecessary.
-    return p, q, p * q, d3, d5
+    return p, q, p * q, d_sig, d_dec
 
 
 def _generate_rsa_factors(modulus_bit_len: int) -> tuple[int, int]:
