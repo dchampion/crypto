@@ -255,25 +255,19 @@ def shor_factor(n: int) -> tuple[int, int]:
     assert not _is_square(n)
 
     while True:
-        k = prng.randrange(1, n)
-        g = euclid.gcd(k, n)
+        a = prng.randrange(1, n)
+        g = euclid.gcd(a, n)
         if g != 1:
             return g, n // g
 
-        q, r, s = 1, 0, -1
-        while s != 1:
-            s = q * k % n
-            q = s
+        r = 1
+        while util.fast_mod_exp(a, r, n) != 1:
             r += 1
 
         if r % 2 == 0:
-            p = 1
-            for _ in range(r//2):
-                s = p * k % n
-                p = s
-
-            if p + 1 != n:
-                return euclid.gcd(p+1, n), euclid.gcd(p-1, n)
+            s = util.fast_mod_exp(a, r//2, n)
+            if s + 1 != n:
+                return euclid.gcd(s+1, n), euclid.gcd(s-1, n)
 
 
 def _validate_param(n: int) -> None:
