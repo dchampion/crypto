@@ -46,7 +46,7 @@ Let $n$ be an integer greater than $1$. Let $d$ be the smallest divisor of $n$ t
 
 # [Euclid's Lemma](https://en.wikipedia.org/wiki/Euclid%27s_lemma)
 
-If $p$ is a prime, and $p|ab$, where $ab$ is the product of two integers $a$ and $b$, then $p$ must divide either $a$ or $b$.
+If $p$ is prime, and $p|ab$, where $ab$ is the product of two integers $a$ and $b$, then $p$ must divide either $a$ or $b$.
 
 ## Proof
 
@@ -77,7 +77,7 @@ This is technically just a specialization of Euclid's lemma; it is important bec
 - Thus, $p$ divides $a^2-1$
 - Factor the term $a^2 - 1$ into the difference of its squares, giving $(a+1)(a-1)$
 - Thus, $p$ divides $(a+1)(a-1)$
-- Since $p$ is prime, then $p$ divides either $(a+1)$ or $(a-1)$ (proven by Euclid's lemma)
+- Since $p$ is prime, then $p$ divides either $(a+1)$ or $(a-1)$ (proven by [Euclid's lemma](#euclids-lemma))
 - Therefore, $a$ is congruent to either $1$ or $-1$ modulo $p$
 
 # [Fermat's Factorization Algorithm](https://en.wikipedia.org/wiki/Fermat%27s_factorization_method)
