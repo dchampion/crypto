@@ -171,6 +171,9 @@ def _is_composite_2(n: int) -> bool:
         while s % 2 == 0:
             s //= 2
             x = util.fast_mod_exp(a, s, n)
+            # print(f"a={a}")
+            # print(f"s={s}")
+            # print(f"x={x}")
             if x == 1:
                 continue
             if x == n - 1:
@@ -255,17 +258,36 @@ def shor_factor(n: int) -> tuple[int, int]:
     assert not _is_square(n)
 
     while True:
+        # Select a random base (a) in the range of n.
         a = prng.randrange(1, n)
+        # print(f"a={a}")
+
+        # Take the gcd (g) of a and n. The larger the n, the lower the probability that g
+        # will not be 1.
         g = euclid.gcd(a, n)
         if g != 1:
             return g, n // g
 
+        # Find the period (r) of a in the finite group modulo n (this is the order of a in
+        # the group). Whatever r is, by Lagrange's theorem, it must divide the totient of n
+        # (or the order of the group). The larger n is, the longer this will take; in fact,
+        # the running time of this loop is exponential in the size of n.
         r = 1
         while util.fast_mod_exp(a, r, n) != 1:
             r += 1
 
+        # If the period r is even, then a^r mod n must have a square root; namely,
+        # a^(r/2) mod n. If r is odd, start over with another a.
+        # print(f"r={r}")
         if r % 2 == 0:
+
+            # Take the square root (s) of a^r mod n. If s is n-1 (or -1 mod n), then it is
+            # a trivial square root of a^r mod n (or 1 mod n). If s is NOT n-1, then it is
+            # a non-trivial square root of 1 mod n, and we can thus identify n's non-trivial
+            # factors using Euclid's algorithm. Note that s cannot be n+1 (or 1 mod n)
+            # because r is n+1.
             s = util.fast_mod_exp(a, r//2, n)
+            # print(f"s={s}")
             if s + 1 != n:
                 return euclid.gcd(s+1, n), euclid.gcd(s-1, n)
 
