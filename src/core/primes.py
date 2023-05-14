@@ -132,9 +132,9 @@ def _is_composite_2(n: int) -> bool:
     # -1 (which can also written as n-1). This is a specialization of Euclid's
     # lemma.
     # 5. If n is composite, it is also possible for the square root of 1 modulo n
-    # to be 1 or -1, but the probability of such a result is only .25; i.e.,
-    # approximately 1 in 4 bases a are false witnesses to the primality of said
-    # composite n.
+    # to be 1 or -1, but the probability of such a result is at most .25; i.e.,
+    # at most 1 in 4 bases are false witnesses to the primality of said composite
+    # n.
     # 6. If a square root of 1 modulo n is neither 1 nor -1, then n must be
     # composite.
 
@@ -248,10 +248,10 @@ def _is_square(n: int) -> bool:
 def shor_factor(n: int) -> tuple[int, int]:
     """
     Attempts to factor a valid RSA modulus n using Shor's factorization algorithm. A valid n
-    is an integer that is the composite product of exactly two distinct prime factors. Returns
-    the tuple (p, q) if the factorization is successful, where p and q are the prime factors of
-    n. The runtime performance of this algorithm is exponential in the size of n; therefore it
-    should generally not be called with n > 32 bits.
+    is an integer that is the product of exactly two distinct, nontrivial prime factors.
+    Returns the tuple (p, q) if the factorization is successful, where p and q are the
+    nontrivial factors of n. The runtime performance of this algorithm is exponential in the
+    size of n; therefore it should generally not be called with n > 32 bits.
     """
     assert isinstance(n, int) and n > 2 and n % 2 != 0
     assert not is_prime(n)
@@ -259,36 +259,37 @@ def shor_factor(n: int) -> tuple[int, int]:
 
     while True:
         # Select a random base (a) in the range of n.
-        a = prng.randrange(1, n)
+        a = prng.randrange(2, n)
         # print(f"a={a}")
 
-        # Take the gcd (g) of a and n. The larger the n, the lower the probability that g
-        # will not be 1.
+        # Take the gcd (g) of a and n. The larger the n, the lower the probability that
+        # gcd(a, n) != 1
         g = euclid.gcd(a, n)
         if g != 1:
             return g, n // g
 
-        # Find the period (r) of a in the finite group modulo n (this is the order of a in
-        # the group). Whatever r is, by Lagrange's theorem, it must divide the totient of n
-        # (or the order of the group). The larger n is, the longer this will take; in fact,
-        # the running time of this loop is exponential in the size of n.
+        # Find the order (r) of a in the finite group modulo n. Whatever r is, by Lagrange's
+        # theorem, it must divide the totient of n (or the order of the group). The larger n
+        # is, the longer this will take; in fact, the running time of this loop is
+        # exponential in the size of n.
         r = 1
         while util.fast_mod_exp(a, r, n) != 1:
             r += 1
 
-        # If the period r is even, then a^r mod n must have a square root; namely,
+        # If the order (r) is even, then a^r mod n must have a square root; namely,
         # a^(r/2) mod n. If r is odd, start over with another a.
         # print(f"r={r}")
         if r % 2 == 0:
 
-            # Take the square root (s) of a^r mod n. If s is n-1 (or -1 mod n), then it is
-            # a trivial square root of a^r mod n (or 1 mod n). If s is NOT n-1, then it is
-            # a non-trivial square root of 1 mod n, and we can thus identify n's non-trivial
-            # factors using Euclid's algorithm. Note that s cannot be n+1 (or 1 mod n)
-            # because r is n+1.
+            # Take the square root (s) of a^r mod n. Note that s (or r//2) cannot be 1
+            # (or n+1), since r was already the first case for which 1 was found in the
+            # order-finding loop. If s is -1 (or n-1), then by definition we have identified
+            # a trivial factor of n (i.e., n itself), and we must start over with another a.
+            # If on the other hand s is NOT -1, then we have found a nontrivial square root
+            # of 1 mod n, and can thus return n's nontrivial factors using Euclid's algorithm.
             s = util.fast_mod_exp(a, r//2, n)
             # print(f"s={s}")
-            if s + 1 != n:
+            if s != n - 1:
                 return euclid.gcd(s+1, n), euclid.gcd(s-1, n)
 
 
