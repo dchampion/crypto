@@ -82,7 +82,7 @@ This is technically just a specialization of Euclid's lemma; it is important bec
 
 # [Fermat's Factorization Algorithm](https://en.wikipedia.org/wiki/Fermat%27s_factorization_method)
 
-Attempts to factor an odd integer $n$. If $n$ is a semiprime RSA modulus, and it can be factored using this algorithm, then the difference of its factors is too small, and the factors therefore cryptographically weak. Suitable factors of an RSA modulus should be sufficiently distant to defeat this algorithm for a sufficiently long run time.
+Attempts to factor a composite odd integer $n$, where $n$ is the product of exactly two distinct prime factors $p$ and $q$ (e.g., an RSA modulus). If $n$ can be factored using this algorithm, then the difference of its factors is too small, and the factors therefore cryptographically weak. Suitable factors of an RSA modulus should be distant enough to defeat this algorithm for a sufficiently long run time.
 
 Note that if $n$ is an RSA modulus it cannot be even; otherwise one of its factors would be $2$.
 
@@ -93,6 +93,35 @@ Note that if $n$ is an RSA modulus it cannot be even; otherwise one of its facto
 5. Repeat steps 3 and 4 until $b$ is a perfect square, or a sensible number of attempts has been made.
 
 Fermat's factorization algorithm is based on the fact that any odd integer $n$ can be expressed as the [difference of two consecutive squares](#difference-of-two-squares), i.e., $n = a^2 - b^2$ for two consecutive integers $b$ and $a$. The right&ndash;hand side of this equation can be factored into $(a+b)(a-b)$. And if $(a+b) \ne 1$ and $(a-b) \ne 1$, then $(a+b)(a-b)$ is a nontrivial factorization of $n$.
+
+# [Shor's Factorization Algorithm](https://en.wikipedia.org/wiki/Shor%27s_algorithm)
+
+Attempts to factor a composite odd integer $n$, where $n$ is the product of exactly two distinct prime factors $p$ and $q$ (e.g., an RSA modulus).
+
+In 1994, Peter Shor proposed a theoretical version of this algorithm that would run in polynomial time on a suitably&ndash;configured quantum computer. At the time of this writing, no such computer yet exists. However, the algorithm can still be executed on a classical computer, albeit with an exponential running time, in the following way.
+
+1. Set $a$ to a value randomly selected from the range $[2..n-1]$
+2. Set $g = gcd(a,n)$
+3. If $g \ne 1$, then $g$ and $n/g$ are the nontrivial factors of $n$ and we are done
+4. Set $r = 1$
+5. While $a^r \bmod n \ne 1$, set $r = r+1$
+6. If $r$ is even, set $s$ = $a^{r/2} \bmod n$; otherwise, return to step 1
+7. If $s \ne n-1$, then $gcd(s-1, n)$ and $gcd(s+1,n)$ are the nontrivial factors of $n$ and we are done; otherwise, return to step 1.
+
+Step 5&mdash;which is called the _order&ndash;finding_ part of the algorithm&mdash;is the bottleneck, and would take millions of years to run against a proper RSA modulus on even the most powerful classical computer. Using a Quantum Fourier Transform on a quantum computer, however, the period of $a$ can be identified in polynomial time.
+
+## Proof
+
+* Let $n$ be a semiprime integer
+* Let $r$ be the smallest integer such that $a^r \equiv 1 \pmod n$ for some integer $a$, where $1 < a < n$ (if $r$ is odd, start over with another $a$)
+* Therefore, $n$ divides $a^r - 1$; or, stated another way, $a^r-1$ is a multiple of $n$
+* Let $s$ be the square root of $a^r - 1$; i.e., $s = a^{r/2} - 1$
+* It cannot be the case that $s \equiv 1 \pmod n$, because $a^r \equiv 1 \pmod n$, and $r$ is the smallest integer such that $a^r \equiv 1 \pmod n$
+* If $s \equiv -1 \pmod n$, then $n$ divides $s-1$; or, stated another way, $s-1$ is a multiple of $n$
+* Otherwise, $s \not \equiv 1 \pmod n$ and $s \not \equiv -1 \pmod n$, and therefore neither $s+1$ nor $s-1$ is a multiple of $n$, but their product is; i.e., $a^r-1 = (a^{r/2}+1)(a^{r/2}-1) = (s+1)(s-1) \equiv 1 \pmod n$
+* Therefore, the prime factors of $n$ share factors with $(s+1)(s-1)$
+* Let $p$ and $q$ be the prime factors of $n$
+* Then $p=gcd(n,s+1)$ and $q=gcd(n,s-1)$
 
 # [Difference of Two Squares](https://en.wikipedia.org/wiki/Difference_of_two_squares)
 Every odd number $n$ can be expressed as the difference of two consecutive squares, such that $n=a^2-b^2$ for two consecutive integers $b$ and $a$.
@@ -105,7 +134,6 @@ Every odd number $n$ can be expressed as the difference of two consecutive squar
 - $n = (k+1)(k+1) - k^2$
 - $n = k^2 + 2k+1 - k^2$
 - $n = 2k+1$
-
 
 # [Euclid's Theorem](https://en.wikipedia.org/wiki/Euclid%27s_theorem)
 
