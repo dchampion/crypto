@@ -114,7 +114,7 @@ Step 5&mdash;which is called the _order&ndash;finding_ part of the algorithm&mda
 
 * Let $n$ be a semiprime integer
 * Let $r$ be the smallest integer such that $a^r \equiv 1 \pmod n$ for some integer $a$, where $1 < a < n$ (if $r$ is odd, start over with another $a$)
-* Therefore, $n$ divides $a^r - 1$; or, stated another way, $a^r-1$ is a multiple of $n$
+* Therefore, $n$ divides $a^r - 1$; or, stated another way, $a^r-1$ is a multiple of $n$ (also note that $r$ divides $\phi(n)$)
 * Let $s$ be the square root of $a^r - 1$; i.e., $s = a^{r/2} - 1$
 * It cannot be the case that $s \equiv 1 \pmod n$, because $a^r \equiv 1 \pmod n$, and $r$ is the smallest integer such that $a^r \equiv 1 \pmod n$
 * If $s \equiv -1 \pmod n$, then $n$ divides $s-1$; or, stated another way, $s-1$ is a multiple of $n$
