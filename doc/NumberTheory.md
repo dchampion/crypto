@@ -98,7 +98,11 @@ Fermat's factorization algorithm is based on the fact that any odd integer $n$ c
 
 Attempts to factor a composite odd integer $n$, where $n$ is the product of exactly two distinct prime factors $p$ and $q$ (e.g., an RSA modulus).
 
-In 1994, Peter Shor proposed a theoretical version of this algorithm that would run in polynomial time on a suitably&ndash;configured quantum computer. At the time of this writing, no such computer yet exists. However, the algorithm can still be executed on a classical computer, albeit with an exponential running time, in the following way.
+In 1994, Peter Shor proposed a theoretical version of this algorithm that would run in polynomial time on a sufficiently powerful quantum computer. At the time of this writing, no such computer yet exists. The algorithm can nevertheless be executed on a classical computer, albeit with an exponential running time.
+
+The algorithm reduces the problem of factoring to one of order&ndash;finding, and leverages the fact that the order of any element in the finite multiplicative group of integers modulo $n$ divides the order of $n$.
+
+The classical version runs as follows:
 
 1. Set $a$ to a value randomly selected from the range $[2..n-1]$
 2. Set $g = gcd(a,n)$
@@ -108,20 +112,20 @@ In 1994, Peter Shor proposed a theoretical version of this algorithm that would 
 6. If $r$ is even, set $s$ = $a^{r/2} \bmod n$; otherwise, return to step 1
 7. If $s \ne n-1$, then $gcd(s-1, n)$ and $gcd(s+1,n)$ are the nontrivial factors of $n$ and we are done; otherwise, return to step 1.
 
-Step 5&mdash;which is called the _order&ndash;finding_ part of the algorithm&mdash;is the bottleneck, and would take millions of years to run against a proper RSA modulus on even the most powerful classical computer. Using a Quantum Fourier Transform on a quantum computer, however, the period of $a$ can be identified in polynomial time.
+Step 5&mdash;which is the order&ndash;finding part of the algorithm&mdash;is the bottleneck, and would take millions of years to run against a proper RSA modulus on even the most powerful classical computer. On a sufficiently large quantum computer, however, the order of $a$ can be identified in polynomial time using a quantum fourier transform.
 
 ## Proof
 
 * Let $n$ be a semiprime integer
 * Let $r$ be the smallest integer such that $a^r \equiv 1 \pmod n$ for some integer $a$, where $1 < a < n$ (if $r$ is odd, start over with another $a$)
-* Therefore, $n$ divides $a^r - 1$; or, stated another way, $a^r-1$ is a multiple of $n$ (also note that $r$ divides $\phi(n)$)
-* Let $s$ be the square root of $a^r - 1$; i.e., $s = a^{r/2} - 1$
-* It cannot be the case that $s \equiv 1 \pmod n$, because $a^r \equiv 1 \pmod n$, and $r$ is the smallest integer such that $a^r \equiv 1 \pmod n$
-* If $s \equiv -1 \pmod n$, then $n$ divides $s-1$; or, stated another way, $s-1$ is a multiple of $n$
-* Otherwise, $s \not \equiv 1 \pmod n$ and $s \not \equiv -1 \pmod n$, and therefore neither $s+1$ nor $s-1$ is a multiple of $n$, but their product is; i.e., $a^r-1 = (a^{r/2}+1)(a^{r/2}-1) = (s+1)(s-1) \equiv 1 \pmod n$
-* Therefore, the prime factors of $n$ share factors with $(s+1)(s-1)$
+* Therefore, $n$ divides $a^r - 1$ (also note that $r$ divides $\phi(n)$)
+* Let $s = a^{r/2}$ (this is the square root of $a^r$)
+* Then it cannot be the case that $s \equiv 1 \pmod n$, because $a^r \equiv 1 \pmod n$, and $r$ is the smallest integer such that $a^r \equiv 1 \pmod n$
+* If it is the case that $s \equiv -1 \pmod n$, then $n$ divides $s+1$, and $s+1$ is a trivial factor of $n$
+* Otherwise, $s \not \equiv 1 \pmod n$ and $s \not \equiv -1 \pmod n$, and therefore neither $s-1$ nor $s+1$ is a multiple of $n$, but their product is; i.e., $a^r-1 = (a^{r/2}-1)(a^{r/2}+1) = (s-1)(s+1) \equiv 0 \pmod n$
+* Therefore, the prime factors of $n$ must share factors with $(s-1)(s+1)$
 * Let $p$ and $q$ be the prime factors of $n$
-* Then $p=gcd(n,s+1)$ and $q=gcd(n,s-1)$
+* Then $p=gcd(n,s-1)$ and $q=gcd(n,s+1)$
 
 # [Difference of Two Squares](https://en.wikipedia.org/wiki/Difference_of_two_squares)
 Every odd number $n$ can be expressed as the difference of two consecutive squares, such that $n=a^2-b^2$ for two consecutive integers $b$ and $a$.
