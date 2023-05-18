@@ -282,11 +282,12 @@ def shor_factor(n: int) -> tuple[int, int]:
         if r % 2 == 0:
 
             # Take the square root (s) of a^r mod n. Note that s (or r//2) cannot be 1
-            # (or n+1), since r was already the first case for which 1 was found in the
-            # order-finding loop. If s is -1 (or n-1), then by definition we have identified
-            # a trivial factor of n (i.e., n itself), and we must start over with another a.
-            # If on the other hand s is NOT -1, then we have found a nontrivial square root
-            # of 1 mod n, and can thus return n's nontrivial factors using Euclid's algorithm.
+            # modulo n, since r was the first case for which 1 modulo n was identified in the
+            # order-finding loop. If on the other hand s is -1 modulo n, then by definition
+            # we have identified a trivial factor of n (i.e., n itself), and we must start
+            # over with another a. If however s is NOT -1 modulo n, then we have found a
+            # nontrivial square root of 1 modulo n, and can thus identify n's nontrivial
+            # factors using Euclid's algorithm.
             s = util.fast_mod_exp(a, r//2, n)
             # print(f"s={s}")
             if s != n - 1:
