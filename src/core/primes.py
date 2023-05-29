@@ -260,7 +260,7 @@ def shor_factor(n: int) -> tuple[int, int]:
     while True:
         # Select a random base (a) in the range of n.
         a = prng.randrange(2, n)
-        # print(f"a={a}")
+        print(f"a={a}")
 
         # Take the gcd (g) of a and n. The larger the n, the lower the probability that
         # gcd(a, n) != 1
@@ -278,7 +278,7 @@ def shor_factor(n: int) -> tuple[int, int]:
 
         # If the order (r) is even, then a^r mod n must have a square root; namely,
         # a^(r/2) mod n. If r is odd, start over with another a.
-        # print(f"r={r}")
+        print(f"r={r}")
         if r % 2 == 0:
 
             # Take the square root (s) of a^r mod n. Note that s (or r//2) cannot be 1
@@ -289,7 +289,7 @@ def shor_factor(n: int) -> tuple[int, int]:
             # nontrivial square root of 1 modulo n, and can thus identify n's nontrivial
             # factors using Euclid's algorithm.
             s = util.fast_mod_exp(a, r//2, n)
-            # print(f"s={s}")
+            print(f"s={s}")
             if s != n - 1:
                 return euclid.gcd(s+1, n), euclid.gcd(s-1, n)
 

@@ -48,6 +48,8 @@ Let $n$ be an integer greater than $1$. Let $d$ be the smallest divisor of $n$ t
 
 If $p$ is prime, and $p|ab$, where $ab$ is the product of two integers $a$ and $b$, then $p$ must divide either $a$ or $b$.
 
+If on the other hand $p$ is composite, and $p|ab$, then $p$ may divide either $a$ or $b$. For example, if $p=10$, $a=4$ and $b=25$, then $p$ divides neither $a$ nor $b$ individually, but it divides $ab$.
+
 ## Proof
 
 - Let $p$ be a prime, and $a$ an integer coprime with $p$; i.e., $p$ does not divide $a$
@@ -118,14 +120,14 @@ Step 5&mdash;which is the order&ndash;finding part of the algorithm&mdash;is the
 
 * Let $n$ be a semiprime integer
 * Let $r$ be the smallest integer such that $a^r \equiv 1 \pmod n$ for some integer $a$, where $1 < a < n$ (if $r$ is odd, start over with another $a$)
-* Therefore, $n$ divides $a^r - 1$ (also note that $r$ divides $\phi(n)$)
-* Let $s = a^{r/2}$ (this is the square root of $a^r$)
-* Then it cannot be the case that $s \equiv 1 \pmod n$, because $a^r \equiv 1 \pmod n$, and $r$ is the smallest integer such that $a^r \equiv 1 \pmod n$
+* Therefore, $n$ divides $a^r - 1$; incidentally, also note that $r$ divides $\phi(n)$
+* Let $s = a^{r/2}$; i.e., the square root of $a^r$
+* It cannot be the case that $s \equiv 1 \pmod n$, because $a^r \equiv 1 \pmod n$, and $r$ is the smallest integer such that $a^r \equiv 1 \pmod n$
 * If it is the case that $s \equiv -1 \pmod n$, then $n$ divides $s+1$, and $s+1$ is a trivial factor of $n$
-* Otherwise, $s \not \equiv 1 \pmod n$ and $s \not \equiv -1 \pmod n$, and therefore neither $s-1$ nor $s+1$ is a multiple of $n$, but their product is; i.e., $a^r-1 = (a^{r/2}-1)(a^{r/2}+1) = (s-1)(s+1) \equiv 0 \pmod n$
-* Therefore, the prime factors of $n$ must share factors with $(s-1)(s+1)$
-* Let $p$ and $q$ be the prime factors of $n$
-* Then $p=gcd(n,s-1)$ and $q=gcd(n,s+1)$
+* Otherwise, $s \not \equiv 1 \pmod n$ and $s \not \equiv -1 \pmod n$, and therefore neither $s-1$ nor $s+1$ is a multiple of $n$, but their product is; i.e., $a^r-1 = (a^{r/2}-1)(a^{r/2}+1) = (s-1)(s+1) \equiv 0 \pmod n$ (see [Euclid's lemma](#euclids-lemma))
+* Therefore, the prime factors of $n$ must share factors with $(s-1)$ and $(s+1)$
+* Let $p=gcd(n,s-1)$ and $q=gcd(n,s+1)$
+* Then $p$ and $q$ are the prime factors of $n$
 
 # [Difference of Two Squares](https://en.wikipedia.org/wiki/Difference_of_two_squares)
 Every odd number $n$ can be expressed as the difference of two consecutive squares, such that $n=a^2-b^2$ for two consecutive integers $b$ and $a$.
