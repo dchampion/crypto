@@ -21,15 +21,16 @@ def is_prime(n: int) -> bool:
     Returns True if the supplied positive integer n is prime, or False if it is composite.
     This function is probabilistic, as defined by the following characteristics:
 
-    If n < 1,000, then the probability this function will return a correct answer is 1;
+    If n < 1000, then the probability this function will return a correct answer is 1;
     that is, this function is deterministic.
 
-    If n > 1,000, and this function returns False, then the probability n is composite is
+    If n > 1000, and this function returns False, then the probability n is composite is
     also 1; that is, this function is deterministic.
 
-    However, if n > 1,000, and this function returns True, then the probability n is
-    composite is .25^64 (or 2.93 x 10^-39); that is, if n is prime, this function is
-    probabilistic, but with an astronomically high level of confidence.
+    If n > 1000, and this function returns True, however, then the probability n is
+    composite is .25^64 (or 2.93 x 10^-39). That is, if n is a prime > 1000, this function
+    might return the wrong answer, but the likelihood of such a result is infinitesimally
+    small.
     """
     assert isinstance(n, int) and n > 1
 
@@ -37,23 +38,21 @@ def is_prime(n: int) -> bool:
     if n % 2 == 0:
         return n == 2
 
-    # Dispense with small primes and multiples thereof. Return True for an n that matches
-    # any of the first 168 primes (less than 1,000). Any multiples thereof are composites
-    # (but for those return False).
+    # Dispense with small primes and multiples thereof.
     for prime in _small_primes:
         if n % prime == 0:
             return n == prime
 
-    # n is neither even, a small prime, nor a multiple of thereof; use Miller-Rabin.
+    # n is neither even, a small prime, nor a multiple thereof; resort to heavy lifting.
     return not _is_composite(n)
 
 
 def _is_composite(n: int) -> bool:
     # The Miller-Rabin primality test. Returns True if the supplied positive odd
     # integer n is composite; otherwise False. This function is probabilistic, in
-    # that it is theoretically possible for it to return False for an n that is in
-    # fact composite. However, the probability of such an error is .25^64. Conversely,
-    # if this function returns True, n is assured to be composite.
+    # that it is possible for it to return False for an n that is in fact composite.
+    # However, the probability of such an error is very small (i.e., it is .25^64).
+    # Conversely, if this function returns True, n is assured to be composite.
 
     _validate_param(n)
 
@@ -115,7 +114,7 @@ def _factor_n(n: int) -> tuple[int, int]:
 
 def _is_composite_2(n: int) -> bool:
     # An implementation of the Miller-Rabin primality test that is easy to
-    # reason about. We use this test instead of the Fermat test because some
+    # reason about. We use Miller-Rabin instead of the Fermat test because some
     # pseudo-prime numbers, known as Carmichael numbers, defeat the Fermat
     # test. Specifically, for every base a, where 1 < a < n and n is a
     # Carmichael number, a^n = a (mod n) holds, even though n is not prime.
@@ -133,7 +132,7 @@ def _is_composite_2(n: int) -> bool:
     # lemma.
     # 5. If n is composite, it is also possible for the square root of 1 modulo n
     # to be 1 or -1, but the probability of such a result is at most .25; i.e.,
-    # at most 1 in 4 bases are false witnesses to the primality of said composite
+    # at most 1 in 4 bases is a false witness to the primality of said composite
     # n.
     # 6. If a square root of 1 modulo n is neither 1 nor -1, then n must be
     # composite.
@@ -147,9 +146,9 @@ def _is_composite_2(n: int) -> bool:
     # a^(s/2).
     # 3. If x = 1, n might be prime. Repeat step 2.
     # 4. If x = n-1, n might also be prime, but there is no need to test its
-    # square root. Go to step 1. There is no further need to test its square root
+    # square root. Go to step 1. There is no need to test its square root
     # because, given that the square root of 1 modulo n is either 1 or -1, there
-    # is no such gaurantee regarding the square root of -1 modulo n.
+    # is no such guarantee regarding the square root of -1 modulo n.
     # 5. If x != 1 and x != n-1, n MUST be composite. Return True.
     # 6. If the compositeness of n is not established after executing steps 1-5
     # 64 times, then n is prime with a probability of 1 - .25^64. Return False.
@@ -186,8 +185,8 @@ def _is_composite_2(n: int) -> bool:
 def _fermat_is_prime(n: int) -> bool:
     # Returns True if the supplied positive odd integer n is prime; otherwise False. This
     # function is probabilistic, in that it is possible for it to return True for an n
-    # that is in fact not prime. For example, if n is a so-called Carmichael number,
-    # this function may return True even though n is composite. Because of this, the
+    # that is in fact not prime. For example, if n is a pseudo-prime Carmichael number,
+    # this function will likely return True even though n is composite. Because of this, the
     # miller_rabin function, which accounts for Carmichael numbers, should be preferred to
     # this one for primality testing.
 
@@ -224,9 +223,10 @@ def fermat_factor(n: int) -> tuple[bool, int, int] | bool:
 
     # Fermat's factorization algorithm leverages the fact that a valid RSA modulus must be odd,
     # and every odd number can be expressed as the difference of two squares; i.e., n = a^2 - b^2
-    # = (a+b)(a-b). If we start with a number a that is close to the square root of n, repeatedly
-    # increment it by 1, and find after fewer than 1m iterations that b^2 = a^2 - n, then we have
-    # found the nontrivial factors of n. Here b is the distance from a to the prime factors of n.
+    # = (a+b)(a-b), for two integers a and b. If we start with an a that is close to the square
+    # root of n, repeatedly increment it by 1, and find after fewer than 1k iterations that
+    # b^2 = a^2 - n, then we have found the nontrivial factors of n. Here b is the distance
+    # from a to the prime factors of n.
     a = math.isqrt(n) + 1
     c, tries = 0, 1000
     while not _is_square(a**2 - n):
@@ -251,45 +251,45 @@ def shor_factor(n: int) -> tuple[int, int]:
     is an integer that is the product of exactly two distinct, nontrivial prime factors.
     Returns the tuple (p, q) if the factorization is successful, where p and q are the
     nontrivial factors of n. The runtime performance of this algorithm is exponential in the
-    size of n; therefore it should generally not be called with n > 32 bits.
+    size (in bits) of n; therefore it should generally not be called with n > 32 bits.
     """
     assert isinstance(n, int) and n > 2 and n % 2 != 0
     assert not is_prime(n)
     assert not _is_square(n)
 
     while True:
-        # Select a random base (a) in the range of n.
+        # Select a random base a in the range of n.
         a = prng.randrange(2, n)
-        print(f"a={a}")
+        # print(f"a={a}")
 
-        # Take the gcd (g) of a and n. The larger the n, the lower the probability that
+        # Take the gcd of a and n. The larger the n, the smaller the probability that
         # gcd(a, n) != 1
         g = euclid.gcd(a, n)
         if g != 1:
             return g, n // g
 
-        # Find the order (r) of a in the finite group modulo n. Whatever r is, by Lagrange's
+        # Find the order r of a in the finite group modulo n. Whatever r is, by Lagrange's
         # theorem, it must divide the totient of n (or the order of the group). The larger n
         # is, the longer this will take; in fact, the running time of this loop is
-        # exponential in the size of n.
+        # exponential in the size (in bits) of n.
         r = 1
         while util.fast_mod_exp(a, r, n) != 1:
             r += 1
 
-        # If the order (r) is even, then a^r mod n must have a square root; namely,
+        # If the order r is even, then a^r mod n must have a square root; namely,
         # a^(r/2) mod n. If r is odd, start over with another a.
-        print(f"r={r}")
+        # print(f"r={r}")
         if r % 2 == 0:
 
-            # Take the square root (s) of a^r mod n. Note that s (or r//2) cannot be 1
-            # modulo n, since r was the first case for which 1 modulo n was identified in the
-            # order-finding loop. If on the other hand s is -1 modulo n, then by definition
-            # we have identified a trivial factor of n (i.e., n itself), and we must start
+            # Take the square root of a^r mod n. Note that this cannot be 1 modulo n,
+            # since r was the first case for which 1 modulo n was identified in the order-
+            # finding loop. If on the other hand s is -1 modulo n, then by definition we
+            # have identified a trivial factor of n (i.e., n itself), and we must start
             # over with another a. If however s is NOT -1 modulo n, then we have found a
             # nontrivial square root of 1 modulo n, and can thus identify n's nontrivial
             # factors using Euclid's algorithm.
             s = util.fast_mod_exp(a, r//2, n)
-            print(f"s={s}")
+            # print(f"s={s}")
             if s != n - 1:
                 return euclid.gcd(s+1, n), euclid.gcd(s-1, n)
 
