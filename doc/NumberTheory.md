@@ -245,7 +245,14 @@ More specifically, the order of any element $a$ in group $G$ is the smallest int
 
 It follows then that $a^n = e$, where $n$ is the order of a group.
 
-If $n$ is prime, the group is _cyclic_ and _simple_; i.e., its only subgroups are 1 and the group itself.
+If $n$ is prime, the group is _cyclic_ and _simple_; i.e., its only subgroups are $1$ and the group itself.
+
+## Proof:
+- Consider a finite multiplicative group $G$ modulo some prime $p$
+- Then $a^{p-1} \equiv 1 \pmod{p}$ for some $a$ where $0 < a < p$ ([Fermat's Little Theorem](#fermats-little-theorem))
+- Let $g$ be a primitive element of $G$; that is, $g$ generates every element in the group $G$
+- Then $g^x = a$ for some integer $x$ (this must be true because $g$ generates the whole group)
+- Therefore, $a^{p-1} = g^{x(p-1)} = g^{(p-1)x} = 1^x \equiv 1 \pmod{p}$
 
 # [The Chinese Remainder Theorem](https://en.wikipedia.org/wiki/Chinese_remainder_theorem)
 
