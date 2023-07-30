@@ -155,29 +155,65 @@ There are an infinite number of primes.
 
 # [Fermat's Little Theorem](https://en.wikipedia.org/wiki/Fermat%27s_little_theorem)
 
-$a^{p-1} \equiv 1 \pmod{p}$, where $a$ is an integer not divisible by $p$, and $p$ is prime.
+If $a$ and $p$ are integers, and $p$ is prime, then $a^p - a$ is an integer multiple of $p$. Algebraically, this can be expressed as follows:
 
-It therefore follows that $a^p \equiv a \pmod{p}$ for the same $a$ and $p$, if we multiply both sides of the relation by $a$, as in:
+$a^p \equiv a \pmod{p}$
 
-- $a^{p-1} \equiv 1 \pmod{p}$
-- $a^{p-1} \times a \equiv 1 \times a \pmod{p}$
-- $a^{p-1+1} \equiv a \pmod{p}$
+Further, if $a$ is not a multiple of $p$, then the following also holds:
+
+$a^{p-1} \equiv 1 \pmod{p}$
+
+This is because if $a$ is not a multiple of $p$, then $a$ and $p$ are coprime, and by the [rule of cancellation](#rule-of-cancellation) the first relation can be transformed to the second in the following way:
+
 - $a^p \equiv a \pmod{p}$
+- $a^p \times a^{-1} \equiv a \times a^{-1} \pmod{p}$
+- $a^{p-1} \equiv 1 \pmod{p}$
 
-There are many proofs of Fermat's little theorem. The following proof uses [group theory](#groups), and is based specifically on [LaGrange's theorem](#lagranges-theorem).
+Conversely, $a^{p-1} \equiv 1 \pmod{p}$ does _not_ hold if $a$ is a multiple of $p$. In that case, $a^{p-1} \equiv 0 \pmod{p}$.
+
+To summarize, $a^{p-1} \equiv 1 \pmod{p}$ holds if $a$ and $p$ are integers, $p$ is prime, $0 < a < p$, or if $a > p$, $p$ does not divide $a$.
 
 ## Proof:
-- Let $p$ be a prime
-- Let $G$ be the set $\{1, 2, ...,p-1\}$ (which in group theory is called _the multiplicative group modulo p_)
-- Let $a$ be a member of this group, i.e., $1 \le a \le p-1$
-- Let $k$ be the order of $a$; i.e., the smallest integer such that $a^k \equiv 1 \pmod p$
-- Then the numbers $a, a^2, ..., a^k$ modulo $p$ form a subgroup of $G$ whose order is $k$
-- By LaGrange's theorem, $k$ divides the order of $G$, or $p-1$
-- Then $p-1 = km$ for some integer $m$
-- Therefore, $a^{p-1} = a^{km} = (a^{k})^m \equiv 1^m \equiv 1 \pmod p$
+Consider the set of integers modulo $p$; i.e., $1, 2, 3, ..., p-1$. This set forms a [group](#groups) under multiplication. Consider a second set $a, 2a, 3a, ..., (p-1)a$, where $a$ is some element of the first set. Since all integers modulo $p$ are in the set $1, 2, 3, ..., (p-1)$, all elements of the second set must exist in the first set. If we assume the elements of the second set, reduced modulo $p$, are a [rearrangement](#rearrangement) of the elements of first set, then we have:
 
-For another interesting proof, based on [Euclid's lemma](#euclids-lemma), see [power-product expansions](https://en.wikipedia.org/wiki/Proofs_of_Fermat%27s_little_theorem#Proof_using_power_product_expansions).
+- $a \times 2a \times 3a \times ... \times (p-1)a \equiv 1 \times 2 \times 3 \times ... \times (p-1) \pmod{p}$
+- $a^{p-1}(p-1)! \equiv (p-1)! \pmod{p}$
+- $a^{p-1} \equiv 1 \pmod{p}$
 
+Note that the term $(p-1)!$ can be removed from both sides of the relation by the [rule of cancellation](#rule-of-cancellation).
+
+# Rearrangement
+Consider the set of integers modulo $p$; i.e., $1, 2, 3, ..., p-1$, where $p$ is prime. Consider a  second set modulo $p$ that consists of the elements $a, 2a, 3a, ..., (p-1)a$, where $a$ is some element of the first set. Then the elements of the second set are a _rearrangement_ of the elements of the first set
+
+First, we must prove that all elements of the first set exist in the second set. Let $k$ be some element of the first set, which by definition is coprime with $p$. Since $a$ also comes from the first set, it too is coprime with $p$. By [Euclid's lemma](#euclids-lemma), the product of $k$ and $a$ must also be coprime with $p$. Therefore, all elements from the second set, when reduced modulo $p$, must exist in the first set.
+
+Second, we must prove that all elements of the second set are _distinct_. Let $k$ and $m$ be elements of the first set. Then:
+
+- $ka \equiv ma \pmod{p}$
+- $k \equiv m \pmod{p}$ (by the [rule of cancellation](#rule-of-cancellation))
+
+Since $k$ and $m$ are both members of the first set, then $k = m$. Therefore, the elements of the second set must be distinct.
+
+# Rule of Cancellation
+Given integers $u$, $x$, $y$ and $z$, and $ux \equiv uy \pmod{z}$, if $u$ and $z$ are coprime, then the term $u$ can be _cancelled_ from both sides of the relation:
+
+- $ux \equiv uy \pmod{z}$
+- $ux \times u^{-1} \equiv uy \times u^{-1} \pmod{z}$
+- $x \equiv y \pmod{z}$
+
+Multiplication by $u^{-1}$ is possible because $u$ and $z$ are coprime, and therefore $u$ has an inverse modulo $z$. A notable consequence of this rule is that if $z$ is prime, then $z$ must divide $x-y$.
+
+- $x \equiv y \pmod{z}$
+- $x - y \equiv y - y \pmod{z}$
+- $x - y \equiv 0 \pmod{z}$
+
+Stated another way, if $z$ is prime, and $z$ does not divide $u$, then it must divide $x-y$.
+
+- $ux \equiv uy \pmod{z}$
+- $ux - uy \equiv 0 \pmod{z}$
+- $u(x-y) \equiv 0 \pmod{z}$
+
+By [Euclid's Lemma](#euclids-lemma), since $z$ is prime, it must divide either $u$ or $x-y$, and since it does not divide $u$ (recall $u$ and $z$ are coprime), $z$ must therefore divide $x-y$.
 
 # Finding Large Primes
 Primality&ndash;testing algorithms based on trial division are not feasible for primes of the size necessary for use in cryptographic applications. Even though the time complexity of these algorithms is linear, their candidate inputs are so large that even linear&ndash;time algorithms are too slow. (How slow? they would require many times the age of the universe to complete.)
