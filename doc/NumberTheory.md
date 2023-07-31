@@ -174,27 +174,28 @@ Conversely, $a^{p-1} \equiv 1 \pmod{p}$ does _not_ hold if $a$ is a multiple of 
 To summarize, $a^{p-1} \equiv 1 \pmod{p}$ holds if $a$ and $p$ are integers, $p$ is prime, $0 < a < p$, or if $a > p$, $p$ does not divide $a$.
 
 ## Proof:
-Consider the set of integers modulo $p$; i.e., $1, 2, 3, ..., p-1$. This set forms a [group](#groups) under multiplication. Consider a second set $a, 2a, 3a, ..., (p-1)a$, where $a$ is some element of the first set. Since all integers modulo $p$ are in the set $1, 2, 3, ..., (p-1)$, all elements of the second set must exist in the first set. If we assume the elements of the second set, reduced modulo $p$, are a [rearrangement](#rearrangement) of the elements of first set, then we have:
+Consider the set of integers modulo a prime $p$; i.e., $1, 2, 3, ..., p-1$. This set forms a [group](#groups) under multiplication. Consider a second set $1a, 2a, 3a, ..., (p-1)a$, where $a$ is some element from the first set. Since all integers modulo $p$ are in the set $1, 2, 3, ..., (p-1)$, all elements of the second set, when reduced modulo $p$, must exist in the first set. Further, if we assume that the elements of the second set are a [rearrangement](#rearrangement) of the elements of first set, then we have:
 
 - $a \times 2a \times 3a \times ... \times (p-1)a \equiv 1 \times 2 \times 3 \times ... \times (p-1) \pmod{p}$
 - $a^{p-1}(p-1)! \equiv (p-1)! \pmod{p}$
 - $a^{p-1} \equiv 1 \pmod{p}$
 
-Note that the term $(p-1)!$ can be removed from both sides of the relation by the [rule of cancellation](#rule-of-cancellation).
+This completes the proof. Note that it is permissible to remove the term $(p-1)!$ from both sides of the relation by the [rule of cancellation](#rule-of-cancellation).
 
-# Rearrangement
-Consider the set of integers modulo $p$; i.e., $1, 2, 3, ..., p-1$, where $p$ is prime. Consider a  second set modulo $p$ that consists of the elements $a, 2a, 3a, ..., (p-1)a$, where $a$ is some element of the first set. Then the elements of the second set are a _rearrangement_ of the elements of the first set
+### Rearrangement
+Consider the set of integers modulo a prime $p$; i.e., $1, 2, 3, ..., p-1$. Consider a  second set modulo $p$ that consists of the elements $1a, 2a, 3a, ..., (p-1)a$, where $a$ is some element from the first set. Then the elements of the second set are a _rearrangement_ of the elements of the first set.
 
-First, we must prove that all elements of the first set exist in the second set. Let $k$ be some element of the first set, which by definition is coprime with $p$. Since $a$ also comes from the first set, it too is coprime with $p$. By [Euclid's lemma](#euclids-lemma), the product of $k$ and $a$ must also be coprime with $p$. Therefore, all elements from the second set, when reduced modulo $p$, must exist in the first set.
+First we must prove that all elements of the second set exist in the first set. Let $k$ be some element of the first set, which by definition is coprime with $p$. Since $a$ also comes from the first set, it too is coprime with $p$. By [Euclid's lemma](#euclids-lemma), the product of $k$ and $a$ must also be coprime with $p$. Therefore, all elements from the second set, when reduced modulo $p$, must exist in the first set.
 
-Second, we must prove that all elements of the second set are _distinct_. Let $k$ and $m$ be elements of the first set. Then:
+Second, we must prove that all elements of the second set are _distinct_. Let $k$ and $m$ be elements from the first set. Then we can write:
 
 - $ka \equiv ma \pmod{p}$
 - $k \equiv m \pmod{p}$ (by the [rule of cancellation](#rule-of-cancellation))
+- $k = m$
 
-Since $k$ and $m$ are both members of the first set, then $k = m$. Therefore, the elements of the second set must be distinct.
+Since $k$ and $m$ are both members of the first set, then $k$ must equal $m$. Therefore, all elements of the second set must be distinct.
 
-# Rule of Cancellation
+### Rule of Cancellation
 Given integers $u$, $x$, $y$ and $z$, and $ux \equiv uy \pmod{z}$, if $u$ and $z$ are coprime, then the term $u$ can be _cancelled_ from both sides of the relation:
 
 - $ux \equiv uy \pmod{z}$
@@ -214,6 +215,51 @@ Stated another way, if $z$ is prime, and $z$ does not divide $u$, then it must d
 - $u(x-y) \equiv 0 \pmod{z}$
 
 By [Euclid's Lemma](#euclids-lemma), since $z$ is prime, it must divide either $u$ or $x-y$, and since it does not divide $u$ (recall $u$ and $z$ are coprime), $z$ must therefore divide $x-y$.
+
+# [Euler's Theorem](https://en.wikipedia.org/wiki/Euler%27s_theorem)
+
+If $a$ and $n$ are integers, then $a^{\phi(n)+1} - a$ is an integer multiple of $n$. Algebraically, this can be expressed as follows:
+
+$a^{\phi(n)+1} \equiv a \pmod{n}$
+
+Further, if $a$ and $n$ are coprime, then the following also holds:
+
+$a^{\phi(n)} \equiv 1 \pmod{n}$
+
+This is because if $a$ and $n$ are coprime, by the [rule of cancellation](#rule-of-cancellation) the first relation can be transformed to the second in the following way:
+
+- $a^{\phi(n)+1} \equiv a \pmod{n}$
+- $a^{\phi(n)+1} \times a^{-1} \equiv a \times a^{-1} \pmod{n}$
+- $a^{\phi(n)} \equiv 1 \pmod{n}$
+
+Conversely, $a^{\phi(n)} \equiv 1 \pmod{n}$ does _not_ hold if $a$ and $n$ are not coprime (that is, if $a$ divides $n$, or $n$ divides $a$).
+
+To summarize, $a^{\phi(n)} \equiv 1 \pmod{n}$ holds if $a$ and $n$ are coprime integers.
+
+Euler's theorem is a generalization of Fermat's little theorem, since $n$ can be either prime (Fermat) or the product of primes (Euler).
+
+Recall that $\phi(n)$ gives the number of integers between $1$ and $n$ that are coprime with $n$. Therefore, if $n$ is prime, then $\phi(n) = n - 1$, and we have $a^{n-1} \equiv 1 \pmod{n}$ (Fermat).
+
+Euler's totient function is _multiplicative_, meaning that if two integers $p$ and $q$ are relatively prime, then $\phi(pq) = \phi(p) \times \phi(q) = (p-1)(q-1)$.
+
+There are many proofs of Euler's theorem, including a generalized version of the proof of [Fermat's little theorem](#fermats-little-theorem) presented above. The following proof uses [LaGrange's theorem](#lagranges-theorem).
+
+## Proof:
+- Let $n$ be a positive integer (that is not necessarily prime)
+- Let $G$ be the set $\lbrace 1 \le a \le n-1 : gcd(a,n) = 1\rbrace$ (which in group theory is called _the multiplicative group modulo_ $n$).
+- Let $a$ be a member of this group
+- Let $k$ be the order $a$; i.e., the smallest integer such that $a^k \equiv 1 \pmod{n}$
+- Then the numbers $a, a^2, ..., a^k$ modulo $n$ form a subgroup of $G$ whose order is $k$
+- By LaGrange's theorem, $k$ divides the order of $G$, or $\phi(n)$
+- Then $\phi(n) = km$ for some integer $m$
+- Therefore, $a^{\phi(n)} = a^{km} = (a^{k})^m \equiv 1^m \equiv 1 \pmod n$
+
+A corollary to Euler's theorem&mdash;and one that is crucial to understanding the RSA algorithm&mdash;is that for any integers $x$ and $y$, $x \equiv y \pmod{\phi(n)}$ implies $a^x \equiv a^y \pmod{n}$, if $a$ is coprime to $n$. This is proven as follows:
+
+- $x \equiv y \pmod{\phi(n)}$
+- $x - y = \phi(n)k$, for some integer $k$
+- $x = y + \phi(n)k$
+- $a^x = a^{y+\phi(n)k} = a^y(a^{\phi(n)})^{k} \equiv a^y1^k \equiv a^y \pmod{n}$
 
 # Finding Large Primes
 Primality&ndash;testing algorithms based on trial division are not feasible for primes of the size necessary for use in cryptographic applications. Even though the time complexity of these algorithms is linear, their candidate inputs are so large that even linear&ndash;time algorithms are too slow. (How slow? they would require many times the age of the universe to complete.)
@@ -241,37 +287,6 @@ If Miller&ndash;Rabin were a theorem, it would state that if $p$ is prime, then 
 Stated generally, if $p$ is prime, then the square root of $a^{p-1}$ (which by Fermat we know to be congruent to $1$ modulo $p$) must either also be congruent to $1$ modulo $p$ or, if it is not, then it must be congruent to $-1$ modulo $p$.
 
 Specifically, with regard to the Miller&ndash;Rabin algorithm, if the square root of $a^{p-1}$ is _not_ congruent to either $1$ or $-1$ modulo $p$, then $p$ must be composite. We can use this fact to test for the compositeness of an integer that runs in logarithmic time in the size of the input.
-
-# [Euler's Theorem](https://en.wikipedia.org/wiki/Euler%27s_theorem)
-
-$a^{\phi(n)} \equiv 1 \pmod{n}$, where $a$ is an integer not divisible by $n$.
-
-It therefore follows that $a^{\phi(n)+1} \equiv a \pmod{n}$ for the same $a$ and $n$.
-
-Euler's theorem is a generalization of Fermat's little theorem, since $n$ can be either prime (Fermat) or the product of primes (Euler).
-
-Recall that $\phi(n)$ gives the number of integers between 1 and $n$ that are coprime with $n$. Therefore, if $n$ is prime, then $\phi(n) = n - 1$, and we have $a^{n-1} \equiv 1 \pmod{n}$ (Fermat).
-
-Euler's totient function is _multiplicative_, meaning that if two integers $p$ and $q$ are relatively prime, then $\phi(pq) = \phi(p) \times \phi(q) = (p-1)(q-1)$.
-
-A corollary to Euler's theorem&mdash;and one that is crucial to understanding the RSA algorithm&mdash;is that for any integers $x$ and $y$, $x \equiv y \pmod{\phi(n)}$ implies $a^x \equiv a^y \pmod{n}$, if $a$ is coprime to $n$. This is proven as follows:
-
-- $x \equiv y \pmod{\phi(n)}$
-- $x - y = \phi(n)k$, for some integer $k$
-- $x = y + \phi(n)k$
-- $a^x = a^{y+\phi(n)k} = a^y(a^{\phi(n)})^{k} \equiv a^y1^k \equiv a^y \pmod{n}$
-
-There are many proofs of Euler's theorem. The following is a generalization of the proof of [Fermat's little theorem](#fermats-little-theorem) presented above.
-
-## Proof:
-- Let $n$ be a positive integer (that is not necessarily prime)
-- Let $G$ be the set $\lbrace 1 \le a \le n-1 : gcd(a,n) = 1\rbrace$ (which in group theory is called _the multiplicative group modulo_ $n$).
-- Let $a$ be a member of this group
-- Let $k$ be the order $a$; i.e., the smallest integer such that $a^k \equiv 1 \pmod{n}$
-- Then the numbers $a, a^2, ..., a^k$ modulo $n$ form a subgroup of $G$ whose order is $k$
-- By LaGrange's theorem, $k$ divides the order of $G$, or $\phi(n)$
-- Then $\phi(n) = km$ for some integer $m$
-- Therefore, $a^{\phi(n)} = a^{km} = (a^{k})^m \equiv 1^m \equiv 1 \pmod n$
 
 # [Lagrange's Theorem](<https://en.wikipedia.org/wiki/Lagrange%27s_theorem_(group_theory)>)
 
