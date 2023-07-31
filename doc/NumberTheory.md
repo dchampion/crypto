@@ -52,7 +52,7 @@ If on the other hand $p$ is composite, and $p|ab$, then $p$ may divide either $a
 
 ## Proof
 
-- Let $p$ be a prime, and $a$ an integer coprime with $p$; i.e., $p$ does not divide $a$
+- Let $p$ be a prime, and $a$ an integer coprime with $p$
 - There are integers $x$ and $y$ such that $xp + ya = 1$ (this is [Bezout's identity](https://en.wikipedia.org/wiki/B%C3%A9zout%27s_identity))
 - Multiply both sides of this equation by $b$, giving $xpb + yab = b$
 - The term $xpb$ is divisible by $p$
@@ -63,9 +63,6 @@ If on the other hand $p$ is composite, and $p|ab$, then $p$ may divide either $a
 # [Fundamental Theorem of Arithmetic](https://en.wikipedia.org/wiki/Fundamental_theorem_of_arithmetic)
 
 All integers greater than $1$ are the product of a unique set of primes. For example, $3$ and $5$ are the unique prime factors of $15$; and $2$, $2$, $3$ and $5$ are the unique prime factors $60$.
-
-## Proof
-- If a prime divides the product of two integers, then it must divide at least one of these integers (proven by Euclid's lemma)
 
 # [Miller&ndash;Rabin Theorem](https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test) 
 
@@ -232,7 +229,7 @@ This is because if $a$ and $n$ are coprime, by the [rule of cancellation](#rule-
 - $a^{\phi(n)+1} \times a^{-1} \equiv a \times a^{-1} \pmod{n}$
 - $a^{\phi(n)} \equiv 1 \pmod{n}$
 
-Conversely, $a^{\phi(n)} \equiv 1 \pmod{n}$ does _not_ hold if $a$ and $n$ are not coprime (that is, if $a$ divides $n$, or $n$ divides $a$).
+Conversely, $a^{\phi(n)} \equiv 1 \pmod{n}$ does _not_ hold if $a$ and $n$ are not coprime.
 
 To summarize, $a^{\phi(n)} \equiv 1 \pmod{n}$ holds if $a$ and $n$ are coprime integers.
 
@@ -242,7 +239,7 @@ Recall that $\phi(n)$ gives the number of integers between $1$ and $n$ that are 
 
 Euler's totient function is _multiplicative_, meaning that if two integers $p$ and $q$ are relatively prime, then $\phi(pq) = \phi(p) \times \phi(q) = (p-1)(q-1)$.
 
-There are many proofs of Euler's theorem, including a generalized version of the proof of [Fermat's little theorem](#fermats-little-theorem) presented above. The following proof uses [LaGrange's theorem](#lagranges-theorem).
+There are many proofs of Euler's theorem, including a generalized version of the proof of [Fermat's little theorem](#fermats-little-theorem) presented above. The following proof uses [Lagrange's theorem](#lagranges-theorem).
 
 ## Proof:
 - Let $n$ be a positive integer (that is not necessarily prime)
@@ -250,7 +247,7 @@ There are many proofs of Euler's theorem, including a generalized version of the
 - Let $a$ be a member of this group
 - Let $k$ be the order $a$; i.e., the smallest integer such that $a^k \equiv 1 \pmod{n}$
 - Then the numbers $a, a^2, ..., a^k$ modulo $n$ form a subgroup of $G$ whose order is $k$
-- By LaGrange's theorem, $k$ divides the order of $G$, or $\phi(n)$
+- By Lagrange's theorem, $k$ divides the order of $G$, or $\phi(n)$
 - Then $\phi(n) = km$ for some integer $m$
 - Therefore, $a^{\phi(n)} = a^{km} = (a^{k})^m \equiv 1^m \equiv 1 \pmod n$
 
