@@ -160,7 +160,7 @@ Further, if $a$ is not a multiple of $p$, then the following also holds:
 
 $a^{p-1} \equiv 1 \pmod{p}$
 
-This is because if $a$ is not a multiple of $p$, then $a$ and $p$ are coprime, and by the [rule of cancellation](#rule-of-cancellation) the first relation can be transformed to the second in the following way:
+This is because if $a$ is not a multiple of $p$, then $a$ and $p$ are coprime, and by the [_rule of cancellation_](#rule-of-cancellation) the first relation can be transformed to the second in the following way:
 
 - $a^p \equiv a \pmod{p}$
 - $a^p \times a^{-1} \equiv a \times a^{-1} \pmod{p}$
@@ -168,21 +168,21 @@ This is because if $a$ is not a multiple of $p$, then $a$ and $p$ are coprime, a
 
 Conversely, $a^{p-1} \equiv 1 \pmod{p}$ does _not_ hold if $a$ is a multiple of $p$. In that case, $a^{p-1} \equiv 0 \pmod{p}$.
 
-To summarize, $a^{p-1} \equiv 1 \pmod{p}$ holds if $a$ and $p$ are integers, $p$ is prime, $0 < a < p$, or if $a > p$, $p$ does not divide $a$.
+To summarize, $a^{p-1} \equiv 1 \pmod{p}$ holds if $a$ and $p$ are integers, $p$ is prime, $0 < a < p$ or, if $a > p$, $p$ does not divide $a$.
 
 ## Proof:
-Consider the set of integers modulo a prime $p$; i.e., $1, 2, 3, ..., p-1$. This set forms a [group](#groups) under multiplication. Consider a second set $1a, 2a, 3a, ..., (p-1)a$, where $a$ is some element from the first set. Since all integers modulo $p$ are in the set $1, 2, 3, ..., (p-1)$, all elements of the second set, when reduced modulo $p$, must exist in the first set. Further, if we assume that the elements of the second set are a [rearrangement](#rearrangement) of the elements of first set, then we have:
+Consider the set of integers modulo a prime $p$ that are also coprime with $p$ (recall for a prime $p$, this is every postitive integer that is _not_ a multiple of $p$). This set consists of the integers $1, 2, 3, ..., p-1$, and forms a [_group_](#groups) under multiplication. Consider a second set $1a, 2a, 3a, ..., (p-1)a$, where $a$ is some element from the first set. Since all integers modulo $p$ (and coprime with $p$) are in the set $1, 2, 3, ..., (p-1)$, all elements of the second set, when reduced modulo $p$, must exist in the first set. Further, if we assume that the elements of the second set are a [_rearrangement_](#rearrangement) of the elements of first set, then we have:
 
 - $a \times 2a \times 3a \times ... \times (p-1)a \equiv 1 \times 2 \times 3 \times ... \times (p-1) \pmod{p}$
 - $a^{p-1}(p-1)! \equiv (p-1)! \pmod{p}$
 - $a^{p-1} \equiv 1 \pmod{p}$
 
-This completes the proof. Note that it is permissible to remove the term $(p-1)!$ from both sides of the relation by the [rule of cancellation](#rule-of-cancellation).
+This completes the proof. Note that it is permissible to remove the term $(p-1)!$ from both sides of the relation by the [_rule of cancellation_](#rule-of-cancellation).
 
 ### Rearrangement
-Consider the set of integers modulo a prime $p$; i.e., $1, 2, 3, ..., p-1$. Consider a  second set modulo $p$ that consists of the elements $1a, 2a, 3a, ..., (p-1)a$, where $a$ is some element from the first set. Then the elements of the second set are a _rearrangement_ of the elements of the first set.
+Consider the set of integers modulo a prime $p$ and coprime with $p$; i.e., $1, 2, 3, ..., p-1$. Consider a  second set modulo $p$ that consists of the elements $1a, 2a, 3a, ..., (p-1)a$, where $a$ is some element from the first set. Then the elements of the second set are a _rearrangement_ of the elements of the first set.
 
-First we must prove that all elements of the second set exist in the first set. Let $k$ be some element of the first set, which by definition is coprime with $p$. Since $a$ also comes from the first set, it too is coprime with $p$. By [Euclid's lemma](#euclids-lemma), the product of $k$ and $a$ must also be coprime with $p$. Therefore, all elements from the second set, when reduced modulo $p$, must exist in the first set.
+First we must prove that all elements of the second set exist in the first set. Let $k$ be some element of the first set, which by definition is coprime with $p$ (because it is less than $p$ and the only divisors of $p$ are $1$ and $p$ itself). Since $a$ also comes from the first set, it too is coprime with $p$ . By [Euclid's lemma](#euclids-lemma), the product of $k$ and $a$ must also be coprime with $p$. Therefore, all elements from the second set, when reduced modulo $p$, must exist in the first set.
 
 Second, we must prove that all elements of the second set are _distinct_. Let $k$ and $m$ be elements from the first set. Then we can write:
 
