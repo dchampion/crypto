@@ -53,11 +53,15 @@ If on the other hand $p$ is composite, and $p|ab$, then $p$ may divide either $a
 ## Proof
 
 - Let $p$ be a prime, and $a$ an integer coprime with $p$
-- There are integers $x$ and $y$ such that $xp + ya = 1$ (this is [Bezout's identity](https://en.wikipedia.org/wiki/B%C3%A9zout%27s_identity))
-- Multiply both sides of this equation by $b$, giving $xpb + yab = b$
-- The term $xpb$ is divisible by $p$
-- The term $yab$ is divisible by $ab$
-- Since $p|ab$, the sum of $xpb$ and $yab$, or $b$, is also divisible by $p$
+- Then there are integers $x$ and $y$ such that $ax + py = 1$ (this is given by [Bezout's identity](https://en.wikipedia.org/wiki/B%C3%A9zout%27s_identity))
+- Multiply both sides of this identity by $b$, giving $b(ax + py) = b$
+- Distribute over addition, giving $bax + bpy = b$
+- The term $bpy$ is self-evidently divisible by $p$
+- The term $bax$ is also divisible $p$; this is because $bax$ is divisible by $ab$, and we started with the premise that $ab$ is divisible by $p$
+- Since $bpy$ and $bax$ are both divisible by $p$, their sum must also be divisible by $p$
+- Therefore, since $b$ equals the sum of $bax$ and $bpy$, and the sum of $bax$ and $bpy$ is divisible by $p$, then $b$ must also be divisible by $p$
+
+In summary, if $p$ divides $ab$, and $p$ does not divide $a$ (which we state in the first step of the proof), then $p$ must divide $b$.
 
 
 # [Fundamental Theorem of Arithmetic](https://en.wikipedia.org/wiki/Fundamental_theorem_of_arithmetic)
