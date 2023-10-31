@@ -22,7 +22,7 @@ The symbol $\equiv$ denotes a congruence relation (which in effect tranlates to 
 
 The symbol $\phi$ (the letter _phi_ in the Greek alphabet) denotes [_Euler's Totient Funtion_](https://en.wikipedia.org/wiki/Euler%27s_totient_function), as in $\phi(n)$, where $n$ is some integer. For any integer $n$, $\phi(n)$ gives the number of integers between $1$ and $n$ that are [_coprime_](https://en.wikipedia.org/wiki/Coprime_integers), or [_relatively prime_](https://en.wikipedia.org/wiki/Coprime_integers), to $n$.
 
-# Transitivity of Divisors Lemma
+# Transitivity of Divisors
 
 If $a|b$ and $b|c$, then $a|c$.
 
@@ -32,17 +32,17 @@ If $a|b$ and $b|c$, then $a|c$.
 - If $b|c$, then there is an integer $l$ such that $bl = c$
 - Therefore, $c = bl = (ak)l = a(kl)$
 
-# Prime Factors Lemma
+# Prime Factors
 
 Let $n$ be an integer greater than $1$. Let $d$ be the smallest divisor of $n$ that is greater than $1$. Then $d$ is prime.
 
 ## Proof (by contradiction):
 
 - $n$ is a divisor of $n$, and $n > 1$; therefore, there is at least one divisor of $n$ that is greater than $1$, and there must also be a smallest divisor of $n$ that is greater than $1$
-- Assume $d$ is not a prime (contradiction)
+- Assume $d$ is not a prime
 - If $d$ is not a prime, it has a divisor $e$ such that $1 < e < d$
-- If $e|d$ and $d|n$, then $e|n$ (proven by transitivity of divisors lemma)
-- So $e$ is a divisor of $n$, and $e$ is also smaller than $d$; but $d$ is the smallest divisor of $n$
+- If $e|d$ and $d|n$, then $e|n$ (see [Transitivity of Divisors](#transitivity-of-divisors))
+- So $e$ is a divisor of $n$, and $e$ is also smaller than $d$; but $d$ is the smallest divisor of $n$ (this is a contradiction)
 
 # [Euclid's Lemma](https://en.wikipedia.org/wiki/Euclid%27s_lemma)
 
@@ -57,31 +57,92 @@ If on the other hand $p$ is composite, and $p|ab$, then $p$ may divide either $a
 - Multiply both sides of this identity by $b$, giving $b(ax + py) = b$
 - Distribute over addition, giving $bax + bpy = b$
 - The term $bpy$ is self-evidently divisible by $p$
-- The term $bax$ is also divisible $p$; this is because $bax$ is divisible by $ab$, and we started with the premise that $ab$ is divisible by $p$
+- The term $bax$ is also divisible $p$ (this is given by the [Transitivity of Divisors](#transitivity-of-divisors-lemma); i.e., if $p|ab$, and $ab|bax$, then $p|bax$)
 - Since $bpy$ and $bax$ are both divisible by $p$, their sum must also be divisible by $p$
 - Therefore, since $b$ equals the sum of $bax$ and $bpy$, and the sum of $bax$ and $bpy$ is divisible by $p$, then $b$ must also be divisible by $p$
 
-In summary, if $p$ divides $ab$, and $p$ does not divide $a$ (which we state in the first step of the proof), then $p$ must divide $b$.
+In summary, if a prime $p$ divides $ab$, and $p$ does not divide $a$ (which is another way of stating that $a$ is coprime with $p$, as given in the first step of the proof), then $p$ must divide $b$.
+
+## Corollary
+
+If $p$ is prime, then the only possible square roots of $1$ modulo $p$ are $1$ and $-1$.
+
+This is useful because it is used to test very large integers for primality (see subsection [_Finding Large Primes_](#finding-large-primes) for a more thorough discussion).
+
+## Proof
+- Let $a^2 \equiv 1 \pmod{p}$, giving that $a$ is the square root of $1$ modulo $p$
+- Subtract $1$ from both sides of the relation, giving $a^2 - 1 \equiv 0 \pmod{p}$
+- Thus, $p$ divides $a^2-1$
+- Factor the term $a^2 - 1$ into $(a+1)(a-1)$
+- Thus, $p$ divides $(a+1)(a-1)$
+- Since $p$ is prime, then $p$ divides either $(a+1)$ or $(a-1)$ (given by [Euclid's lemma](#euclids-lemma))
+- Therefore, $a$ is congruent to either $1$ or $-1$ modulo $p$
 
 
 # [Fundamental Theorem of Arithmetic](https://en.wikipedia.org/wiki/Fundamental_theorem_of_arithmetic)
 
 All integers greater than $1$ are the product of a unique set of primes. For example, $3$ and $5$ are the unique prime factors of $15$; and $2$, $2$, $3$ and $5$ are the unique prime factors $60$.
 
-# [Miller&ndash;Rabin Theorem](https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test) 
+## Proof (by contradiction)
 
-If $p$ is prime, then the only possible square roots of $1$ modulo $p$ are either $1$ or $-1$.
+- Let $n$ be the smallest integer with two distinct prime factorizations, such that $n = p_{1} \times p_{2} \times p_{3} ...\times p_{j} = q_{1} \times q_{2} \times q_{3} ...\times q_{k}$
+- Since $p_{1}$ divides $q_{1} \times q_{2} \times q_{3} ...\times q_{k}$, $p_{1}$ must divide some $q_{i}$ (given by [Euclid's Lemma](#euclids-lemma))
+- Suppose $p_{1}$ divides $q_{1}$
+- Since $p_{1}$ and $q_{1}$ are both prime, it must be the case that $p_{1} = q_{1}$
+- Cancel these factors to produce $p_{2} \times p_{3} ...\times p_{j} = q_{2} \times q_{3} ...\times q_{k}$
+- We now have two distinct factorizations of an integer smaller than $n$, but $n$ is the smallest integer with two distinct factorizations (this is a contradiction)
 
-This is technically just a specialization of Euclid's lemma; it is important because it is used to test very large integers for primality (see subsection [_Finding Large Primes_](#finding-large-primes) for a more thorough discussion).
+# [Euclid's Theorem](https://en.wikipedia.org/wiki/Euclid%27s_theorem)
+
+There are an infinite number of primes.
+
+## Proof (by contradiction)
+
+- Assume the number of primes is finite
+- Let $n$ be the product of the following set, plus $1$; that is, $p_{1} \times p_{2} \times p_{3} ...\times p_{k} + 1$, where $k$ is the number of primes
+- Let $d$ be the smallest divisor of $n$, which must be prime (given by [Prime Factors](#prime-factors))
+- None of the primes in the set is a divisor of $n$ (they are instead divisors of $n - 1$); therefore, dividing $n$ by any $p$ in the set leaves a remainder of $1$
+- Therefore, $d$ is prime and it is not in the set (this is a contradiction)
+
+# Finding Large Primes
+Primality&ndash;testing algorithms based on trial division are not feasible for primes of the size necessary for use in cryptographic applications. Even though the time complexity of these algorithms is linear, their candidate inputs are so large that even linear&ndash;time algorithms are too slow. (How slow? they would require many millions of years to complete on a classical computer.)
+
+However, combining some theorems and lemmas from above, we can identify very large primes using an algorithm of logarithmic time complexity. Perhaps the most famous of these is the [Miller&ndash;Rabin](https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test) algorithm, which in its accepted form was developed by Michael Rabin in 1980. Rabin's variant is probabalistic, and builds on a deterministic version of the algorithm developed by Gary Miller in 1976.
+
+## Lemmas Used in Miller&ndash;Rabin
+
+- [Fermat's little theorem](#fermats-little-theorem), which states that if $p$ is prime, then $a^{p-1} \equiv 1 \pmod{p}$, where $1 < a < p$.
+- [Euclid's lemma](#euclids-lemma), which states that if $p$ is prime, and $p|ab$, where $ab$ is the product of two integers $a$ and $b$, then $p$ must divide either $a$ or $b$.
+
+## Miller&ndash;Rabin
+
+If Miller&ndash;Rabin were a theorem, it would state that if $p$ is prime, then the square root of $1$ modulo $p$ is either $1$ or $-1$. Conversely, if the square root of $p$ modulo $1$ is neither $1$ nor $-1$, then $p$ must be composite (see [corollary to Euclid's Lemma](#corollary) for a more general proof).
+
+### Proof
+
+- By Fermat, we have that if $p$ is prime, then $a^{p-1} \equiv 1 \pmod{p}$
+- If we subtract $1$ from both sides of this relation, we get $a^{p-1} - 1 \equiv 0 \pmod{p}$
+- Therefore, $p$ divides $a^{p-1} - 1$
+- The square root of $a^{p-1}$ is $a^{(p-1)/2}$, so by the difference of squares we can rewrite $a^{p-1} - 1$ as $(a^{(p-1)/2} + 1)(a^{(p-1)/2} - 1)$
+- By Euclid, we have that if $p$ is prime, then $p$ divides at least one of the terms $(a^{(p-1)/2} + 1)$ or $(a^{(p-1)/2} - 1)$
+- Therefore, the square root of $a^{p-1}$, or $a^{(p-1)/2}$, is congruent to either $1$ or $-1$ modulo $p$
+
+Stated generally, if $p$ is prime, then the square root of $a^{p-1}$ (which by Fermat we know to be congruent to $1$ modulo $p$) must either also be congruent to $1$ modulo $p$ or, if it is not, then it must be congruent to $-1$ modulo $p$.
+
+Specifically, with regard to the Miller&ndash;Rabin algorithm, if the square root of $a^{p-1}$ is _not_ congruent to either $1$ or $-1$ modulo $p$, then $p$ must be composite. We can use this fact to test for the compositeness of an integer that runs in logarithmic time in the size of the input.
+
+# [Difference of Two Squares](https://en.wikipedia.org/wiki/Difference_of_two_squares)
+
+Every odd number $n$ can be expressed as the difference of two squares, such that $n=b^2-a^2$ for two integers $a$ and $b$.
 
 ## Proof
-- Let $a^2 \equiv 1 \pmod{p}$, giving that $a$ is the square root of $1$ modulo $p$
-- Subtract $1$ from both sides of the relation, giving $a^2 - 1 \equiv 0 \pmod{p}$
-- Thus, $p$ divides $a^2-1$
-- Factor the term $a^2 - 1$ into the difference of its squares, giving $(a+1)(a-1)$
-- Thus, $p$ divides $(a+1)(a-1)$
-- Since $p$ is prime, then $p$ divides either $(a+1)$ or $(a-1)$ (proven by [Euclid's lemma](#euclids-lemma))
-- Therefore, $a$ is congruent to either $1$ or $-1$ modulo $p$
+- If $n$ is an odd integer, then $n = 2k+1$ trivially for some integer $k$
+- By the difference of squares, $n = b^2 - a^2$ for two integers $a$ and $b$
+- Let $a=k$ and $b=(k+1)$
+- Then $n = (k+1)^2 - k^2$
+- $n = (k+1)(k+1) - k^2$
+- $n = k^2 + 2k+1 - k^2$
+- $n = 2k+1$
 
 # [Fermat's Factorization Algorithm](https://en.wikipedia.org/wiki/Fermat%27s_factorization_method)
 
@@ -95,7 +156,7 @@ Note that if $n$ is an RSA modulus it cannot be even; otherwise one of its facto
 4. If $b$ is _not_ a perfect square, set $a=a+1$ and go to step 3; otherwise, $(a+b)$ and $(a-b)$ are the factors of $n$ and we're done
 5. Repeat steps 3 and 4 until $b$ is a perfect square, or a sensible number of attempts has been made.
 
-Fermat's factorization algorithm is based on the fact that any odd integer $n$ can be expressed as the [difference of two consecutive squares](#difference-of-two-squares), i.e., $n = a^2 - b^2$ for two consecutive integers $b$ and $a$. The right&ndash;hand side of this equation can be factored into $(a+b)(a-b)$. And if $(a+b) \ne 1$ and $(a-b) \ne 1$, then $(a+b)(a-b)$ is a nontrivial factorization of $n$.
+Fermat's factorization algorithm is based on the fact that any odd integer $n$ can be expressed as the [difference of two squares](#difference-of-two-squares), i.e., $n = b^2 - a^2$ for two integers $a$ and $b$. The right&ndash;hand side of this equation can be factored into $(b+a)(b-a)$. And if $(b+a) \ne 1$ and $(b-a) \ne 1$, then $(b+a)(b-a)$ is a nontrivial factorization of $n$.
 
 # [Shor's Factorization Algorithm](https://en.wikipedia.org/wiki/Shor%27s_algorithm)
 
@@ -129,30 +190,6 @@ Step 5&mdash;which is the order&ndash;finding part of the algorithm&mdash;is the
 * Therefore, the prime factors of $n$ must share factors with $(s-1)$ and $(s+1)$
 * Let $p=gcd(n,s-1)$ and $q=gcd(n,s+1)$
 * Then $p$ and $q$ are the prime factors of $n$
-
-# [Difference of Two Squares](https://en.wikipedia.org/wiki/Difference_of_two_squares)
-Every odd number $n$ can be expressed as the difference of two consecutive squares, such that $n=a^2-b^2$ for two consecutive integers $b$ and $a$.
-
-## Proof
-- If $n$ is an odd integer, then $n = 2k+1$ trivially for some integer $k$
-- By the difference of squares, $n = a^2 - b^2$ for two consecutive integers $b$ and $a$
-- Let $a=(k+1)$ and $b=k$
-- Then $n = (k+1)^2 - k^2$
-- $n = (k+1)(k+1) - k^2$
-- $n = k^2 + 2k+1 - k^2$
-- $n = 2k+1$
-
-# [Euclid's Theorem](https://en.wikipedia.org/wiki/Euclid%27s_theorem)
-
-There are an infinite number of primes.
-
-## Proof (by contradiction):
-
-- Assume the number of primes is finite
-- Let $n$ be the product of the following set, plus $1$; that is, $p_{1} \times p_{2} \times p_{3} ...\times p_{k} + 1$, where $k$ is the number of primes
-- Let $d$ be the smallest divisor of $n$, which must be prime (proven by prime factors lemma)
-- None of the primes in the set is a divisor of $n$ (they are instead divisors of $n - 1$); therefore, dividing $n$ by any $p$ in the set leaves a remainder of $1$
-- Therefore, $d$ is prime and it is not in the set (contradiction)
 
 # [Fermat's Little Theorem](https://en.wikipedia.org/wiki/Fermat%27s_little_theorem)
 
@@ -261,33 +298,6 @@ A corollary to Euler's theorem&mdash;and one that is crucial to understanding th
 - $x - y = \phi(n)k$, for some integer $k$
 - $x = y + \phi(n)k$
 - $a^x = a^{y+\phi(n)k} = a^y(a^{\phi(n)})^{k} \equiv a^y1^k \equiv a^y \pmod{n}$
-
-# Finding Large Primes
-Primality&ndash;testing algorithms based on trial division are not feasible for primes of the size necessary for use in cryptographic applications. Even though the time complexity of these algorithms is linear, their candidate inputs are so large that even linear&ndash;time algorithms are too slow. (How slow? they would require many times the age of the universe to complete.)
-
-However, combining some theorems and lemmas from above, we can identify very large primes using an algorithm of logarithmic time complexity. Perhaps the most famous of these is the [Miller&ndash;Rabin](https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test) algorithm, which in its accepted form was developed by Michael Rabin in 1980. Rabin's variant is probabalistic, and builds on a deterministic version of the algorithm developed by Gary Miller in 1976.
-
-## Lemmas Used in Miller&ndash;Rabin
-
-- Fermat's little theorem, which states that if $p$ is prime, then $a^{p-1} \equiv 1 \pmod{p}$, where $1 < a < p$.
-- Euclid's lemma, which states that if $p$ is prime, and $p|ab$, where $ab$ is the product of two integers $a$ and $b$, then $p$ must divide either $a$ or $b$.
-
-## Miller&ndash;Rabin
-
-If Miller&ndash;Rabin were a theorem, it would state that if $p$ is prime, then the square root of $1$ modulo $p$ is either $1$ or $-1$. Conversely, if the square root of $p$ modulo $1$ is neither $1$ nor $-1$, then $p$ must be composite (see subsection [_Miller&ndash;Rabin Theorem_](#miller–rabin-theorem) for a more general proof).
-
-### Proof
-
-- By Fermat, we have that if $p$ is prime, then $a^{p-1} \equiv 1 \pmod{p}$
-- If we subtract $1$ from both sides of this relation, we get $a^{p-1} - 1 \equiv 0 \pmod{p}$
-- Therefore, $p$ divides $a^{p-1} - 1$
-- The square root of $a^{p-1}$ is $a^{(p-1)/2}$, so by the difference of squares we can rewrite $a^{p-1} - 1$ as $(a^{(p-1)/2} + 1)(a^{(p-1)/2} - 1)$
-- By Euclid, we have that if $p$ is prime, then $p$ divides at least one of the terms $(a^{(p-1)/2} + 1)$ or $(a^{(p-1)/2} - 1)$
-- Therefore, the square root of $a^{p-1}$, or $a^{(p-1)/2}$, is congruent to either $1$ or $-1$ modulo $p$
-
-Stated generally, if $p$ is prime, then the square root of $a^{p-1}$ (which by Fermat we know to be congruent to $1$ modulo $p$) must either also be congruent to $1$ modulo $p$ or, if it is not, then it must be congruent to $-1$ modulo $p$.
-
-Specifically, with regard to the Miller&ndash;Rabin algorithm, if the square root of $a^{p-1}$ is _not_ congruent to either $1$ or $-1$ modulo $p$, then $p$ must be composite. We can use this fact to test for the compositeness of an integer that runs in logarithmic time in the size of the input.
 
 # [Lagrange's Theorem](<https://en.wikipedia.org/wiki/Lagrange%27s_theorem_(group_theory)>)
 
