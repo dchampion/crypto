@@ -20,7 +20,7 @@ The symbol | means _divides_. For example, given two integers $a$ and $b$, $a|b$
 
 The symbol $\equiv$ denotes a congruence relation (which in effect tranlates to _is equivalent to_). For example, $a \equiv b \pmod{c}$ means $a$ is congruent to $b$ modulo $c$, where $a$, $b$ and $c$ are all integers. In such a relation, $a - b$ is a multiple of $c$; or, more formally, $a - b = kc$ for some integer $k$.
 
-The symbol $\phi$ (the letter _phi_ in the Greek alphabet) denotes [_Euler's Totient Funtion_](https://en.wikipedia.org/wiki/Euler%27s_totient_function), as in $\phi(n)$, where $n$ is some integer. For any integer $n$, $\phi(n)$ gives the number of integers between $1$ and $n$ that are [_coprime_](https://en.wikipedia.org/wiki/Coprime_integers), or [_relatively prime_](https://en.wikipedia.org/wiki/Coprime_integers), to $n$.
+The symbol $\phi$ (the letter _phi_ in the Greek alphabet) denotes [Euler's Totient Funtion](https://en.wikipedia.org/wiki/Euler%27s_totient_function), as in $\phi(n)$, where $n$ is some integer. For any integer $n$, $\phi(n)$ gives the number of integers between $1$ and $n$ that are [coprime](https://en.wikipedia.org/wiki/Coprime_integers), or [relatively prime](https://en.wikipedia.org/wiki/Coprime_integers), to $n$.
 
 # Transitivity of Divisors
 
@@ -39,7 +39,7 @@ Let $n$ be an integer greater than $1$. Let $d$ be the smallest divisor of $n$ t
 ## Proof (by contradiction):
 
 - $n$ is a divisor of $n$, and $n > 1$; therefore, there is at least one divisor of $n$ that is greater than $1$, and there must also be a smallest divisor of $n$ that is greater than $1$
-- Assume $d$ is not a prime
+- Assume $d$ is _not_ a prime
 - If $d$ is not a prime, it has a divisor $e$ such that $1 < e < d$
 - If $e|d$ and $d|n$, then $e|n$ (see [Transitivity of Divisors](#transitivity-of-divisors))
 - So $e$ is a divisor of $n$, and $e$ is also smaller than $d$; but $d$ is the smallest divisor of $n$ (this is a contradiction)
@@ -48,26 +48,26 @@ Let $n$ be an integer greater than $1$. Let $d$ be the smallest divisor of $n$ t
 
 If $p$ is prime, and $p|ab$, where $ab$ is the product of two integers $a$ and $b$, then $p$ must divide either $a$ or $b$.
 
-If on the other hand $p$ is composite, and $p|ab$, then $p$ may divide either $a$ or $b$. For example, if $p=10$, $a=4$ and $b=25$, then $p$ divides neither $a$ nor $b$ individually, but it divides $ab$.
+Conversely, if $p$ is composite, and $p|ab$, then $p$ may or may not divide $a$ or $b$. For example, if $p=10$, $a=4$ and $b=25$, then $p$ divides neither $a$ nor $b$ individually, but it divides $ab$.
 
 ## Proof
 
 - Let $p$ be a prime, and $a$ an integer coprime with $p$
 - Then there are integers $x$ and $y$ such that $ax + py = 1$ (this is given by [Bezout's identity](https://en.wikipedia.org/wiki/B%C3%A9zout%27s_identity))
 - Multiply both sides of this identity by $b$, giving $b(ax + py) = b$
-- Distribute over addition, giving $bax + bpy = b$
+- Distribute $b$ over addition, giving $bax + bpy = b$
 - The term $bpy$ is self-evidently divisible by $p$
-- The term $bax$ is also divisible $p$ (this is given by the [Transitivity of Divisors](#transitivity-of-divisors-lemma); i.e., if $p|ab$, and $ab|bax$, then $p|bax$)
+- The term $bax$ is also divisible $p$ (this is given by the [Transitivity of Divisors](#transitivity-of-divisors), because if $p|ab$, and $ab|bax$, then $p|bax$)
 - Since $bpy$ and $bax$ are both divisible by $p$, their sum must also be divisible by $p$
 - Therefore, since $b$ equals the sum of $bax$ and $bpy$, and the sum of $bax$ and $bpy$ is divisible by $p$, then $b$ must also be divisible by $p$
 
 In summary, if a prime $p$ divides $ab$, and $p$ does not divide $a$ (which is another way of stating that $a$ is coprime with $p$, as given in the first step of the proof), then $p$ must divide $b$.
 
-## Corollary
+## Corollary to Euclid's Lemma
 
 If $p$ is prime, then the only possible square roots of $1$ modulo $p$ are $1$ and $-1$.
 
-This is useful because it is used to test very large integers for primality (see subsection [_Finding Large Primes_](#finding-large-primes) for a more thorough discussion).
+This is useful because it is used to test very large integers for primality (see subsection [Finding Large Primes](#finding-large-primes) for a more thorough discussion).
 
 ## Proof
 - Let $a^2 \equiv 1 \pmod{p}$, giving that $a$ is the square root of $1$ modulo $p$
@@ -81,15 +81,17 @@ This is useful because it is used to test very large integers for primality (see
 
 # [Fundamental Theorem of Arithmetic](https://en.wikipedia.org/wiki/Fundamental_theorem_of_arithmetic)
 
-All integers greater than $1$ are the product of a unique set of primes. For example, $3$ and $5$ are the unique prime factors of $15$; and $2$, $2$, $3$ and $5$ are the unique prime factors $60$.
+All integers greater than $1$ are the product of a unique set of primes.
+
+For example, $3$ and $5$ are the unique prime factors of $15$; and $2$, $2$, $3$ and $5$ are the unique prime factors $60$.
 
 ## Proof (by contradiction)
 
-- Let $n$ be the smallest integer with two distinct prime factorizations, such that $n = p_{1} \times p_{2} \times p_{3} ...\times p_{j} = q_{1} \times q_{2} \times q_{3} ...\times q_{k}$
-- Since $p_{1}$ divides $q_{1} \times q_{2} \times q_{3} ...\times q_{k}$, $p_{1}$ must divide some $q_{i}$ (given by [Euclid's Lemma](#euclids-lemma))
+- Let $n$ be the smallest integer with two distinct prime factorizations, such that $n = p_{1} \times p_{2} \times p_{3} \times ... \times p_{j} = q_{1} \times q_{2} \times q_{3} \times ... \times q_{k}$
+- Since $p_{1}$ divides $q_{1} \times q_{2} \times q_{3} \times ... \times q_{k}$, $p_{1}$ must divide some $q_{i}$ (given by [Euclid's Lemma](#euclids-lemma))
 - Suppose $p_{1}$ divides $q_{1}$
 - Since $p_{1}$ and $q_{1}$ are both prime, it must be the case that $p_{1} = q_{1}$
-- Cancel these factors to produce $p_{2} \times p_{3} ...\times p_{j} = q_{2} \times q_{3} ...\times q_{k}$
+- Cancel these factors to produce $p_{2} \times p_{3} \times ... \times p_{j} = q_{2} \times q_{3} \times ... \times q_{k}$
 - We now have two distinct factorizations of an integer smaller than $n$, but $n$ is the smallest integer with two distinct factorizations (this is a contradiction)
 
 # [Euclid's Theorem](https://en.wikipedia.org/wiki/Euclid%27s_theorem)
@@ -99,97 +101,10 @@ There are an infinite number of primes.
 ## Proof (by contradiction)
 
 - Assume the number of primes is finite
-- Let $n$ be the product of the following set, plus $1$; that is, $p_{1} \times p_{2} \times p_{3} ...\times p_{k} + 1$, where $k$ is the number of primes
+- Let $n$ be the product of the following set, plus $1$; that is, $p_{1} \times p_{2} \times p_{3} \times ... \times p_{k} + 1$, where $k$ is the number of primes
 - Let $d$ be the smallest divisor of $n$, which must be prime (given by [Prime Factors](#prime-factors))
 - None of the primes in the set is a divisor of $n$ (they are instead divisors of $n - 1$); therefore, dividing $n$ by any $p$ in the set leaves a remainder of $1$
 - Therefore, $d$ is prime and it is not in the set (this is a contradiction)
-
-# Finding Large Primes
-Primality&ndash;testing algorithms based on trial division are not feasible for primes of the size necessary for use in cryptographic applications. Even though the time complexity of these algorithms is linear, their candidate inputs are so large that even linear&ndash;time algorithms are too slow. (How slow? they would require many millions of years to complete on a classical computer.)
-
-However, combining some theorems and lemmas from above, we can identify very large primes using an algorithm of logarithmic time complexity. Perhaps the most famous of these is the [Miller&ndash;Rabin](https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test) algorithm, which in its accepted form was developed by Michael Rabin in 1980. Rabin's variant is probabalistic, and builds on a deterministic version of the algorithm developed by Gary Miller in 1976.
-
-## Lemmas Used in Miller&ndash;Rabin
-
-- [Fermat's little theorem](#fermats-little-theorem), which states that if $p$ is prime, then $a^{p-1} \equiv 1 \pmod{p}$, where $1 < a < p$.
-- [Euclid's lemma](#euclids-lemma), which states that if $p$ is prime, and $p|ab$, where $ab$ is the product of two integers $a$ and $b$, then $p$ must divide either $a$ or $b$.
-
-## Miller&ndash;Rabin
-
-If Miller&ndash;Rabin were a theorem, it would state that if $p$ is prime, then the square root of $1$ modulo $p$ is either $1$ or $-1$. Conversely, if the square root of $p$ modulo $1$ is neither $1$ nor $-1$, then $p$ must be composite (see [corollary to Euclid's Lemma](#corollary) for a more general proof).
-
-### Proof
-
-- By Fermat, we have that if $p$ is prime, then $a^{p-1} \equiv 1 \pmod{p}$
-- If we subtract $1$ from both sides of this relation, we get $a^{p-1} - 1 \equiv 0 \pmod{p}$
-- Therefore, $p$ divides $a^{p-1} - 1$
-- The square root of $a^{p-1}$ is $a^{(p-1)/2}$, so by the difference of squares we can rewrite $a^{p-1} - 1$ as $(a^{(p-1)/2} + 1)(a^{(p-1)/2} - 1)$
-- By Euclid, we have that if $p$ is prime, then $p$ divides at least one of the terms $(a^{(p-1)/2} + 1)$ or $(a^{(p-1)/2} - 1)$
-- Therefore, the square root of $a^{p-1}$, or $a^{(p-1)/2}$, is congruent to either $1$ or $-1$ modulo $p$
-
-Stated generally, if $p$ is prime, then the square root of $a^{p-1}$ (which by Fermat we know to be congruent to $1$ modulo $p$) must either also be congruent to $1$ modulo $p$ or, if it is not, then it must be congruent to $-1$ modulo $p$.
-
-Specifically, with regard to the Miller&ndash;Rabin algorithm, if the square root of $a^{p-1}$ is _not_ congruent to either $1$ or $-1$ modulo $p$, then $p$ must be composite. We can use this fact to test for the compositeness of an integer that runs in logarithmic time in the size of the input.
-
-# [Difference of Two Squares](https://en.wikipedia.org/wiki/Difference_of_two_squares)
-
-Every odd number $n$ can be expressed as the difference of two squares, such that $n=b^2-a^2$ for two integers $a$ and $b$.
-
-## Proof
-- If $n$ is an odd integer, then $n = 2k+1$ trivially for some integer $k$
-- By the difference of squares, $n = b^2 - a^2$ for two integers $a$ and $b$
-- Let $a=k$ and $b=(k+1)$
-- Then $n = (k+1)^2 - k^2$
-- $n = (k+1)(k+1) - k^2$
-- $n = k^2 + 2k+1 - k^2$
-- $n = 2k+1$
-
-# [Fermat's Factorization Algorithm](https://en.wikipedia.org/wiki/Fermat%27s_factorization_method)
-
-Attempts to factor a composite odd integer $n$, where $n$ is the product of exactly two distinct prime factors $p$ and $q$ (e.g., an RSA modulus). If $n$ can be factored using this algorithm, then the difference of its factors is too small, and the factors therefore cryptographically weak. Suitable factors of an RSA modulus should be distant enough to defeat this algorithm for a sufficiently long run time.
-
-Note that if $n$ is an RSA modulus it cannot be even; otherwise one of its factors would be $2$.
-
-1. Set $i$ to the integer floor of the square root of $n$
-2. Set $a=i+1$
-3. Set $b=a^2 - n$
-4. If $b$ is _not_ a perfect square, set $a=a+1$ and go to step 3; otherwise, $(a+b)$ and $(a-b)$ are the factors of $n$ and we're done
-5. Repeat steps 3 and 4 until $b$ is a perfect square, or a sensible number of attempts has been made.
-
-Fermat's factorization algorithm is based on the fact that any odd integer $n$ can be expressed as the [difference of two squares](#difference-of-two-squares), i.e., $n = b^2 - a^2$ for two integers $a$ and $b$. The right&ndash;hand side of this equation can be factored into $(b+a)(b-a)$. And if $(b+a) \ne 1$ and $(b-a) \ne 1$, then $(b+a)(b-a)$ is a nontrivial factorization of $n$.
-
-# [Shor's Factorization Algorithm](https://en.wikipedia.org/wiki/Shor%27s_algorithm)
-
-Attempts to factor a composite odd integer $n$, where $n$ is the product of exactly two distinct prime factors $p$ and $q$ (e.g., an RSA modulus).
-
-In 1994, Peter Shor proposed a theoretical version of this algorithm that would run in polynomial time on a sufficiently powerful quantum computer. At the time of this writing, no such computer yet exists. The algorithm can nevertheless be executed on a classical computer, albeit with an exponential running time.
-
-The algorithm reduces the problem of factoring to one of order&ndash;finding, and leverages the fact that the order of any element in the finite multiplicative group of integers modulo $n$ divides the order of $n$.
-
-The classical version runs as follows:
-
-1. Set $a$ to a value randomly selected from the range $[2..n-1]$
-2. Set $g = gcd(a,n)$
-3. If $g \ne 1$, then $g$ and $n/g$ are the nontrivial factors of $n$ and we are done
-4. Set $r = 1$
-5. While $a^r \bmod n \ne 1$, set $r = r+1$
-6. If $r$ is even, set $s$ = $a^{r/2} \bmod n$; otherwise, return to step 1
-7. If $s \ne n-1$, then $gcd(s-1, n)$ and $gcd(s+1,n)$ are the nontrivial factors of $n$ and we are done; otherwise, return to step 1.
-
-Step 5&mdash;which is the order&ndash;finding part of the algorithm&mdash;is the bottleneck, and would take millions of years to run against a proper RSA modulus on even the most powerful classical computer. On a sufficiently large quantum computer, however, the order of $a$ can be identified in polynomial time using a quantum fourier transform.
-
-## Proof
-
-* Let $n$ be a semiprime integer
-* Let $r$ be the smallest integer such that $a^r \equiv 1 \pmod n$ for some integer $a$, where $1 < a < n$ (if $r$ is odd, start over with another $a$)
-* Therefore, $n$ divides $a^r - 1$; incidentally, also note that $r$ divides $\phi(n)$
-* Let $s = a^{r/2}$; i.e., the square root of $a^r$
-* It cannot be the case that $s \equiv 1 \pmod n$, because $a^r \equiv 1 \pmod n$, and $r$ is the smallest integer such that $a^r \equiv 1 \pmod n$
-* If it is the case that $s \equiv -1 \pmod n$, then $n$ divides $s+1$, and $s+1$ is a trivial factor of $n$
-* Otherwise, $s \not \equiv 1 \pmod n$ and $s \not \equiv -1 \pmod n$, and therefore neither $s-1$ nor $s+1$ is a multiple of $n$, but their product is; i.e., $a^r-1 = (a^{r/2}-1)(a^{r/2}+1) = (s-1)(s+1) \equiv 0 \pmod n$ (see [Euclid's lemma](#euclids-lemma))
-* Therefore, the prime factors of $n$ must share factors with $(s-1)$ and $(s+1)$
-* Let $p=gcd(n,s-1)$ and $q=gcd(n,s+1)$
-* Then $p$ and $q$ are the prime factors of $n$
 
 # [Fermat's Little Theorem](https://en.wikipedia.org/wiki/Fermat%27s_little_theorem)
 
@@ -201,7 +116,7 @@ Further, if $a$ is not a multiple of $p$, then the following also holds:
 
 $a^{p-1} \equiv 1 \pmod{p}$
 
-This is because if $a$ is not a multiple of $p$, then $a$ and $p$ are coprime, and by the [_rule of cancellation_](#rule-of-cancellation) the first relation can be transformed to the second in the following way:
+This is because if $a$ is not a multiple of $p$, then $a$ and $p$ are coprime, and by the [rule of cancellation](#rule-of-cancellation) the first relation can be transformed to the second in the following way:
 
 - $a^p \equiv a \pmod{p}$
 - $a^p \times a^{-1} \equiv a \times a^{-1} \pmod{p}$
@@ -218,7 +133,7 @@ Consider the set of integers modulo a prime $p$ that are also coprime with $p$ (
 - $a^{p-1}(p-1)! \equiv (p-1)! \pmod{p}$
 - $a^{p-1} \equiv 1 \pmod{p}$
 
-This completes the proof. Note that it is permissible to remove the term $(p-1)!$ from both sides of the relation by the [_rule of cancellation_](#rule-of-cancellation).
+This completes the proof. Note that it is permissible to remove the term $(p-1)!$ from both sides of the relation by the [rule of cancellation](#rule-of-cancellation).
 
 ### Rearrangement
 Consider the set of integers modulo a prime $p$ and coprime with $p$; i.e., $1, 2, 3, ..., p-1$. Consider a  second set modulo $p$ that consists of the elements $1a, 2a, 3a, ..., (p-1)a$, where $a$ is some element from the first set. Then the elements of the second set are a _rearrangement_ of the elements of the first set.
@@ -240,7 +155,7 @@ Given integers $u$, $x$, $y$ and $z$, and $ux \equiv uy \pmod{z}$, if $u$ and $z
 - $ux \times u^{-1} \equiv uy \times u^{-1} \pmod{z}$
 - $x \equiv y \pmod{z}$
 
-Multiplication by $u^{-1}$ is possible because $u$ and $z$ are coprime, and therefore $u$ has an inverse modulo $z$. A notable consequence of this rule is that if $z$ is prime, then $z$ must divide $x-y$.
+Multiplication by $u^{-1}$ is permissible because $u$ and $z$ are coprime, and therefore $u$ has an inverse modulo $z$. A notable consequence of this rule is that if $z$ is prime, then $z$ must divide $x-y$.
 
 - $x \equiv y \pmod{z}$
 - $x - y \equiv y - y \pmod{z}$
@@ -322,27 +237,111 @@ For any number of integers that are pairwise coprime, if one knows the remainder
 
 Stated another way, each $x$ in $\mathbb{Z}_{n}$ corresponds to a unique pair $(x \bmod{p}, x \bmod{q})$.
 
-The Chinese Remainder Theorem (CRT) is used in RSA to accelerate the otherwise intolerably expensive operations of decryption and digital signature.
+The Chinese Remainder Theorem (CRT) is used in RSA to accelerate otherwise intolerably expensive exponentiations.
+
+# Finding Large Primes
+Primality&ndash;testing algorithms based on trial division are not feasible for primes of the size necessary for use in cryptographic applications. Even though the time complexity of these algorithms is linear, their candidate inputs are so large that even linear&ndash;time algorithms are too slow. (How slow? they would require many millions of years to complete on a classical computer.)
+
+However, combining some theorems and lemmas from above, we can identify very large, cryptographically suitable primes using an algorithm of logarithmic time complexity. Perhaps the most widely utilized of these is the [Miller&ndash;Rabin](https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test) algorithm, which in its accepted form was developed by Michael Rabin in 1980 (Rabin's variant is probabalistic, and builds on a deterministic version of the algorithm established by Gary Miller in 1976; hence _Miller&ndash;Rabin_ algorithm).
+
+There is another very well&ndash;known primality test known as the [Fermat primality test](https://en.wikipedia.org/wiki/Fermat_primality_test) (because it is based on [Fermat's little theorem](#fermats-little-theorem)). This test is inferior to Miller&ndash;Rabin, however, due to the existence  _Carmichael_ numbers which, although rare, defeat the Fermat test.
+
+## Lemmas Used in The Miller&ndash;Rabin Algorithm
+
+- [Fermat's little theorem](#fermats-little-theorem), which states that if $p$ is prime, then $a^{p-1} \equiv 1 \pmod{p}$, where $1 < a < p$.
+- [Euclid's lemma](#euclids-lemma), which states that if $p$ is prime, and $p|ab$, where $ab$ is the product of two integers $a$ and $b$, then $p$ must divide either $a$ or $b$.
+
+## Miller&ndash;Rabin Algorithm
+
+The Miller&ndash;Rabin algorithm leverages the fact that if $p$ is prime, then the square root of $1$ modulo $p$ is either $1$ or $-1$. Conversely, if the square root of $p$ modulo $1$ is neither $1$ nor $-1$, then $p$ must be composite (see [corollary to Euclid's Lemma](#corollary) for a more general proof).
+
+### Proof
+
+- By Fermat, we have that if $p$ is prime, then $a^{p-1} \equiv 1 \pmod{p}$
+- If we subtract $1$ from both sides of this relation, we get $a^{p-1} - 1 \equiv 0 \pmod{p}$
+- Therefore, $p$ divides $a^{p-1} - 1$
+- The square root of $a^{p-1}$ is $a^{(p-1)/2}$, so by the [difference of squares](#difference-of-two-squares) we can rewrite $a^{p-1} - 1$ as $(a^{(p-1)/2} + 1)(a^{(p-1)/2} - 1)$
+- By [Euclid's lemma](#euclids-lemma), we have that if $p$ is prime, then $p$ divides at least one of the terms $(a^{(p-1)/2} + 1)$ or $(a^{(p-1)/2} - 1)$
+- Therefore, the square root of $a^{p-1}$ (or $a^{(p-1)/2}$) is congruent to either $1$ or $-1$ modulo $p$
+
+Stated generally, if $p$ is prime, then the square root of $a^{p-1}$ (which by Fermat we know to be congruent to $1$ modulo $p$) must either also be congruent to $1$ modulo $p$ or, if it is not, then it must be congruent to $-1$ modulo $p$.
+
+Specifically, with regard to the Miller&ndash;Rabin algorithm, if the square root of $a^{p-1}$ is _not_ congruent to either $1$ or $-1$ modulo $p$, then $p$ must be composite. We can use this fact to test for the compositeness of an integer that runs in logarithmic time in the size of the input.
+
+# [Difference of Two Squares](https://en.wikipedia.org/wiki/Difference_of_two_squares)
+
+Every odd number $n$ can be expressed as the difference of two squares, such that $n=b^2-a^2$ for two integers $a$ and $b$.
+
+## Proof
+- If $n$ is an odd integer, then $n = 2k+1$ trivially for some integer $k$
+- Let $a=k$
+- Let $b=k+1$
+- Then $n = (k+1)^2 - k^2$
+- $n = (k+1)(k+1) - k^2$
+- $n = k^2 + 2k+1 - k^2$
+- $n = 2k+1$
+
+# [Fermat's Factorization Algorithm](https://en.wikipedia.org/wiki/Fermat%27s_factorization_method)
+
+Attempts to factor a composite odd integer $n$, where $n$ is the product of exactly two distinct prime factors $p$ and $q$ (e.g., an RSA modulus). If $n$ can be factored using this algorithm, then the difference of its factors is too small, and the factors therefore cryptographically weak. Suitable factors of an RSA modulus should be distant enough to defeat this algorithm.
+
+Note that if $n$ is an RSA modulus it cannot be even; otherwise one of its factors would be $2$.
+
+1. Set $i$ to the integer floor of the square root of $n$
+2. Set $a=i+1$
+3. Set $b=a^2 - n$
+4. If $b$ is _not_ a perfect square, set $a=a+1$ and go to step 3; otherwise, $(a+b)$ and $(a-b)$ are the factors of $n$ and we're done
+5. Repeat steps 3 and 4 until $b$ is a perfect square, or a sensible number of attempts has been made.
+
+Fermat's factorization algorithm is based on the fact that any odd integer $n$ can be expressed as the [difference of two squares](#difference-of-two-squares), i.e., $n = b^2 - a^2$ for two integers $a$ and $b$. The right&ndash;hand side of this equation can be factored into $(b+a)(b-a)$. And if $(b+a) \ne 1$ and $(b-a) \ne 1$, then $(b+a)(b-a)$ is a nontrivial factorization of $n$.
+
+# [Shor's Factorization Algorithm](https://en.wikipedia.org/wiki/Shor%27s_algorithm)
+
+Attempts to factor a composite odd integer $n$, where $n$ is the product of exactly two distinct prime factors $p$ and $q$ (e.g., an RSA modulus).
+
+In 1994, Peter Shor proposed an algorithm that would run in polynomial time on a sufficiently powerful quantum computer. As of the time of this writing, no such computer is known to exist. Though purely theoretical, the algorithm can nevertheless be executed on a classical computer (albeit with exponential time complexity).
+
+The algorithm reduces the problem of factoring to one of _order&ndash;finding_, and leverages the fact that the order of any element in the finite multiplicative group of integers modulo $n$ divides the order of $n$.
+
+The classical (i.e., non-quantum) variant runs as follows:
+
+1. Set $a$ to a value randomly selected from the range $[2..n-1]$
+2. Set $g = gcd(a,n)$
+3. If $g \ne 1$, then $g$ and $n/g$ are the nontrivial factors of $n$ and we are done
+4. Set $r = 1$
+5. While $a^r \bmod n \ne 1$, set $r = r+1$
+6. If $r$ is even, set $s$ = $a^{r/2} \bmod n$; otherwise, if $r$ is odd, return to step 1
+7. If $s \ne n-1$, then $gcd(s-1, n)$ and $gcd(s+1,n)$ are the nontrivial factors of $n$ and we are done; otherwise, return to step 1.
+
+Step 5&mdash;which is the order&ndash;finding part of the algorithm&mdash;is the bottleneck, and would take millions of years to run against a proper RSA modulus on even the most powerful classical computer. On a sufficiently large quantum computer, however, the order of $a$ can be identified in polynomial time using a [quantum fourier transform](https://en.wikipedia.org/wiki/Quantum_Fourier_transform).
+
+## Proof
+
+* Let $n$ be a semiprime integer
+* Let $r$ be the smallest integer such that $a^r \equiv 1 \pmod n$ for some integer $a$, where $1 < a < n$ (if $r$ is odd, start over with another $a$)
+* Therefore, $n$ divides $a^r - 1$ (also note that $r$ divides $\phi(n)$)
+* Let $s = a^{r/2}$ (this is the square root of $a^r$)
+* It cannot be the case that $s \equiv 1 \pmod n$, because $a^r \equiv 1 \pmod n$, and $r$ is the smallest integer such that $a^r \equiv 1 \pmod n$
+* If it is instead the case that $s \equiv -1 \pmod n$, then $n$ divides $s+1$, and $s+1$ is a trivial factor of $n$
+* Otherwise, $s \not \equiv 1 \pmod n$ _and_ $s \not \equiv -1 \pmod n$, and therefore neither $s-1$ nor $s+1$ is a multiple of $n$, but their product is; i.e., $a^r-1 = (a^{r/2}-1)(a^{r/2}+1) = (s-1)(s+1) \equiv 0 \pmod n$ (see [Euclid's lemma](#euclids-lemma))
+* Therefore, the prime factors of $n$ must share factors with $(s-1)$ and $(s+1)$
+* Let $p=gcd(n,s-1)$ and $q=gcd(n,s+1)$
+* Then $p$ and $q$ are the prime factors of $n$
 
 # Finite Fields
 
 - Any integer taken modulo a prime $p$ is always in the range $0, ..., p - 1$.
 - The set of integers modulo a prime $p$ is a [_finite field_](https://en.wikipedia.org/wiki/Finite_field).
 - You can always add or subtract any multiple of $p$ without changing the result (see [_congruence relation_](https://en.wikipedia.org/wiki/Congruence_relation)).
-- Results of binary operations (addition, subtraction, multiplication and division) are always in the range $0, 1, ..., p - 1$.
+- Results of the binary operations of addition subtraction and are always in the range $0, 1, ..., p - 1$.
 - The finite field of integers modulo $p$ is written $\mathbb{Z}_{p}$.
-
-# Rings
-
-- The numbers modulo a composite $n$, where $n$ is the product of exactly two distinct odd primes $p$ and $q$, are $0, 1, ..., n - 1$.
-- This is not a finite field (as it would be if $n$ were prime), but rather a [_ring_](<https://en.wikipedia.org/wiki/Ring_(mathematics)>), and is denoted $\mathbb{Z}_{n}$.
 
 # Groups
 
-- A [_group_](<https://en.wikipedia.org/wiki/Group_(mathematics)>) is a finite field together with a single binary operation, such as addition or multiplication.
+- A [_group_](<https://en.wikipedia.org/wiki/Group_(mathematics)>) is a [finite field](#finite-fields) together with a single binary operation (such as addition or multiplication).
 - The numbers in $\mathbb{Z}_{p}$ form a group together with addition; one can add or subtract any two numbers in the group and the result will be a number in the group.
-- A group whose operator is multiplication cannot contain 0 (because one cannot divide by 0), and consists of the set $1, ..., p - 1$; this is known as the _muliplicative group_ modulo $p$, and is written $\mathbb{Z_p^*}$.
-- A group can contain _subgroups_; a subgroup is a subset of the elements in the full group.
+- There is another group whose operator is multiplication. However, this group cannot contain 0 (because division by 0 is undefined). It consists of the set $1, ..., p - 1$. This group is known as the _muliplicative group_ modulo $p$, and is written $\mathbb{Z_p^*}$.
+- A group can contain one or more _subgroups_, which are subsets of the elements in the full group.
 - If you apply the group operator to two elements in a subgroup, you again get an element in the subgroup.
 
 # Muliplicative Groups Modulo a prime $p$
@@ -352,32 +351,30 @@ The Chinese Remainder Theorem (CRT) is used in RSA to accelerate the otherwise i
 - In the multiplicative group modulo $p$, there is at least one $g$ that generates the entire group $G$. Such a $g$ is called a _primitive element_, or _generator_, of the group.
 - Other values of $g$ generate smaller sets, or _subgroups_, of $G$.
 - Multiplication or division of any two elements in the group or subgroup generated by $g$ yield another element in that group or subgroup.
-- For any element $g$, the order of $g$ is a divisor of $p - 1$ (Lagrange's theorem)
-- Conversely, for any divisor $d$ of $p-1$, there is a single subgroup of size $d$.
+- For any element $g$, the order of $g$ is a divisor of $p - 1$ (see [Lagrange's theorem](#lagranges-theorem))
 
 # Multiplication Modulo a composite $n$
 
-- The integers modulo $n$, where $n$ is the product of exactly two distinct odd primes $p$ and $q$, are $0, 1, ..., n - 1$.
+- The integers modulo a composite $n$ are $0, 1, ..., n - 1$.
 - These integers do not form a finite field, but rather a [_ring_](<https://en.wikipedia.org/wiki/Ring_(mathematics)>).
-- For any prime $p$, for all $x$ where $0 < x < p$, the congruence relation $x^{p-1} \equiv 1 \pmod{p}$ holds. This is [_Fermat's Little Theorem_](https://en.wikipedia.org/wiki/Fermat%27s_little_theorem).
-- For a composite $n$ that is the product of exactly two distinct odd primes $p$ and $q$, there is an exponent $t$ such that $x^t \equiv 1 \pmod{n}$ for _almost_ all $x$; the exceptions are values of $x$ that are multiples of either $p$ or $q$.
+- For a composite $n$ that is the product of exactly two distinct odd primes $p$ and $q$ (e.g., an RSA modulus), there is an exponent $t$ such that $x^t \equiv 1 \pmod{n}$ for _almost_ all $x$; the exceptions are values of $x$ that are multiples of either $p$ or $q$.
 - The frequency of such exceptions is in the proportion $\displaystyle \frac{(p+q)}{pq}$, and diminishes quadratically in the size of $pq$.
 - The smallest $t$ that is a multiple of $p - 1$ and $q - 1$ is their least common mulitple, or $lcm(p-1, q-1)$.
 
 # Greatest Common Divisor
 
-- The greatest common divisor (_GCD_) of two integers $a$ and $b$ is the largest integer $k$ such that $k|a$ and $k|b$.
-- The [_Euclidean Algorithm_](https://github.com/dchampion/crypto/blob/master/doc/EuclideanAlgorithms.md) computes the GCD of two integers in logarithmic time.
+- The greatest common divisor (GCD) of two integers $a$ and $b$ is the largest integer $k$ such that $k|a$ and $k|b$.
+- The [Euclidean Algorithm](https://github.com/dchampion/crypto/blob/master/doc/EuclideanAlgorithms.md) computes the GCD of two integers in logarithmic time.
 
 # Least Common Multiple
 
-- The least common multiple (_LCM_) of two integers $a$ and $b$ is smallest $k$ such that $k$ is a multiple of both $a$ and $b$; it is found by $\displaystyle \frac{ab}{gcd(a, b)}$.
-- Whereas the original RSA whitepaper specifies that $\phi(pq)$&mdash;which recall is $(p-1)(q-1)$&mdash;be used to compute decryption and signature exponents, in practice $lcm(p-1, q-1)$ is used instead because it results in smaller, and therefore more efficient (albeit no less secure), exponents.
+- The least common multiple (LCM) of two integers $a$ and $b$ is smallest $k$ such that $k$ is a multiple of both $a$ and $b$; it is found by $\displaystyle \frac{ab}{gcd(a, b)}$.
+- Whereas the original RSA whitepaper specifies that $\phi(pq)$&mdash;which recall is $(p-1)(q-1)$&mdash;be used to compute private exponents, in practice $lcm(p-1, q-1)$ is used instead because it results in smaller, and therefore more efficient (albeit no less secure), exponents.
 
 # The Extended Euclidean Algorithm
 
 - Division is not possible in a multiplicative group, because division can produce fractional results.
-- Therefore, to _simulate_ division in a multiplicative group, we use the [_Extended Euclidean
-  Algorithm_](https://github.com/dchampion/crypto/blob/master/doc/EuclideanAlgorithms.md).
+- Therefore, to _simulate_ division in a multiplicative group, we use the [Extended Euclidean
+  Algorithm](https://github.com/dchampion/crypto/blob/master/doc/EuclideanAlgorithms.md).
 - This can be thought of as _multiplication by an inverse_ in the real numbers. For example, $\frac{5}{2}$ (division) is the same as $5 \times \frac{1}{2}$ (multiplication). In the latter, we multiply $5$ by the _inverse_ of $2$, or $\frac{1}{2}$. Both operations yield the same result, which is $2 \frac{1}{2}$.
 - The extended euclidean algorithm finds two integers $u$ and $v$ such that $ua + vb = gcd(a, b)$, which allows one to compute the mulitiplicative inverse of an integer modulo $p$.
