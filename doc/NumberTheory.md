@@ -6,11 +6,11 @@ A statement of fact that has been proven to be true.
 
 ## _Lemma_
 
-A minor statement of fact that can be used in the construction of a theorem.
+An elemetary statement of fact that can be used in the construction of a theorem.
 
 ## _Proof_
 
-Argues why a lemma or theorem is true. A special case is a proof by contradiction, which proves a lemma or theorem by assuming it is not true and demonstrating that this is a contradiction.
+Argues why a lemma or theorem is true. A special case is a proof by contradiction, which proves a lemma or theorem by assuming it is not true, and demonstrating that this is a contradiction.
 
 # Notation
 
@@ -18,11 +18,11 @@ _Unless otherwise noted, assume all integers are positive._
 
 The symbol | means _divides_. For example, given two integers $a$ and $b$, $a|b$ means $a$ divides $b$ without leaving a remainder.
 
-The symbol $\equiv$ denotes a congruence relation (which in effect tranlates to _is equivalent to_). For example, $a \equiv b \pmod{c}$ means $a$ is congruent to $b$ modulo $c$, where $a$, $b$ and $c$ are all integers. In such a relation, $a - b$ is a multiple of $c$; or, more formally, $a - b = kc$ for some integer $k$.
+The symbol $\equiv$ means _is congruent to_. For example, $a \equiv b \pmod{c}$ means $a$ is congruent to $b$ modulo $c$, where $a$, $b$ and $c$ are all integers. In such a relation, $a - b$ is an integer multiple of $c$; or, more formally, $a - b = kc$ for some integer $k$.
 
 The symbol $\phi$ (the letter _phi_ in the Greek alphabet) denotes [Euler's Totient Funtion](https://en.wikipedia.org/wiki/Euler%27s_totient_function), as in $\phi(n)$, where $n$ is some integer. For any integer $n$, $\phi(n)$ gives the number of integers between $1$ and $n$ that are [coprime](https://en.wikipedia.org/wiki/Coprime_integers), or [relatively prime](https://en.wikipedia.org/wiki/Coprime_integers), to $n$.
 
-# Transitivity of Divisors
+# Transitivity of Divisors (Lemma 1)
 
 If $a|b$ and $b|c$, then $a|c$.
 
@@ -32,7 +32,7 @@ If $a|b$ and $b|c$, then $a|c$.
 - If $b|c$, then there is an integer $l$ such that $bl = c$
 - Therefore, $c = bl = (ak)l = a(kl)$
 
-# Prime Factors
+# Prime Factors (Lemma 2)
 
 Let $n$ be an integer greater than $1$. Let $d$ be the smallest divisor of $n$ that is greater than $1$. Then $d$ is prime.
 
@@ -41,8 +41,23 @@ Let $n$ be an integer greater than $1$. Let $d$ be the smallest divisor of $n$ t
 - $n$ is a divisor of $n$, and $n > 1$; therefore, there is at least one divisor of $n$ that is greater than $1$, and there must also be a smallest divisor of $n$ that is greater than $1$
 - Assume $d$ is _not_ a prime
 - If $d$ is not a prime, it has a divisor $e$ such that $1 < e < d$
-- If $e|d$ and $d|n$, then $e|n$ (see [Transitivity of Divisors](#transitivity-of-divisors))
+- If $e|d$ and $d|n$, then $e|n$ (given by [Lemma 1](#transitivity-of-divisors-lemma-1))
 - So $e$ is a divisor of $n$, and $e$ is also smaller than $d$; but $d$ is the smallest divisor of $n$ (this is a contradiction)
+
+# [Fundamental Theorem of Arithmetic](https://en.wikipedia.org/wiki/Fundamental_theorem_of_arithmetic)
+
+All integers greater than $1$ are the product of a unique set of primes.
+
+For example, $3$ and $5$ are the unique prime factors of $15$; and $2$, $2$, $3$ and $5$ are the unique prime factors $60$.
+
+## Proof (by contradiction)
+
+- Let $n$ be the smallest integer with two distinct prime factorizations, such that $n = p_{1} \times p_{2} \times p_{3} \times ... \times p_{j} = q_{1} \times q_{2} \times q_{3} \times ... \times q_{k}$
+- Since $p_{1}$ divides $q_{1} \times q_{2} \times q_{3} \times ... \times q_{k}$, $p_{1}$ must divide some $q_{i}$ (given by [Euclid's Lemma](#euclids-lemma))
+- Suppose $p_{1}$ divides $q_{1}$
+- Since $p_{1}$ and $q_{1}$ are both prime, it must be the case that $p_{1} = q_{1}$
+- Cancel these factors to produce $p_{2} \times p_{3} \times ... \times p_{j} = q_{2} \times q_{3} \times ... \times q_{k}$
+- We now have two distinct factorizations of an integer smaller than $n$, but $n$ is the smallest integer with two distinct factorizations (this is a contradiction)
 
 # [Euclid's Lemma](https://en.wikipedia.org/wiki/Euclid%27s_lemma)
 
@@ -53,11 +68,11 @@ Conversely, if $p$ is composite, and $p|ab$, then $p$ may or may not divide $a$ 
 ## Proof
 
 - Let $p$ be a prime, and $a$ an integer coprime with $p$
-- Then there are integers $x$ and $y$ such that $ax + py = 1$ (this is given by [Bezout's identity](https://en.wikipedia.org/wiki/B%C3%A9zout%27s_identity))
+- Then there are integers $x$ and $y$ such that $ax + py = 1$ (given by [Bezout's identity](https://en.wikipedia.org/wiki/B%C3%A9zout%27s_identity))
 - Multiply both sides of this identity by $b$, giving $b(ax + py) = b$
 - Distribute $b$ over addition, giving $bax + bpy = b$
 - The term $bpy$ is self-evidently divisible by $p$
-- The term $bax$ is also divisible $p$ (this is given by the [Transitivity of Divisors](#transitivity-of-divisors), because if $p|ab$, and $ab|bax$, then $p|bax$)
+- The term $bax$ is also divisible $p$ (given by [Lemma 1](#transitivity-of-divisors-lemma-1), because if $p|ab$, and $ab|bax$, then $p|bax$)
 - Since $bpy$ and $bax$ are both divisible by $p$, their sum must also be divisible by $p$
 - Therefore, since $b$ equals the sum of $bax$ and $bpy$, and the sum of $bax$ and $bpy$ is divisible by $p$, then $b$ must also be divisible by $p$
 
@@ -75,24 +90,8 @@ This is useful because it is used to test very large integers for primality (see
 - Thus, $p$ divides $a^2-1$
 - Factor the term $a^2 - 1$ into $(a+1)(a-1)$
 - Thus, $p$ divides $(a+1)(a-1)$
-- Since $p$ is prime, then $p$ divides either $(a+1)$ or $(a-1)$ (given by [Euclid's lemma](#euclids-lemma))
+- Since $p$ is prime, $p$ divides either $(a+1)$ or $(a-1)$ (given by [Euclid's lemma](#euclids-lemma))
 - Therefore, $a$ is congruent to either $1$ or $-1$ modulo $p$
-
-
-# [Fundamental Theorem of Arithmetic](https://en.wikipedia.org/wiki/Fundamental_theorem_of_arithmetic)
-
-All integers greater than $1$ are the product of a unique set of primes.
-
-For example, $3$ and $5$ are the unique prime factors of $15$; and $2$, $2$, $3$ and $5$ are the unique prime factors $60$.
-
-## Proof (by contradiction)
-
-- Let $n$ be the smallest integer with two distinct prime factorizations, such that $n = p_{1} \times p_{2} \times p_{3} \times ... \times p_{j} = q_{1} \times q_{2} \times q_{3} \times ... \times q_{k}$
-- Since $p_{1}$ divides $q_{1} \times q_{2} \times q_{3} \times ... \times q_{k}$, $p_{1}$ must divide some $q_{i}$ (given by [Euclid's Lemma](#euclids-lemma))
-- Suppose $p_{1}$ divides $q_{1}$
-- Since $p_{1}$ and $q_{1}$ are both prime, it must be the case that $p_{1} = q_{1}$
-- Cancel these factors to produce $p_{2} \times p_{3} \times ... \times p_{j} = q_{2} \times q_{3} \times ... \times q_{k}$
-- We now have two distinct factorizations of an integer smaller than $n$, but $n$ is the smallest integer with two distinct factorizations (this is a contradiction)
 
 # [Euclid's Theorem](https://en.wikipedia.org/wiki/Euclid%27s_theorem)
 
@@ -102,7 +101,7 @@ There are an infinite number of primes.
 
 - Assume the number of primes is finite
 - Let $n$ be the product of the following set, plus $1$; that is, $p_{1} \times p_{2} \times p_{3} \times ... \times p_{k} + 1$, where $k$ is the number of primes
-- Let $d$ be the smallest divisor of $n$, which must be prime (given by [Prime Factors](#prime-factors))
+- Let $d$ be the smallest divisor of $n$, which must be prime (given by [Lemma 2](#prime-factors-lemma-2))
 - None of the primes in the set is a divisor of $n$ (they are instead divisors of $n - 1$); therefore, dividing $n$ by any $p$ in the set leaves a remainder of $1$
 - Therefore, $d$ is prime and it is not in the set (this is a contradiction)
 
@@ -240,11 +239,11 @@ Stated another way, each $x$ in $\mathbb{Z}_{n}$ corresponds to a unique pair $(
 The Chinese Remainder Theorem (CRT) is used in RSA to accelerate otherwise intolerably expensive exponentiations.
 
 # Finding Large Primes
-Primality&ndash;testing algorithms based on trial division are not feasible for primes of the size necessary for use in cryptographic applications. Even though the time complexity of these algorithms is linear, their candidate inputs are so large that even linear&ndash;time algorithms are too slow. (How slow? they would require many millions of years to complete on a classical computer.)
+Primality&ndash;testing algorithms based on trial division are not feasible for primes of the size necessary for use in cryptographic applications. Even though the time complexity of these algorithms is linear, their candidate inputs are so large that they would require many millions of years to complete on a classical computer.
 
 However, combining some theorems and lemmas from above, we can identify very large, cryptographically suitable primes using an algorithm of logarithmic time complexity. Perhaps the most widely utilized of these is the [Miller&ndash;Rabin](https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test) algorithm, which in its accepted form was developed by Michael Rabin in 1980 (Rabin's variant is probabalistic, and builds on a deterministic version of the algorithm established by Gary Miller in 1976; hence _Miller&ndash;Rabin_ algorithm).
 
-There is another very well&ndash;known primality test known as the [Fermat primality test](https://en.wikipedia.org/wiki/Fermat_primality_test) (because it is based on [Fermat's little theorem](#fermats-little-theorem)). This test is inferior to Miller&ndash;Rabin, however, due to the existence  _Carmichael_ numbers which, although rare, defeat the Fermat test.
+A related algorithm is the [Fermat primality test](https://en.wikipedia.org/wiki/Fermat_primality_test), which is based on [Fermat's little theorem](#fermats-little-theorem). It is considered inferior to Miller&ndash;Rabin, however, due to the existence of pseudoprime numbers (also known as [_Carmichael_](https://en.wikipedia.org/wiki/Carmichael_number) numbers). Although rare, these numbers defeat the Fermat test.
 
 ## Lemmas Used in The Miller&ndash;Rabin Algorithm
 
@@ -253,7 +252,7 @@ There is another very well&ndash;known primality test known as the [Fermat prima
 
 ## Miller&ndash;Rabin Algorithm
 
-The Miller&ndash;Rabin algorithm leverages the fact that if $p$ is prime, then the square root of $1$ modulo $p$ is either $1$ or $-1$. Conversely, if the square root of $p$ modulo $1$ is neither $1$ nor $-1$, then $p$ must be composite (see [corollary to Euclid's Lemma](#corollary) for a more general proof).
+The Miller&ndash;Rabin algorithm leverages the fact that if $p$ is prime, then the square root of $1$ modulo $p$ must either be $1$ or $-1$. Conversely, if the square root of $1$ modulo $p$ is neither $1$ nor $-1$, then $p$ must be composite (see [corollary to Euclid's Lemma](#corollary-to-euclids-lemma) for a more general proof).
 
 ### Proof
 
