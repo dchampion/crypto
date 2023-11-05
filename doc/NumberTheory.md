@@ -10,7 +10,7 @@ An elemetary statement of fact that can be used in the construction of a theorem
 
 ## _Proof_
 
-Argues why a lemma or theorem is true. A special case is a proof by contradiction, which proves a lemma or theorem by assuming it is not true, and demonstrating that this is a contradiction.
+Argues why a lemma or theorem is true. A special case is a proof by contradiction, which proves a lemma or theorem by assuming it is not true and demonstrating that this is a contradiction.
 
 # Notation
 
@@ -243,7 +243,7 @@ Primality&ndash;testing algorithms based on trial division are not feasible for 
 
 However, combining some theorems and lemmas from above, we can identify very large, cryptographically suitable primes using an algorithm of logarithmic time complexity. Perhaps the most widely utilized of these is the [Miller&ndash;Rabin](https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test) algorithm, which in its accepted form was developed by Michael Rabin in 1980 (Rabin's variant is probabalistic, and builds on a deterministic version of the algorithm established by Gary Miller in 1976; hence _Miller&ndash;Rabin_ algorithm).
 
-A related algorithm is the [Fermat primality test](https://en.wikipedia.org/wiki/Fermat_primality_test), which is based on [Fermat's little theorem](#fermats-little-theorem). It is considered inferior to Miller&ndash;Rabin, however, due to the existence of pseudoprime numbers (also known as [_Carmichael_](https://en.wikipedia.org/wiki/Carmichael_number) numbers). Although rare, these numbers defeat the Fermat test.
+A related algorithm is the [Fermat primality test](https://en.wikipedia.org/wiki/Fermat_primality_test), which is based on [Fermat's little theorem](#fermats-little-theorem). It is considered inferior to Miller&ndash;Rabin, however, due to the existence of pseudoprime numbers (also known as [_Carmichael_](https://en.wikipedia.org/wiki/Carmichael_number) numbers) which, although rare, defeat the Fermat test.
 
 ## Lemmas Used in The Miller&ndash;Rabin Algorithm
 
@@ -266,6 +266,8 @@ The Miller&ndash;Rabin algorithm leverages the fact that if $p$ is prime, then t
 Stated generally, if $p$ is prime, then the square root of $a^{p-1}$ (which by Fermat we know to be congruent to $1$ modulo $p$) must either also be congruent to $1$ modulo $p$ or, if it is not, then it must be congruent to $-1$ modulo $p$.
 
 Specifically, with regard to the Miller&ndash;Rabin algorithm, if the square root of $a^{p-1}$ is _not_ congruent to either $1$ or $-1$ modulo $p$, then $p$ must be composite. We can use this fact to test for the compositeness of an integer that runs in logarithmic time in the size of the input.
+
+Note crucially that the Miller&ndash;Rabin test is not _deterministic_, but rather _probabilistic_. This is because if $p$ is composite, it may still be the case that the square root of $a^{p-1}$ _is_ congruent to $1$ or $-1$ modulo $p$. In such a case, $a$ is said to be a _false witness_ to the primality of $p$ (for a composite $p$, at most $1$ in $4$ bases $a$ is a false witnesses to the primality of $p$). As a result, when testing some $p$ for primality, it should be subjected to multiple iterations of the Miller&ndash;Rabin test, using different, randomly&ndash;chosen bases on each iteration, to build confidence in the result.
 
 # [Difference of Two Squares](https://en.wikipedia.org/wiki/Difference_of_two_squares)
 
