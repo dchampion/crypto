@@ -267,7 +267,7 @@ Stated generally, if $p$ is prime, then the square root of $a^{p-1}$ (which by F
 
 Specifically, with regard to the Miller&ndash;Rabin algorithm, if the square root of $a^{p-1}$ is _not_ congruent to either $1$ or $-1$ modulo $p$, then $p$ must be composite. We can use this fact to test for the compositeness of an integer that runs in logarithmic time in the size of the input.
 
-Note crucially that the Miller&ndash;Rabin test is not _deterministic_, but rather _probabilistic_. This is because if $p$ is composite, it may still be the case that the square root of $a^{p-1}$ _is_ congruent to $1$ or $-1$ modulo $p$. In such a case, $a$ is said to be a _false witness_ to the primality of $p$ (for a composite $p$, at most $1$ in $4$ bases $a$ is a false witnesses to the primality of $p$). As a result, when testing some $p$ for primality, it should be subjected to multiple iterations of the Miller&ndash;Rabin test, using different, randomly&ndash;chosen bases on each iteration, to build confidence in the result.
+Note crucially that the Miller&ndash;Rabin test is not _deterministic_, but rather _probabilistic_. This is because if $p$ is composite, it may still be the case that the square root of $a^{p-1}$ _is_ congruent to $1$ or $-1$ modulo $p$. In such a case, $a$ is said to be a _false witness_ to the primality of $p$ (for a composite $p$, at most $1$ in $4$ bases $a$ is a false witness to the primality of $p$). As a result, when testing some $p$ for primality, it should be subjected to multiple iterations of the Miller&ndash;Rabin test&mdash;using different, randomly&ndash;chosen bases on each iteration&mdash;to build confidence in the result.
 
 # [Difference of Two Squares](https://en.wikipedia.org/wiki/Difference_of_two_squares)
 
