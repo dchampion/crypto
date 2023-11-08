@@ -53,7 +53,8 @@ For example, $3$ and $5$ are the unique prime factors of $15$; and $2$, $2$, $3$
 ## Proof (by contradiction)
 
 - Let $n$ be the smallest integer with two distinct prime factorizations, such that $n = p_{1} \times p_{2} \times p_{3} \times ... \times p_{j} = q_{1} \times q_{2} \times q_{3} \times ... \times q_{k}$
-- Since $p_{1}$ divides $q_{1} \times q_{2} \times q_{3} \times ... \times q_{k}$, $p_{1}$ must divide some $q_{i}$ (given by [Euclid's Lemma](#euclids-lemma))
+- Since $p_{1}$ divides $p_{1} \times p_{2} \times p_{3} \times ... \times p_{k}$, it must also divide $q_{1} \times q_{2} \times q_{3} \times ... \times q_{k}$ (because they are equal).
+- Since $p_{1}$ divides $q_{1} \times q_{2} \times q_{3} \times ... \times q_{k}$, $p_{1}$ must by induction divide some $q_{i}$. This is because $p_{1}$ divides either $(q_{1} \times q_{2} \times q_{3} \times ... \times q_{k-1})$ or $q_{k}$ (given by [Euclid's Lemma](#euclids-lemma))
 - Suppose $p_{1}$ divides $q_{1}$
 - Since $p_{1}$ and $q_{1}$ are both prime, it must be the case that $p_{1} = q_{1}$
 - Cancel these factors to produce $p_{2} \times p_{3} \times ... \times p_{j} = q_{2} \times q_{3} \times ... \times q_{k}$
@@ -72,7 +73,7 @@ Conversely, if $p$ is composite, and $p|ab$, then $p$ may or may not divide $a$ 
 - Multiply both sides of this identity by $b$, giving $b(ax + py) = b$
 - Distribute $b$ over addition, giving $bax + bpy = b$
 - The term $bpy$ is self-evidently divisible by $p$
-- The term $bax$ is also divisible $p$ (given by [Lemma 1](#transitivity-of-divisors-lemma-1), because if $p|ab$, and $ab|bax$, then $p|bax$)
+- The term $bax$ is also divisible $p$, because if $p|ab$, and $ab|bax$, then $p|bax$ (given by [Lemma 1](#transitivity-of-divisors-lemma-1))
 - Since $bpy$ and $bax$ are both divisible by $p$, their sum must also be divisible by $p$
 - Therefore, since $b$ equals the sum of $bax$ and $bpy$, and the sum of $bax$ and $bpy$ is divisible by $p$, then $b$ must also be divisible by $p$
 
@@ -82,7 +83,7 @@ In summary, if a prime $p$ divides $ab$, and $p$ does not divide $a$ (which is a
 
 If $p$ is prime, then the only possible square roots of $1$ modulo $p$ are $1$ and $-1$.
 
-This is useful because it is used to test very large integers for primality (see subsection [Finding Large Primes](#finding-large-primes) for a more thorough discussion).
+This is useful because it can be used to test very large integers for primality (see subsection [Finding Large Primes](#finding-large-primes) for a more thorough discussion).
 
 ## Proof
 - Let $a^2 \equiv 1 \pmod{p}$, giving that $a$ is the square root of $1$ modulo $p$
@@ -241,9 +242,9 @@ The Chinese Remainder Theorem (CRT) is used in RSA to accelerate otherwise intol
 # Finding Large Primes
 Primality&ndash;testing algorithms based on trial division are not feasible for primes of the size necessary for use in cryptographic applications. Even though the time complexity of these algorithms is linear, their candidate inputs are so large that they would require many millions of years to complete on a classical computer.
 
-However, combining some theorems and lemmas from above, we can identify very large, cryptographically suitable primes using an algorithm of logarithmic time complexity. Perhaps the most widely utilized of these is the [Miller&ndash;Rabin](https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test) algorithm, which in its accepted form was developed by Michael Rabin in 1980 (Rabin's variant is probabalistic, and builds on a deterministic version of the algorithm established by Gary Miller in 1976; hence _Miller&ndash;Rabin_ algorithm).
+However, combining some theorems and lemmas from above, we can identify very large, cryptographically suitable primes using an algorithm that runs in logarithmic time. Perhaps the most widely used of these is the [Miller&ndash;Rabin](https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test) algorithm, which in its accepted form was developed by Michael Rabin in 1980 (Rabin's variant is probabalistic, and builds on a deterministic version of the algorithm established by Gary Miller in 1976; hence _Miller&ndash;Rabin_ algorithm).
 
-A related algorithm is the [Fermat primality test](https://en.wikipedia.org/wiki/Fermat_primality_test), which is based on [Fermat's little theorem](#fermats-little-theorem). It is considered inferior to Miller&ndash;Rabin, however, due to the existence of pseudoprime numbers (also known as [_Carmichael_](https://en.wikipedia.org/wiki/Carmichael_number) numbers) which, although rare, defeat the Fermat test.
+There is a related algorithm, based on [Fermat's little theorem](#fermats-little-theorem), known as the [Fermat primality test](https://en.wikipedia.org/wiki/Fermat_primality_test). It is considered to be inferior to Miller&ndash;Rabin, however, due to the existence of pseudoprime numbers (also known as [_Carmichael_](https://en.wikipedia.org/wiki/Carmichael_number) numbers) which, although rare, defeat the Fermat test.
 
 ## Lemmas Used in The Miller&ndash;Rabin Algorithm
 
