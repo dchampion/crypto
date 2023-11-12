@@ -53,7 +53,7 @@ For example, $3$ and $5$ are the unique prime factors of $15$; and $2$, $2$, $3$
 ## Proof (by contradiction)
 
 - Let $n$ be the smallest integer with two distinct prime factorizations, such that $n = p_{1} \times p_{2} \times p_{3} \times ... \times p_{j} = q_{1} \times q_{2} \times q_{3} \times ... \times q_{k}$
-- Since $p_{1}$ divides $p_{1} \times p_{2} \times p_{3} \times ... \times p_{k}$, it must also divide $q_{1} \times q_{2} \times q_{3} \times ... \times q_{k}$ (because they are equal).
+- Since $p_{1}$ divides $p_{1} \times p_{2} \times p_{3} \times ... \times p_{k}$, it must also divide $q_{1} \times q_{2} \times q_{3} \times ... \times q_{k}$ (because they are equal)
 - Since $p_{1}$ divides $q_{1} \times q_{2} \times q_{3} \times ... \times q_{k}$, $p_{1}$ must by induction divide some $q_{i}$. This is because $p_{1}$ divides either $(q_{1} \times q_{2} \times q_{3} \times ... \times q_{k-1})$ or $q_{k}$ (given by [Euclid's Lemma](#euclids-lemma))
 - Suppose $p_{1}$ divides $q_{1}$
 - Since $p_{1}$ and $q_{1}$ are both prime, it must be the case that $p_{1} = q_{1}$
