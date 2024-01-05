@@ -250,7 +250,7 @@ def _tangent_intersection(pt: list) -> list:
     # Returns the point of intersection on the curve of a straight line drawn tangent
     # to the point pt on the curve. For a thorough explanation of the arithmetic used in
     # this function, consult the following URL:
-    # https://nbviewer.org/github/dchampion/crypto/blob/master/doc/EllipticCurves.ipynb
+    # https://github.com/dchampion/crypto/blob/master/doc/EllipticCurves.ipynb
 
     m = (
         ((3 * pt[_X] ** 2) + _CURVE.a) * euclid.inverse(2 * pt[_Y], _CURVE.p)
@@ -265,7 +265,7 @@ def _secant_intersection(pt1: list, pt2: list) -> list:
     # Returns the point of intersection on the curve of a straight line drawn between
     # points pt1 and pt2 (i.e., the secant line) on the curve. For a thorough explanation
     # of the arithmetic used in this function, consult the following URL:
-    # https://nbviewer.org/github/dchampion/crypto/blob/master/doc/EllipticCurves.ipynb
+    # https://github.com/dchampion/crypto/blob/master/doc/EllipticCurves.ipynb
 
     m = (
         (pt2[_Y] - pt1[_Y]) * euclid.inverse((pt2[_X] - pt1[_X]) % _CURVE.p, _CURVE.p)
