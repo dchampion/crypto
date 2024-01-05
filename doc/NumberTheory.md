@@ -53,7 +53,7 @@ Let $n$ be an integer greater than $1$. Let $d$ be the smallest divisor of $n$ t
 
 All integers greater than $1$ are the product of a unique set of primes.
 
-For example, the set $\{3,5\}$ uniquely represents the prime factors of $15$; and the set $\{2,2,3,5\}$ uniquely represents the prime factors of $60$.
+For example, the set $\lbrace 3,5 \rbrace$ uniquely represents the prime factors of $15$; and the set $\lbrace 2,2,3,5 \rbrace$ uniquely represents the prime factors of $60$.
 
 ## Proof (by contradiction)
 
