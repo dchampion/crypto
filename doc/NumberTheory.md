@@ -221,8 +221,6 @@ A corollary to Euler's theorem&mdash;and one that is crucial to understanding th
 
 # [Lagrange's Theorem](<https://en.wikipedia.org/wiki/Lagrange%27s_theorem_(group_theory)>)
 
-The following, which is a consequence of Lagrange's theorem, is used above in the proof of Euler's theorem.
-
 For any [group](#groups) $G$, the order of every subgroup of $G$ divides the order of $G$.
 
 More specifically, the order of any element $g$ in group $G$ is the smallest integer $k$ such that $g^k = e$, where $e$ is the identity element of the group. $k$ thus divides the order of $G$.
@@ -243,10 +241,10 @@ If $n$ is prime, the group is _cyclic_ and _simple_; i.e., its only subgroups ar
 
 ## Proof 2:
 - Consider a group $G$ modulo a prime $p$
-- Assume that $G$ and its subgroups are cyclic (given by the [fundamental theorem of cyclic groups](https://en.wikipedia.org/wiki/Subgroups_of_cyclic_groups))
-- By [Fermat](#fermats-little-theorem), we have that $g^{p-1} \equiv 1 \pmod{p}$ for any element $g$ in $G$
-- The order of any $g$ that generates the entire group obviously divides the order of $G$ (because their orders are equal)
-- The order of any $g$ that generates a proper subgroup of $G$ must also divide the order of $G$, because ${p-1}$ must be an integer multiple of the order of $g$.
+- By [Fermat](#fermats-little-theorem), we have that $g^{p-1} \equiv 1 \pmod{p}$ for _any_ element $g$ in $G$
+- By definition, the order of an element $g$ that generates the entire group $G$ is $p-1$, so obviously it divides the order of $G$ because the order of $G$ is also $p-1$
+- By the [fundamental theorem of cyclic groups](https://en.wikipedia.org/wiki/Subgroups_of_cyclic_groups), $G$ and its subgroups are cyclic
+- Therefore, the order of an element $g$ that generates a proper subgroup of $G$ must also divide $p-1$; because if the subgroup is cyclic, then $p-1$ is by definition an integer multiple of the order of $g$
 
 # [The Chinese Remainder Theorem](https://en.wikipedia.org/wiki/Chinese_remainder_theorem)
 
