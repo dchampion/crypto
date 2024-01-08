@@ -244,7 +244,7 @@ If $n$ is prime, the group is _cyclic_ and _simple_; i.e., its only subgroups ar
 - By [Fermat](#fermats-little-theorem), we have that $g^{p-1} \equiv 1 \pmod{p}$ for _any_ element $g$ in $G$
 - By definition, the order of an element $g$ that generates the entire group $G$ is $p-1$, so obviously it divides the order of $G$ because the order of $G$ is also $p-1$
 - By the [fundamental theorem of cyclic groups](https://en.wikipedia.org/wiki/Subgroups_of_cyclic_groups), $G$ and its subgroups are cyclic
-- Therefore, the order of an element $g$ that generates a proper subgroup of $G$ must also divide $p-1$; because if the subgroup is cyclic, then $p-1$ is by definition an integer multiple of the order of $g$
+- Therefore, the order of an element $h$ that generates a proper subgroup of $G$ must also divide $p-1$; because if the subgroup is cyclic, then $p-1$ is by definition an integer multiple of the order of $h$
 
 # [The Chinese Remainder Theorem](https://en.wikipedia.org/wiki/Chinese_remainder_theorem)
 
