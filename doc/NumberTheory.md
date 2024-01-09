@@ -49,21 +49,17 @@ Let $n$ be an integer greater than $1$. Let $d$ be the smallest divisor of $n$ t
 - If $e|d$ and $d|n$, then $e|n$ (given by [Lemma 1](#transitivity-of-divisors-lemma-1))
 - So $e$ is a divisor of $n$, and $e$ is also smaller than $d$; but $d$ is the smallest divisor of $n$ (this is a contradiction)
 
-# [Fundamental Theorem of Arithmetic](https://en.wikipedia.org/wiki/Fundamental_theorem_of_arithmetic)
+# [Euclid's Theorem](https://en.wikipedia.org/wiki/Euclid%27s_theorem)
 
-All integers greater than $1$ are the product of a unique set of primes.
-
-For example, the set $\lbrace 3,5 \rbrace$ uniquely represents the prime factors of $15$; and the set $\lbrace 2,2,3,5 \rbrace$ uniquely represents the prime factors of $60$.
+There are an infinite number of primes.
 
 ## Proof (by contradiction)
 
-- Let $n$ be the smallest integer with two distinct prime factorizations, such that $n = p_{1} \times p_{2} \times p_{3} \times ... \times p_{j} = q_{1} \times q_{2} \times q_{3} \times ... \times q_{k}$
-- Since $p_{1}$ divides $p_{1} \times p_{2} \times p_{3} \times ... \times p_{k}$, it must also divide $q_{1} \times q_{2} \times q_{3} \times ... \times q_{k}$ (because they are equal)
-- Since $p_{1}$ divides $q_{1} \times q_{2} \times q_{3} \times ... \times q_{k}$, $p_{1}$ must by induction divide some $q_{i}$. This is because $p_{1}$ divides either $(q_{1} \times q_{2} \times q_{3} \times ... \times q_{k-1})$ or $q_{k}$ (given by [Euclid's Lemma](#euclids-lemma))
-- Suppose $p_{1}$ divides $q_{1}$
-- Since $p_{1}$ and $q_{1}$ are both prime, it must be the case that $p_{1} = q_{1}$
-- Cancel these factors to produce $p_{2} \times p_{3} \times ... \times p_{j} = q_{2} \times q_{3} \times ... \times q_{k}$
-- We now have two distinct factorizations of an integer smaller than $n$, but $n$ is the smallest integer with two distinct factorizations (this is a contradiction)
+- Assume the number of primes is finite
+- Let $n$ be the product of the following set, plus $1$; that is, $p_{1} \times p_{2} \times p_{3} \times ... \times p_{k} + 1$, where $k$ is the number of primes
+- Let $d$ be the smallest divisor of $n$, which must be prime (given by [Lemma 2](#prime-factors-lemma-2))
+- None of the primes in the set is a divisor of $n$ (they are instead divisors of $n - 1$); therefore, dividing $n$ by any $p$ in the set leaves a remainder of $1$
+- Therefore, $d$ is prime and it is not in the set (this is a contradiction)
 
 # [Euclid's Lemma](https://en.wikipedia.org/wiki/Euclid%27s_lemma)
 
@@ -99,17 +95,21 @@ This is useful because it can be used to test very large integers for primality 
 - Since $p$ is prime, $p$ divides either $(a+1)$ or $(a-1)$ (given by [Euclid's lemma](#euclids-lemma))
 - Therefore, $a$ is congruent to either $1$ or $-1$ modulo $p$
 
-# [Euclid's Theorem](https://en.wikipedia.org/wiki/Euclid%27s_theorem)
+# [Fundamental Theorem of Arithmetic](https://en.wikipedia.org/wiki/Fundamental_theorem_of_arithmetic)
 
-There are an infinite number of primes.
+All integers greater than $1$ are the product of a unique set of primes.
+
+For example, the set $\lbrace 3,5 \rbrace$ uniquely represents the prime factors of $15$; and the set $\lbrace 2,2,3,5 \rbrace$ uniquely represents the prime factors of $60$.
 
 ## Proof (by contradiction)
 
-- Assume the number of primes is finite
-- Let $n$ be the product of the following set, plus $1$; that is, $p_{1} \times p_{2} \times p_{3} \times ... \times p_{k} + 1$, where $k$ is the number of primes
-- Let $d$ be the smallest divisor of $n$, which must be prime (given by [Lemma 2](#prime-factors-lemma-2))
-- None of the primes in the set is a divisor of $n$ (they are instead divisors of $n - 1$); therefore, dividing $n$ by any $p$ in the set leaves a remainder of $1$
-- Therefore, $d$ is prime and it is not in the set (this is a contradiction)
+- Let $n$ be the smallest integer with two distinct prime factorizations, such that $n = p_{1} \times p_{2} \times p_{3} \times ... \times p_{j} = q_{1} \times q_{2} \times q_{3} \times ... \times q_{k}$
+- Since $p_{1}$ divides $p_{1} \times p_{2} \times p_{3} \times ... \times p_{k}$, it must also divide $q_{1} \times q_{2} \times q_{3} \times ... \times q_{k}$ (because they are equal)
+- Since $p_{1}$ divides $q_{1} \times q_{2} \times q_{3} \times ... \times q_{k}$, $p_{1}$ must by induction divide some $q_{i}$. This is because $p_{1}$ divides either $(q_{1} \times q_{2} \times q_{3} \times ... \times q_{k-1})$ or $q_{k}$ (given by [Euclid's Lemma](#euclids-lemma))
+- Suppose $p_{1}$ divides $q_{1}$
+- Since $p_{1}$ and $q_{1}$ are both prime, it must be the case that $p_{1} = q_{1}$
+- Cancel these factors to produce $p_{2} \times p_{3} \times ... \times p_{j} = q_{2} \times q_{3} \times ... \times q_{k}$
+- We now have two distinct factorizations of an integer smaller than $n$, but $n$ is the smallest integer with two distinct factorizations (this is a contradiction)
 
 # [Fermat's Little Theorem](https://en.wikipedia.org/wiki/Fermat%27s_little_theorem)
 
@@ -254,6 +254,19 @@ Stated another way, each $x$ in $\mathbb{Z}_{n}$ corresponds to a unique pair $(
 
 The Chinese Remainder Theorem (CRT) is used in RSA to accelerate otherwise intolerably expensive exponentiations.
 
+# [Difference of Two Squares](https://en.wikipedia.org/wiki/Difference_of_two_squares)
+
+Every odd number $n$ can be expressed as the difference of two squares, such that $n=b^2-a^2$ for two integers $a$ and $b$.
+
+## Proof
+- If $n$ is an odd integer, then $n = 2k+1$ trivially for some integer $k$
+- Let $a=k$
+- Let $b=k+1$
+- Then $n = (k+1)^2 - k^2$
+- $n = (k+1)(k+1) - k^2$
+- $n = k^2 + 2k+1 - k^2$
+- $n = 2k+1$
+
 # Finding Large Primes
 Primality&ndash;testing algorithms based on trial division are not feasible for primes of the size necessary for use in cryptographic applications. Even though the time complexity of these algorithms is linear, their candidate inputs are so large that they would require many millions of years to complete on a classical computer.
 
@@ -284,19 +297,6 @@ Stated generally, if $p$ is prime, then the square root of $a^{p-1}$ (which by F
 Specifically, with regard to the Miller&ndash;Rabin algorithm, if the square root of $a^{p-1}$ is _not_ congruent to either $1$ or $-1$ modulo $p$, then $p$ must be composite. We can use this fact to test for the compositeness of an integer that runs in logarithmic time in the size of the input.
 
 Note crucially that the Miller&ndash;Rabin test is not _deterministic_, but rather _probabilistic_. This is because if $p$ is composite, it may still be the case that the square root of $a^{p-1}$ _is_ congruent to $1$ or $-1$ modulo $p$. In such a case, $a$ is said to be a _false witness_ to the primality of $p$ (for a composite $p$, at most $1$ in $4$ bases $a$ is a false witness to the primality of $p$). As a result, when testing some $p$ for primality, it should be subjected to multiple iterations of the Miller&ndash;Rabin test&mdash;using different, randomly&ndash;chosen bases on each iteration&mdash;to build confidence in the result.
-
-# [Difference of Two Squares](https://en.wikipedia.org/wiki/Difference_of_two_squares)
-
-Every odd number $n$ can be expressed as the difference of two squares, such that $n=b^2-a^2$ for two integers $a$ and $b$.
-
-## Proof
-- If $n$ is an odd integer, then $n = 2k+1$ trivially for some integer $k$
-- Let $a=k$
-- Let $b=k+1$
-- Then $n = (k+1)^2 - k^2$
-- $n = (k+1)(k+1) - k^2$
-- $n = k^2 + 2k+1 - k^2$
-- $n = 2k+1$
 
 # [Fermat's Factorization Algorithm](https://en.wikipedia.org/wiki/Fermat%27s_factorization_method)
 
@@ -368,7 +368,7 @@ Step 5&mdash;which is the order&ndash;finding part of the algorithm&mdash;is the
 - In the multiplicative group modulo $p$, there is at least one $g$ that generates the entire group $G$. Such a $g$ is called a _primitive element_, or _generator_, of the group.
 - Other values of $g$ generate smaller sets, or _subgroups_, of $G$.
 - Multiplication or division of any two elements in the group or subgroup generated by $g$ yield another element in that group or subgroup.
-- For any element $g$, the order of $g$ is a divisor of $p - 1$ (see [Lagrange's theorem](#consequence-of-lagranges-theorem))
+- For any element $g$, the order of $g$ is a divisor of $p - 1$ (see [Lagrange's theorem](#lagranges-theorem))
 
 # Multiplication Modulo a composite $n$
 
