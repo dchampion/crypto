@@ -31,17 +31,19 @@ The symbol $\phi$ (the letter _phi_ in the Greek alphabet) denotes [_Euler's Tot
 
 If $a|b$ and $b|c$, then $a|c$.
 
-## Proof:
+## Proof
 
 - If $a|b$, then there is an integer $k$ such that $ak = b$
 - If $b|c$, then there is an integer $l$ such that $bl = c$
 - Therefore, $c = bl = (ak)l = a(kl)$
 
+That $c = a(kl)$ in the last statement is [_axiomatic_](#axiom). Dividing both sides by $a$, we get $c/a = kl$, which is another way of saying that $c$ is an integer multiple of $a$ (and $kl$ is the number of times $a$ divides $c$).
+
 # Prime Factors (Lemma 2)
 
 Let $n$ be an integer greater than $1$. Let $d$ be the smallest divisor of $n$ that is greater than $1$. Then $d$ is prime.
 
-## Proof (by contradiction):
+## Proof (by contradiction)
 
 - $n$ is a divisor of $n$, and $n > 1$; therefore, there is at least one divisor of $n$ that is greater than $1$, and there must also be a smallest divisor of $n$ that is greater than $1$
 - Assume $d$ is _not_ a prime
@@ -56,7 +58,7 @@ There are an infinite number of primes.
 ## Proof (by contradiction)
 
 - Assume the number of primes is finite
-- Let $n$ be the product of the following set, plus $1$; that is, $p_{1} \times p_{2} \times p_{3} \times ... \times p_{k} + 1$, where $k$ is the number of primes
+- Let $n$ be the product of the finite set of primes plus $1$; that is, $p_{1} \times p_{2} \times p_{3} \times ... \times p_{k} + 1$, where $k$ is the number of primes
 - Let $d$ be the smallest divisor of $n$, which must be prime (given by [Lemma 2](#prime-factors-lemma-2))
 - None of the primes in the set is a divisor of $n$ (they are instead divisors of $n - 1$); therefore, dividing $n$ by any $p$ in the set leaves a remainder of $1$
 - Therefore, $d$ is prime and it is not in the set (this is a contradiction)
@@ -131,7 +133,7 @@ Conversely, $a^{p-1} \equiv 1 \pmod{p}$ does _not_ hold if $a$ is a multiple of 
 
 To summarize, $a^{p-1} \equiv 1 \pmod{p}$ holds if $a$ and $p$ are integers, $p$ is prime, $0 < a < p$ or, if $a > p$, $p$ does not divide $a$.
 
-## Proof:
+## Proof
 Consider the set of integers modulo a prime $p$ that are also coprime with $p$ (recall for a prime $p$, this is every postitive integer that is _not_ a multiple of $p$). This set consists of the integers $1, 2, 3, ..., p-1$, and forms a [_group_](#groups) under multiplication. Consider a second set $1a, 2a, 3a, ..., (p-1)a$, where $a$ is some element from the first set. Since all integers modulo $p$ (and coprime with $p$) are in the set $1, 2, 3, ..., (p-1)$, all elements of the second set, when reduced modulo $p$, must exist in the first set. Further, if we assume that the elements of the second set are a [_rearrangement_](#rearrangement) of the elements of first set, then we have:
 
 - $a \times 2a \times 3a \times ... \times (p-1)a \equiv 1 \times 2 \times 3 \times ... \times (p-1) \pmod{p}$
@@ -202,7 +204,7 @@ Euler's totient function is _multiplicative_, meaning that if two integers $p$ a
 
 There are many proofs of Euler's theorem, including a generalized version of the proof of [Fermat's little theorem](#fermats-little-theorem) presented above. The following proof uses a consequence of [Lagrange's theorem](#lagranges-theorem), which holds that for any group $G$, the order of every subgroup of $G$ divides the order of $G$.
 
-## Proof:
+## Proof
 - Let $n$ be a positive integer (that is not necessarily prime)
 - Let $G$ be the set $\lbrace 1 \le a \le n-1 : gcd(a,n) = 1\rbrace$ (which in group theory is called _the multiplicative group modulo_ $n$)
 - Let $a$ be a member of this group
@@ -229,7 +231,7 @@ It follows then that $g^n = e$, where $n$ is the order of a group.
 
 If $n$ is prime, the group is _cyclic_ and _simple_; i.e., its only subgroups are $1$ and the group itself.
 
-## Proof 1:
+## Proof 1
 - Consider a group $G$ modulo a prime $p$
 - Let $g$ be a primitive element of $G$; that is, $g$ generates every element in $G$
 - Let $h$ be another element in $G$; one that generates a proper subgroup of $G$
@@ -239,7 +241,7 @@ If $n$ is prime, the group is _cyclic_ and _simple_; i.e., its only subgroups ar
 - For any $t$, $g^t = 1 \pmod{p}$ is the same as saying $t = 0 \pmod{p-1}$, so $q$ is the smallest $q$ such that $xq = 0 \pmod{p-1}$; this happens when $q = (p-1) / gcd(x, p-1)$
 - Therefore, $q$ must be a factor of $p-1$
 
-## Proof 2:
+## Proof 2
 - Consider a group $G$ modulo a prime $p$
 - By [Fermat](#fermats-little-theorem), we have that $g^{p-1} \equiv 1 \pmod{p}$ for _any_ element $g$ in $G$
 - By definition, the order of an element $g$ that generates the entire group $G$ is $p-1$, so obviously it divides the order of $G$ because the order of $G$ is also $p-1$
