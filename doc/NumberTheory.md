@@ -338,7 +338,7 @@ Step 5&mdash;which is the order&ndash;finding part of the algorithm&mdash;is the
 
 * Let $N$ be a semiprime integer
 * Let $r$ be the smallest integer such that $a^r \equiv 1 \pmod N$ for some integer $a$, where $1 < a < N$ (if $r$ is odd, start over with another $a$)
-* Therefore, $N$ divides $a^r - 1$; also note that $r$ divides $ \phi(N)$ (see [Lagrange's theorem](#lagranges-theorem))
+* Therefore, $N$ divides $a^r - 1$; also note that $r$ divides $\phi(N)$ (see [Lagrange's theorem](#lagranges-theorem))
 * Let $s = a^{r/2}$ (this is the square root of $a^r$)
 * It cannot be the case that $s \equiv 1 \pmod N$, because $a^r \equiv 1 \pmod N$, and $r$ is the smallest integer such that $a^r \equiv 1 \pmod N$
 * If it is instead the case that $s \equiv -1 \pmod N$, then $N$ divides $s+1$, and $s+1$ is a trivial factor of $N$
