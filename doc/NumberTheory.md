@@ -336,16 +336,16 @@ Step 5&mdash;which is the order&ndash;finding part of the algorithm&mdash;is the
 
 ## Proof
 
-* Let $n$ be a semiprime integer
-* Let $r$ be the smallest integer such that $a^r \equiv 1 \pmod n$ for some integer $a$, where $1 < a < n$ (if $r$ is odd, start over with another $a$)
-* Therefore, $n$ divides $a^r - 1$ (also note that $r$ divides $\phi(n)$)
+* Let $N$ be a semiprime integer
+* Let $r$ be the smallest integer such that $a^r \equiv 1 \pmod N$ for some integer $a$, where $1 < a < N$ (if $r$ is odd, start over with another $a$)
+* Therefore, $N$ divides $a^r - 1$; also note that $r$ divides $ \phi(N)$ (see [Lagrange's theorem](#lagranges-theorem))
 * Let $s = a^{r/2}$ (this is the square root of $a^r$)
-* It cannot be the case that $s \equiv 1 \pmod n$, because $a^r \equiv 1 \pmod n$, and $r$ is the smallest integer such that $a^r \equiv 1 \pmod n$
-* If it is instead the case that $s \equiv -1 \pmod n$, then $n$ divides $s+1$, and $s+1$ is a trivial factor of $n$
-* Otherwise, $s \not \equiv 1 \pmod n$ _and_ $s \not \equiv -1 \pmod n$, and therefore neither $s-1$ nor $s+1$ is a multiple of $n$, but their product is; i.e., $a^r-1 = (a^{r/2}-1)(a^{r/2}+1) = (s-1)(s+1) \equiv 0 \pmod n$ (see [Euclid's lemma](#euclids-lemma))
-* Therefore, the prime factors of $n$ must share factors with $(s-1)$ and $(s+1)$
-* Let $p=gcd(n,s-1)$ and $q=gcd(n,s+1)$
-* Then $p$ and $q$ are the prime factors of $n$
+* It cannot be the case that $s \equiv 1 \pmod N$, because $a^r \equiv 1 \pmod N$, and $r$ is the smallest integer such that $a^r \equiv 1 \pmod N$
+* If it is instead the case that $s \equiv -1 \pmod N$, then $N$ divides $s+1$, and $s+1$ is a trivial factor of $N$
+* Otherwise, $s \not \equiv 1 \pmod N$ _and_ $s \not \equiv -1 \pmod N$, and therefore neither $s-1$ nor $s+1$ is a multiple of $N$, but their product is; i.e., $a^r-1 = (a^{r/2}-1)(a^{r/2}+1) = (s-1)(s+1) \equiv 0 \pmod N$ (see [Euclid's lemma](#euclids-lemma))
+* Therefore, $N$ must share factors with $(s-1)$ and $(s+1)$
+* Let $p=gcd(N,s-1)$ and $q=gcd(N,s+1)$
+* Then $p$ and $q$ are the prime factors of $N$
 
 # Finite Fields
 
