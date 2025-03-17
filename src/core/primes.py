@@ -291,7 +291,8 @@ def shor_factor(n: int) -> tuple[int, int]:
             s = util.fast_mod_exp(a, r//2, n)
             # print(f"s={s}")
             if s != n - 1:
-                return euclid.gcd(s+1, n), euclid.gcd(s-1, n)
+                p = euclid.gcd(s+1, n)
+                return p, n // p
 
 
 def _validate_param(n: int) -> None:
