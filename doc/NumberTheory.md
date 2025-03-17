@@ -287,7 +287,7 @@ The Miller&ndash;Rabin algorithm leverages the fact that if $p$ is prime, then t
 
 ### Proof
 
-- By Fermat, we have that if $p$ is prime, then $a^{p-1} \equiv 1 \pmod{p}$
+- By Fermat, we have that if $p$ is prime, and $a$ is an integer such that $1 < a < p$, then $a^{p-1} \equiv 1 \pmod{p}$
 - If we subtract $1$ from both sides of this relation, we get $a^{p-1} - 1 \equiv 0 \pmod{p}$
 - Therefore, $p$ divides $a^{p-1} - 1$
 - The square root of $a^{p-1}$ is $a^{(p-1)/2}$, so by the [difference of squares](#difference-of-two-squares) we can rewrite $a^{p-1} - 1$ as $(a^{(p-1)/2} + 1)(a^{(p-1)/2} - 1)$
@@ -316,21 +316,21 @@ Fermat's factorization algorithm is based on the fact that any odd integer $n$ c
 
 # [Shor's Factorization Algorithm](https://en.wikipedia.org/wiki/Shor%27s_algorithm)
 
-Attempts to factor a composite odd integer $n$, where $n$ is the product of exactly two distinct prime factors $p$ and $q$ (e.g., an RSA modulus).
+Factors a composite odd integer $N$. For present purposes, we are interested in a specialization of Shor's algorithm that factors an $N$ that is the product of exactly two distinct prime factors $p$ and $q$ (e.g., an RSA modulus).
 
 In 1994, Peter Shor proposed an algorithm that would run in polynomial time on a sufficiently powerful quantum computer. As of the time of this writing, no such computer is known to exist. Though purely theoretical, the algorithm can nevertheless be executed on a classical computer (albeit with exponential time complexity).
 
-The algorithm reduces the problem of factoring to one of _order&ndash;finding_, and leverages the fact that the order of any element in the finite multiplicative group of integers modulo $n$ divides the order of $n$.
+The algorithm reduces the problem of factoring to one of _order&ndash;finding_, and relies on the fact that the order of any element in the finite multiplicative group of integers modulo $N$ divides the order of $N$.
 
 The classical (i.e., non-quantum) variant runs as follows:
 
-1. Set $a$ to a value randomly selected from the range $[2..n-1]$
-2. Set $g = gcd(a,n)$
-3. If $g \ne 1$, then $g$ and $n/g$ are the nontrivial factors of $n$ and we are done
+1. Set $a$ to a value randomly selected from the range $[2..N-1]$
+2. Set $g = gcd(a,N)$
+3. If $g \ne 1$, then $g$ and $N/g$ are the nontrivial factors of $N$ and we are done
 4. Set $r = 1$
-5. While $a^r \bmod n \ne 1$, set $r = r+1$
-6. If $r$ is even, set $s$ = $a^{r/2} \bmod n$; otherwise, if $r$ is odd, return to step 1
-7. If $s \ne n-1$, then $gcd(s-1, n)$ and $gcd(s+1,n)$ are the nontrivial factors of $n$ and we are done; otherwise, return to step 1.
+5. While $a^r \bmod N \ne 1$, set $r = r+1$
+6. If $r$ is even, set $s$ = $a^{r/2} \bmod N$; otherwise, if $r$ is odd, return to step 1
+7. If $s \ne N-1$, then $gcd(s-1,N)$ and $gcd(s+1,N)$ are the nontrivial factors of $N$ and we are done; otherwise, return to step 1.
 
 Step 5&mdash;which is the order&ndash;finding part of the algorithm&mdash;is the bottleneck, and would take millions of years to run against a proper RSA modulus on even the most powerful classical computer. On a sufficiently large quantum computer, however, the order of $a$ can be identified in polynomial time using a [quantum fourier transform](https://en.wikipedia.org/wiki/Quantum_Fourier_transform).
 
